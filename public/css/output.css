@@ -615,6 +615,17 @@ body.menu-open {
   color: #6b7280;
 }
 
+nav a {
+  text-decoration: none;
+  color: #333;
+  padding: 10px;
+}
+
+nav a.active {
+  border-bottom: 2px solid #b5651d;
+  padding-bottom: 5px;
+}
+
 .odd\:bg-gray-100:nth-child(odd) {
   --tw-bg-opacity: 1;
   background-color: rgb(243 244 246 / var(--tw-bg-opacity));
