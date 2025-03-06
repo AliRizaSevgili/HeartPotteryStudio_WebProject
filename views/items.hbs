@@ -1,0 +1,61 @@
+{{!-- layout: 'main' --}}
+<div class="max-w-7xl mx-auto px-4">
+  <h2 class="text-2xl font-bold my-4">Items</h2>
+  <a href="/items/add" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg mb-4 inline-block">
+    Add Item
+  </a>
+
+  {{#if items.length}}
+  <div class="overflow-x-auto">
+    <table class="table-auto border-collapse w-full text-left">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="px-4 py-2 border">Item ID</th>
+          <th class="px-4 py-2 border">Item Name</th>
+          <th class="px-4 py-2 border">Price</th>
+          <th class="px-4 py-2 border">Category</th>
+          <th class="px-4 py-2 border">Published</th>
+          <th class="px-4 py-2 border">Image</th>
+          <th class="px-4 py-2 border">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each items}}
+        <tr class="odd:bg-gray-100 even:bg-white">
+          <td class="px-4 py-2 border"><a href="/item/{{id}}" class="text-blue-500 hover:underline">{{id}}</a></td>
+          <td class="px-4 py-2 border">{{title}}</td>
+          <td class="px-4 py-2 border">{{formatCurrency price}}</td>
+          <td class="px-4 py-2 border">{{#if category.name}}{{category.name}}{{else}}Uncategorized{{/if}}</td>
+          <td class="px-4 py-2 border">{{#if published}}Yes{{else}}No{{/if}}</td>
+          <td class="px-4 py-2 border">
+            {{#if featureImage}}
+              <a href="{{featureImage}}" target="_blank">
+                <img src="{{featureImage}}" alt="{{title}}" class="w-20 h-20 object-cover rounded-md shadow" />
+              </a>
+            {{else}}
+              <img src="/images/default-item.png" alt="No Image" class="w-20 h-20 object-cover rounded-md shadow" />
+            {{/if}}
+          </td>
+          <td class="px-4 py-2 border">
+            <a href="/items/edit/{{id}}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg mr-2">
+              Edit
+            </a>
+            <a href="/items/delete/{{id}}" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
+              Remove
+            </a>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+  {{else}}
+  <div class="text-center bg-yellow-100 border border-yellow-300 rounded-lg p-6 my-4">
+    <img src="/images/no-items.png" alt="No Items" class="mx-auto mb-4 w-24 h-24 object-contain" />
+    <p class="text-gray-700 text-lg">No items found. Please add some items to get started!</p>
+    <a href="/items/add" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg mt-4 inline-block">
+      Add Your First Item
+    </a>
+  </div>
+  {{/if}}
+</div>
