@@ -68,7 +68,7 @@ app.get("/favicon.ico", (req, res) => {
 app.get("/", (req, res) => {
   res.render("homepage", {
     layout: "layouts/main", 
-    title: "Heart Pottery Studio",
+    title: "Home",
     activeHome: true
    });
 });
