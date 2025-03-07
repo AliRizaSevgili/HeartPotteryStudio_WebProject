@@ -139,3 +139,25 @@ nav a.active {
   border-bottom: 2px solid #b5651d; 
   padding-bottom: 5px; 
 }
+
+footer {
+  background-color: #F5F5DC; 
+  color: #6b7280; 
+  text-align: center;
+  padding: 2rem 0;
+  transition: all 0.3s ease-in-out;
+}
+
+footer a {
+  color: #6b7280; 
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease-in-out;
+}
+
+footer a:hover {
+  color: #b5651d; 
+  text-decoration: underline;
+}
+
+

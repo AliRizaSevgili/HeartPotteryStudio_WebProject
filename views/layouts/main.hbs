@@ -16,6 +16,12 @@
       body {
         margin: 0;
         padding-top: 80px; 
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      main {
+        flex-grow: 1;
       }
     </style>
 </head>
@@ -25,16 +31,14 @@
     {{> header}}
 
     <!-- Page Content -->
-    {{{body}}}
-
+    <main>
+        {{{body}}}
+    </main>
 
     <!-- Footer -->
     {{> footer}}
 
     <!-- JavaScript Files -->
     <script src="/js/footer.js"></script>
-
- 
-
 </body>
 </html>
