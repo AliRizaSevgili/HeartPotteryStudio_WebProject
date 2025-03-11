@@ -9,9 +9,12 @@ module.exports = {
     preflight: false, 
   },
   theme: {
-    extend: {fontFamily: {
+    extend: {
+      fontFamily: {
       sans: ['ui-sans-serif', '-apple-system', 'system-ui', 'Segoe UI', 'Helvetica', 'Arial', 'sans-serif'],
-    },},
+    },
+    
+  },
   },
   plugins: [],
 };
