@@ -1,26 +1,36 @@
 {{!-- About Page --}}
 <section class="pt-0 relative">
   <div class="image-area text-center relative">
-    <img src="https://res.cloudinary.com/dnemf1asq/image/upload/v1741734080/pexels-mathilde-18278184_rcz6am.jpg" 
+    <img src="https://res.cloudinary.com/dnemf1asq/image/upload/v1741821944/pexels-mathilde-18278184_rcz6am-1_g7eiy5.jpg" 
       alt="Pottery Making" 
       class="w-full max-w-[1550px] h-auto max-h-[1055px] mx-auto object-cover">
     
-    <!-- Text Content (Aligned Left & Semi-Transparent Background on Mobile) -->
-    <div class="absolute top-8 md:top-16 left-0 md:left-12 right-0 md:right-12 w-[95%] md:w-auto p-4 md:p-6 text-white drop-shadow-lg font-sans text-base md:text-lg lg:text-xl text-left 
-         bg-black bg-opacity-40 rounded-lg md:bg-transparent">
-      <h2 class="text-4xl md:text-5xl font-bold text-white mb-16">About Heart Pottery</h2>
-      <p class="leading-relaxed">
-        Heart Pottery is a studio that truly lives up to its name. It is a space shaped by creativity from the heart, while also carrying a subtle nod to its founder artist’s initials, "H.E."—transformed into art.
-      </p>
-      <p class="leading-relaxed mt-4">
-        In the fast pace of modern life, this studio offers a sanctuary where art becomes a means of relaxation and self-expression. More than just a pottery studio, Heart Pottery is a multidisciplinary creative hub that welcomes anyone seeking inspiration. Whether through the meditative touch of clay or exploring different art forms, it is a place to unwind, create, and reconnect with creativity.
-      </p>
-      <p class="leading-relaxed mt-4">
-        With a wide range of courses and workshops, Heart Pottery is open to both beginners and experienced artists. It also hosts private events and group sessions, bringing people together through the power of artistic expression.
-      </p>
-      <p class="leading-relaxed mt-4">
-        Here, art is more than just a process—it’s an experience, a journey. Step into Heart Pottery, create, explore, and let art speak for itself.
-      </p>
+    <!-- Transparent Opaklık: Tam Görsele Oturdu -->
+    <div id="overlay" class="absolute inset-0 top-0 bottom-0 w-full h-full bg-black bg-opacity-40 md:bg-opacity-0 transition-all duration-300">
+      <div id="text-content" class="absolute top-8 md:top-16 left-0 md:left-8 lg:left-16 right-auto 
+                  w-[90%] md:w-[50%] lg:w-[40%] 
+                  p-6 text-white drop-shadow-lg font-sans 
+                  text-xs md:text-sm lg:text-base text-left break-words 
+                  opacity-0 translate-y-4 transition-opacity transition-transform duration-700 ease-out">
+        <h2 id="about-title" class="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-4 
+                   opacity-0 translate-y-4 transition-opacity transition-transform duration-1000 ease-out">
+          About Heart Pottery
+        </h2>
+        <p class="leading-snug">
+          Heart Pottery is a studio that truly lives up to its name. It is a space shaped by creativity from the heart.
+        </p>
+        <p class="leading-snug mt-2">
+          In the fast pace of modern life, this studio offers a sanctuary where art becomes a means of relaxation and self-expression.
+        </p>
+        <p class="leading-snug mt-2">
+          With a wide range of courses and workshops, Heart Pottery is open to both beginners and experienced artists.
+        </p>
+        <p class="leading-snug mt-2">
+          Here, art is more than just a process—it’s an experience, a journey. Step into Heart Pottery, create, explore, and let art speak for itself.
+        </p>
+      </div>
     </div>
   </div>
 </section>
+
+<script src="/js/about.js"></script>
