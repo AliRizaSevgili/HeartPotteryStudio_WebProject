@@ -161,3 +161,20 @@ footer a:hover {
 }
 
 
+
+
+shape {
+  float: right; /* Fotoğrafı sağa al */
+  width: 35%; /* Alanı belirle */
+  margin-left: 20px; /* Metinden boşluk bırak */
+  margin-bottom: 15px; /* Alttaki metinle mesafeyi ayarla */
+  shape-outside: margin-box; /* Metnin fotoğraf çevresine akmasını sağlar */
+  clip-path: inset(0 0 0 0); /* Görselin tamamını etkile */
+}
+
+.shape-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
