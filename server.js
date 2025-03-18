@@ -112,7 +112,7 @@ app.get("/join", (req, res) => {
 app.get("/contact", (req, res) => {
   res.render("contact", { 
   layout: "layouts/main", 
-  title: "Get in Touch",
+  title: "Contact | FQA",
   activeContact: true
    });
 });
