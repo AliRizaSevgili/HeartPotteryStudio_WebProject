@@ -128,3 +128,8 @@ app.use((req, res) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server is running on port ${PORT}`));
+
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy", "frame-src 'self' https://www.google.com https://maps.google.com;");
+  next();
+});
