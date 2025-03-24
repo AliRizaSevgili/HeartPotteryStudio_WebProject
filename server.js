@@ -121,6 +121,31 @@ app.get("/login", (req, res) => {
   res.render("login", { layout: "layouts/main", title: "Sign In" });
 });
 
+
+app.get("/terms", (req, res) => {
+  res.render("terms", { 
+    layout: "layouts/main", 
+    title: "Terms & Conditions" 
+  });
+});
+
+app.get("/privacy", (req, res) => {
+  res.render("privacy", { 
+    layout: "layouts/main", 
+    title: "Privacy Policy" 
+  });
+});
+
+app.get("/returns", (req, res) => {
+  res.render("returns", { 
+    layout: "layouts/main", 
+    title: "Return & Refund" 
+  });
+});
+
+
+
+
 // Handle 404 errors
 app.use((req, res) => {
   res.status(404).json({ error: "Not Found" });
@@ -133,3 +158,7 @@ app.use((req, res, next) => {
   res.setHeader("Content-Security-Policy", "frame-src 'self' https://www.google.com https://maps.google.com;");
   next();
 });
+
+
+
+
