@@ -193,3 +193,31 @@ shape {
 .animate-fade-in {
   animation: fade-in 0.7s ease-in-out forwards;
 }
+
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #374151 !important; /* Tailwind text-gray-700 */
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Tıklanınca pembe ring efekti korunsun */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px #fbcfe8 !important; /* Tailwind ring-pink-100 */
+  border-color: transparent !important;
+}
+
+input.has-value + label,
+textarea.has-value + label,
+select.has-value + label {
+  top: -0.5rem;
+  left: 2.5rem;
+  font-size: 0.75rem;
+  color: #94a3b8; /* slate-400 */
+  transform: scale(0.9);
+}
+
