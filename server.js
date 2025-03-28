@@ -5,7 +5,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const connectDB = require("./config/db");
 const galleryRoutes = require("./routes/galleryRoutes");
-
+const contactRoutes = require('./routes/contactRoutes');
 const app = express();
 const hbs = require("hbs");
 
@@ -51,10 +51,15 @@ app.use(
   })
 );
 
+
+//Contact Routes
 app.use(express.static(path.join(__dirname, "public")));
 
 // MongoDB 
 connectDB();
+
+app.use('/contact', contactRoutes);
+
 
 // API Routes
 console.log("✅ Server loaded galleryRoutes!");
