@@ -87,10 +87,10 @@ app.get("/about", (req, res) => {
   
 });
 
-app.get("/gallery", (req, res) => {
-  res.render("gallery", { 
+app.get("/events", (req, res) => {
+  res.render("events", { 
     layout: "layouts/main", 
-    title: "Art Gallery",
+    title: "Events",
     activeGallery: true
   });
   
