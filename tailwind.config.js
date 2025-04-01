@@ -5,7 +5,16 @@ module.exports = {
     "./public/**/*.js",
     "./public/**/*.html",
     "./index.html",
+    "./node_modules/flowbite/**/*.js"
   ],
+
+  safelist: [
+    'area',
+    'circles',
+    'circles li',
+    'animate',
+  ],
+  
   corePlugins: {
     preflight: false,
   },
@@ -26,5 +35,7 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('flowbite/plugin')
+  ],
 };
