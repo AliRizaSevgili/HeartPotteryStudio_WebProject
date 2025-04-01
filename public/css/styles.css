@@ -1,5 +1,8 @@
 
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+@import 'flowbite';
 
-
+html {
+  scroll-behavior: smooth;
+}
