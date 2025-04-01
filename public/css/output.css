@@ -305,6 +305,10 @@
   margin-top: 2.5rem;
 }
 
+.mt-12 {
+  margin-top: 3rem;
+}
+
 .mt-16 {
   margin-top: 4rem;
 }
@@ -347,10 +351,6 @@
 
 .mt-\[-28px\] {
   margin-top: -28px;
-}
-
-.mt-12 {
-  margin-top: 3rem;
 }
 
 .block {
@@ -970,11 +970,6 @@
   padding-bottom: 0.625rem;
 }
 
-.py-24 {
-  padding-top: 6rem;
-  padding-bottom: 6rem;
-}
-
 .py-3 {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
@@ -983,11 +978,6 @@
 .py-4 {
   padding-top: 1rem;
   padding-bottom: 1rem;
-}
-
-.py-1 {
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
 }
 
 .pb-0 {
@@ -1000,6 +990,10 @@
 
 .pb-2 {
   padding-bottom: 0.5rem;
+}
+
+.pb-24 {
+  padding-bottom: 6rem;
 }
 
 .pb-6 {
@@ -1040,22 +1034,6 @@
 
 .pt-24 {
   padding-top: 6rem;
-}
-
-.pb-24 {
-  padding-bottom: 6rem;
-}
-
-.pt-12 {
-  padding-top: 3rem;
-}
-
-.pt-6 {
-  padding-top: 1.5rem;
-}
-
-.pt-4 {
-  padding-top: 1rem;
 }
 
 .text-left {
@@ -2081,11 +2059,6 @@ select.has-value + label {
     padding-right: 1.5rem;
   }
 
-  .sm\:py-32 {
-    padding-top: 8rem;
-    padding-bottom: 8rem;
-  }
-
   .sm\:py-24 {
     padding-top: 6rem;
     padding-bottom: 6rem;
@@ -2095,24 +2068,28 @@ select.has-value + label {
     padding-bottom: 8rem;
   }
 
+  .sm\:pt-0 {
+    padding-top: 0px;
+  }
+
   .sm\:pt-8 {
     padding-top: 2rem;
   }
 
-  .sm\:pt-16 {
-    padding-top: 4rem;
+  .sm\:pb-12 {
+    padding-bottom: 3rem;
   }
 
-  .sm\:pt-6 {
-    padding-top: 1.5rem;
+  .sm\:pb-16 {
+    padding-bottom: 4rem;
   }
 
-  .sm\:pt-4 {
-    padding-top: 1rem;
+  .sm\:pb-8 {
+    padding-bottom: 2rem;
   }
 
-  .sm\:pt-0 {
-    padding-top: 0px;
+  .sm\:pb-0 {
+    padding-bottom: 0px;
   }
 
   .sm\:text-5xl {
