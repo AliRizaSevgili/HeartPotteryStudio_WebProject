@@ -12,13 +12,18 @@
     <!-- Tailwind CSS -->
     <link href="/css/output.css" rel="stylesheet">
 
+    <!-- AOS CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+
     <style>
-      body {
+     html body {
         margin: 0;
         padding-top: 80px; 
         display: flex;
         flex-direction: column;
-        min-height: 100vh;
+        overflow-x: hidden;
+        scroll-behavior: smooth;
       }
       main {
         flex-grow: 1;
@@ -40,5 +45,30 @@
 
     <!-- JavaScript Files -->
     <script src="/js/footer.js"></script>
+
+     <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const targets = document.querySelectorAll(".animate-slideUpOnVisible");
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("animate-slideUp");
+          entry.target.classList.remove("opacity-0");
+        } else {
+          // 👇 tekrar görünür olduğunda animasyonun yeniden tetiklenmesini sağla
+          entry.target.classList.remove("animate-slideUp");
+          entry.target.classList.add("opacity-0");
+        }
+      });
+    }, {
+      threshold: 0.3
+    });
+
+    targets.forEach(target => observer.observe(target));
+  });
+</script>
+
+
 </body>
 </html>
