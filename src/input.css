@@ -393,6 +393,87 @@ select.has-value + label {
 	animation-duration: 11s;
 }
 
+.circles li:nth-child(11) {
+	left: 5%;
+	width: 40px;
+	height: 40px;
+	animation-delay: 1s;
+	animation-duration: 20s;
+}
+
+.circles li:nth-child(12) {
+	left: 30%;
+	width: 90px;
+	height: 90px;
+	animation-delay: 6s;
+	animation-duration: 17s;
+}
+
+.circles li:nth-child(13) {
+	left: 55%;
+	width: 50px;
+	height: 50px;
+	animation-delay: 3s;
+	animation-duration: 25s;
+}
+
+.circles li:nth-child(14) {
+	left: 15%;
+	width: 70px;
+	height: 70px;
+	animation-delay: 4s;
+	animation-duration: 22s;
+}
+
+.circles li:nth-child(15) {
+	left: 95%;
+	width: 25px;
+	height: 25px;
+	animation-delay: 7s;
+	animation-duration: 16s;
+}
+
+.circles li:nth-child(16) {
+	left: 0%;
+	width: 30px;
+	height: 30px;
+	animation-delay: 2s;
+	animation-duration: 18s;
+}
+
+.circles li:nth-child(17) {
+	left: 2%;
+	width: 60px;
+	height: 60px;
+	animation-delay: 5s;
+	animation-duration: 20s;
+}
+
+.circles li:nth-child(18) {
+	left: 4%;
+	width: 25px;
+	height: 25px;
+	animation-delay: 7s;
+	animation-duration: 22s;
+}
+
+.circles li:nth-child(19) {
+	left: 6%;
+	width: 45px;
+	height: 45px;
+	animation-delay: 4s;
+	animation-duration: 17s;
+}
+
+.circles li:nth-child(20) {
+	left: 8%;
+	width: 35px;
+	height: 35px;
+	animation-delay: 6s;
+	animation-duration: 19s;
+
+}
+
 @keyframes animate {
 	0% {
 		transform: translateY(0) rotate(0deg);
@@ -406,6 +487,7 @@ select.has-value + label {
 		border-radius: 50%;
 	}
 }
+
 /*
 -- End BackGround Animation 
 */
