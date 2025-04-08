@@ -1627,10 +1627,6 @@ input:checked + .toggle-bg {
   top: 0.625rem;
 }
 
-.top-2\/3 {
-  top: 66.666667%;
-}
-
 .top-6 {
   top: 1.5rem;
 }
@@ -1882,10 +1878,6 @@ input:checked + .toggle-bg {
   height: 2rem;
 }
 
-.h-\[0\.58em\] {
-  height: 0.58em;
-}
-
 .h-\[150px\] {
   height: 150px;
 }
@@ -1924,6 +1916,10 @@ input:checked + .toggle-bg {
 
 .min-h-screen {
   min-height: 100vh;
+}
+
+.w-0 {
+  width: 0px;
 }
 
 .w-1\/2 {
@@ -2156,6 +2152,20 @@ input:checked + .toggle-bg {
 
 .animate-bounce {
   animation: bounce 1s infinite;
+}
+
+@keyframes slidein {
+  0% {
+    width: 0%;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+.animate-slide-in {
+  animation: slidein 1s ease-out forwards;
 }
 
 .cursor-default {
@@ -2652,10 +2662,6 @@ input:checked + .toggle-bg {
 
 .fill-current {
   fill: currentColor;
-}
-
-.fill-orange-500 {
-  fill: #f97316;
 }
 
 .object-contain {
@@ -3232,6 +3238,22 @@ input:checked + .toggle-bg {
 
 .ease-out {
   transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+
+@keyframes slide-in {
+  0% {
+    width: 0%;
+    opacity: 0;
+  }
+
+  100% {
+    width: 100%;
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.8s ease-out forwards;
 }
 
 body {
@@ -4176,10 +4198,6 @@ select.has-value + label {
     --tw-gradient-to: #1f2937 var(--tw-gradient-to-position);
   }
 
-  .dark\:fill-orange-300\/60 {
-    fill: rgb(253 186 116 / 0.6);
-  }
-
   .dark\:text-blue-500 {
     --tw-text-opacity: 1;
     color: rgb(59 130 246 / var(--tw-text-opacity));
@@ -4489,4 +4507,3 @@ select.has-value + label {
     line-height: 1;
   }
 }
-

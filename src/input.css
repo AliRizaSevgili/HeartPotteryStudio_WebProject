@@ -529,3 +529,19 @@ select.has-value + label {
   } 
 }
 
+@layer utilities {
+  @keyframes slide-in {
+    0% {
+      width: 0%;
+      opacity: 0;
+    }
+    100% {
+      width: 100%;
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-in {
+    animation: slide-in 0.8s ease-out forwards;
+  }
+}

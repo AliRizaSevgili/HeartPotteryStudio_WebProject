@@ -13,6 +13,7 @@ module.exports = {
     'circles',
     'circles li',
     'animate',
+    'animate-slide-in'
   ],
   
   
@@ -31,9 +32,22 @@ module.exports = {
         6: '1.5rem',  // used in text-sm/6
         8: '2rem',    // used in text-lg/8
       },
+
+
+      keyframes: {
+        slidein: {
+          '0%': { width: '0%' },
+          '100%': { width: '100%' },
+        },
+      },
+      animation: {
+        'slide-in': 'slidein 1s ease-out forwards',
+      },
     },
   },
   plugins: [
     require('flowbite/plugin')
   ],
 };
+
+
