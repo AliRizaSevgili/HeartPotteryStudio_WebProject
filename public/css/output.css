@@ -2594,6 +2594,11 @@ input:checked + .toggle-bg {
   background-color: rgb(234 179 8 / var(--tw-bg-opacity));
 }
 
+.bg-\[\#d27c3a\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(210 124 58 / var(--tw-bg-opacity));
+}
+
 .bg-opacity-40 {
   --tw-bg-opacity: 0.4;
 }
@@ -3092,6 +3097,15 @@ input:checked + .toggle-bg {
 .text-yellow-700 {
   --tw-text-opacity: 1;
   color: rgb(161 98 7 / var(--tw-text-opacity));
+}
+
+.text-\[\#d27c3a\] {
+  --tw-text-opacity: 1;
+  color: rgb(210 124 58 / var(--tw-text-opacity));
+}
+
+.text-\[\#\#b5651d\] {
+  color: ##b5651d;
 }
 
 .no-underline {
@@ -3950,6 +3964,11 @@ select.has-value + label {
   background-color: rgb(202 138 4 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-\[\#e5833a\]:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(229 131 58 / var(--tw-bg-opacity));
+}
+
 .hover\:text-\[\#b5651d\]:hover {
   --tw-text-opacity: 1;
   color: rgb(181 101 29 / var(--tw-text-opacity));
@@ -4226,6 +4245,20 @@ select.has-value + label {
   .dark\:text-white {
     --tw-text-opacity: 1;
     color: rgb(255 255 255 / var(--tw-text-opacity));
+  }
+
+  .dark\:text-\[\#b5651d\] {
+    --tw-text-opacity: 1;
+    color: rgb(181 101 29 / var(--tw-text-opacity));
+  }
+
+  .dark\:text-\[\#d27c3a\] {
+    --tw-text-opacity: 1;
+    color: rgb(210 124 58 / var(--tw-text-opacity));
+  }
+
+  .dark\:text-\[\#\#b5651d\] {
+    color: ##b5651d;
   }
 
   .dark\:hover\:bg-blue-700:hover {
