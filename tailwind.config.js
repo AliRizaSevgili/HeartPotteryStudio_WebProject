@@ -15,9 +15,7 @@ module.exports = {
     'animate',
   ],
   
-  corePlugins: {
-    preflight: false,
-  },
+  
   theme: {
     extend: {
       fontFamily: {
