@@ -255,7 +255,12 @@
         </svg>
         <span>Just-for-fun group nights!</span>
       </li>
-    </ul>
+              </ul>
+                            <p class="text-gray-700 text-base leading-relaxed mt-3 mb-3">
+                      <span class="text-[#b5651d] font-semibold">Want to book a private session?</span>
+                      Please <span class="underline">use the form below</span> to get in touch.
+                    </p>
+
 
   </div>
 </div>
@@ -263,6 +268,248 @@
 
   </div>
 </section>
+
+                    <section class="relative isolate bg-white px-6 pt-0 pb-24 sm:pt-0 sm:pb-32 lg:px-8 mt-0 font-sans text-gray-700">
+
+
+                <!-- Arka plan şekli (blur & gradient) -->
+                <div class="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]" aria-hidden="true">
+                  <div class="relative left-1/2 -z-10 aspect-1155/678 w-[36.125rem] max-w-none -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-40rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)">
+                  </div>
+                </div>
+
+                <!-- Başlık -->
+                <div class="mx-auto max-w-2xl text-center">
+                  <h2 class="text-4xl font-semibold tracking-tight text-balance text-gray-500 sm:text-5xl">Contact Us</h2>
+                  <p class="mt-2 text-lg/8 text-gray-500 text-balance max-w-md mx-auto">
+                  Share your event ideas, group size, and any special requests — we’ll take care of the rest.
+                </p>
+
+                </div>
+
+                <!-- Form -->
+                <form action="/contact" method="POST" class="mx-auto mt-16 max-w-xl sm:mt-20">
+                  <div class="grid grid-cols-1 gap-x-12 gap-y-6 sm:grid-cols-2">
+
+                <!-- First Name -->
+              <div>
+                <label for="firstName" class="block text-sm/6 font-semibold text-gray-500">First name</label>
+                <div class="mt-2.5">
+                  <input
+                    type="text"
+                    name="firstName"
+                    id="firstName"
+                    placeholder="Enter your first name"
+                    autocomplete="given-name"
+                    required
+                    class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-700 
+                          border border-gray-300 
+                          focus:border-transparent 
+                          focus:outline-none focus:ring-2 focus:ring-pink-100 
+                          shadow-none appearance-none 
+                          placeholder:text-gray-400 placeholder:text-sm
+                          transition-all duration-200"
+                  />
+                </div>
+              </div>
+
+
+
+                    <!-- Last Name -->
+              <div>
+                <label for="lastName" class="block text-sm/6 font-semibold text-gray-500">Last name</label>
+                <div class="mt-2.5">
+                  <input
+                    type="text"
+                    name="lastName"
+                    id="lastName"
+                    placeholder="Enter your last name"
+                    autocomplete="family-name"
+                    required
+                    class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-700 
+                          border border-gray-300 
+                          focus:border-transparent 
+                          focus:outline-none focus:ring-2 focus:ring-pink-100 
+                          shadow-none appearance-none 
+                          placeholder:text-gray-400 placeholder:text-sm 
+                          transition-all duration-200"
+                  />
+                </div>
+              </div>
+
+
+                    <!-- Company -->
+              <div class="sm:col-span-2">
+                <label for="company" class="block text-sm/6 font-semibold text-gray-500">Company</label>
+                <div class="mt-2.5">
+                  <input
+                    type="text"
+                    name="company"
+                    id="company"
+                    placeholder="Enter your company"
+                    autocomplete="organization"
+                    class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-700 
+                          border border-gray-300 
+                          focus:border-transparent 
+                          focus:outline-none focus:ring-2 focus:ring-pink-100 
+                          shadow-none appearance-none 
+                          placeholder:text-gray-400 placeholder:text-sm 
+                          transition-all duration-200"
+                  />
+                </div>
+              </div>
+
+
+                    <!-- Email -->
+              <div class="sm:col-span-2">
+                <label for="email" class="block text-sm/6 font-semibold text-gray-500">Email</label>
+                <div class="mt-2.5">
+                  <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    required
+                    class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-700 
+                          border border-gray-300 
+                          focus:border-transparent 
+                          focus:outline-none focus:ring-2 focus:ring-pink-100 
+                          shadow-none appearance-none 
+                          placeholder:text-gray-400 placeholder:text-sm 
+                          transition-all duration-200"
+                  />
+                </div>
+              </div>
+
+
+                  <!-- Phone Number with Icon -->
+              <div class="w-full max-w-xl mx-auto">
+                <label for="contactNumber" class="block text-sm/6 font-semibold text-gray-500">Phone Number</label>
+                <div class="relative mt-2.5">
+                  <!-- Phone Icon -->
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-slate-600">
+                      <path fill-rule="evenodd" d="M1.5 4.5a3 3 0 0 1 3-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 0 1-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 0 0 6.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 0 1 1.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 0 1-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5Z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+
+                  <!-- Phone Input -->
+                  <input
+                    id="contactNumber"
+                    name="contactNumber"
+                    placeholder=""
+                    class="peer w-full bg-transparent placeholder:text-slate-400 text-gray-700 text-sm 
+                          border border-gray-300 rounded-md pr-3 pl-10 py-2 
+                          focus:outline-none focus:border-transparent focus:ring-2 focus:ring-pink-100 
+                          shadow-none appearance-none transition duration-200 ease-in-out"
+                    pattern="^\+\d{1,3}\s\d{1,3}-\d{3}-\d{4}$"
+                    title="Phone number must be in the format: +1 123-456-7890"
+                    maxlength="16"
+                    required
+                    oninput="this.classList.toggle('has-value', this.value.trim().length > 0)"
+                  />
+
+                  <!-- Floating Label -->
+                  <label for="contactNumber"
+                    class="absolute cursor-text bg-white px-1 left-9 top-2.5 text-slate-400 text-sm transition-all transform origin-left 
+                          peer-focus:-top-2 peer-focus:left-10 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90 
+                          has-value:-top-2 has-value:left-10 has-value:text-xs has-value:text-slate-400 has-value:scale-90">
+                    e.g., +1 123-456-7890
+                  </label>
+                </div>
+              </div>
+
+                  <!-- Message -->
+              <div class="sm:col-span-2">
+                <label for="message" class="block text-sm/6 font-semibold text-gray-500">Message</label>
+                <div class="mt-2.5">
+                  <textarea
+                    name="message"
+                    id="message"
+                    rows="4"
+                    required
+                    placeholder="Enter your message"
+                    class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-700
+                          border border-gray-300
+                          focus:border-transparent 
+                          focus:outline-none focus:ring-2 focus:ring-pink-100
+                          shadow-none appearance-none
+                          placeholder:text-gray-400 placeholder:text-sm
+                          font-sans  
+                          transition-all duration-200"
+                  ></textarea>
+                </div>
+              </div>
+
+
+                    
+                      <!-- Toggle -->
+              <div class="flex gap-x-4 sm:col-span-2 mt-6">
+                <label class="inline-flex items-center cursor-pointer">
+                  <!-- Gizli checkbox (peer) -->
+                  <input type="checkbox" class="sr-only peer" id="toggle-agreement" />
+
+                  <!-- Toggle çubuğu -->
+                  <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-pink-100 rounded-full 
+                              peer-checked:after:translate-x-full 
+                              rtl:peer-checked:after:-translate-x-full
+                              peer-checked:after:border-white 
+                              after:content-[''] after:absolute after:top-[2px] after:start-[2px] 
+                              after:bg-white after:border-gray-300 after:border 
+                              after:rounded-full after:h-5 after:w-5 after:transition-all 
+                              peer-checked:bg-pink-200">
+                  </div>
+
+                  <!-- Açıklama metni -->
+                  <span class="ms-3 text-sm font-medium text-gray-700" id="switch-1-label">
+                    By selecting this, you agree to our
+                    <a href="#" class="font-semibold text-pink-400 hover:text-pink-500">privacy&nbsp;policy</a>.
+                  </span>
+                </label>
+
+                <!-- ❗ Hata mesajı -->
+                <p id="toggle-error" class="mt-2 text-sm text-pink-500 hidden">
+                  Please agree to the privacy policy.
+                </p>
+              </div>
+
+
+                <div class="mt-10">
+                <button
+                  type="submit"
+                  class="block w-full rounded-md bg-[#f8dce2] px-3.5 py-2.5 text-center text-base font-semibold text-[#5a3a3c] shadow-none hover:bg-[#f4cdd7] focus:outline-none focus:ring-0 border-none transition-all duration-200"
+                >
+                  Let's talk
+                </button>
+              </div>
+
+
+                
+                
+                </form>
+                <!-- ✅ Success Message (Animated & Styled) -->
+                <div id="success-message"
+                  class="hidden mt-6 flex items-center gap-3 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-green-800 shadow-sm transition-all duration-300 ease-in-out animate-fade-in">
+
+                <!-- Icon -->
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                    class="h-8 w-8 text-green-600">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M4.5 12.75l6 6 9-13.5"/>
+                </svg>
+                
+                <!-- Message -->
+                  <p class="text-sm font-medium">
+                  Thank you! Your message has been successfully sent.
+                  </p>
+                  </div>
+
+              </section>
+
+
+
 
 
 
@@ -444,112 +691,13 @@
   </div>
 </div>
 
+      
 
 
 
 
-<!-- 🪟 Modal Penceresi: Etkinlik Detayları -->
-<div id="eventModal1" data-modal-backdrop="static" tabindex="-1" aria-hidden="true"
-  class="hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full p-4 overflow-x-hidden overflow-y-auto h-[calc(100%-1rem)] max-h-full bg-black/50">
+    
 
-  <div class="relative w-full max-w-2xl max-h-full mx-auto mt-24">
-    <!-- Modal içeriği -->
-    <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
-
-      <!-- Modal header -->
-      <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-200 dark:border-gray-600">
-        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-          Valentine's Day Ceramic Workshop
-        </h3>
-        <button type="button"
-          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-          data-modal-hide="eventModal1">
-          <svg class="w-3 h-3" fill="none" viewBox="0 0 14 14">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-          </svg>
-          <span class="sr-only">Close modal</span>
-        </button>
-      </div>
-
-        <!-- Modal body -->
-<div class="p-4 md:p-5 space-y-6 text-gray-700 text-sm leading-relaxed">
-  <!-- About this event -->
-  <div>
-    <h4 class="text-lg font-semibold text-gray-800 mb-2">About this event</h4>
-    <p>
-      Looking for a unique way to celebrate Valentine's Day with your loved ones? Join our special in-person workshop where you can unleash your creativity and craft your very own ceramic mug! Whether you're a beginner or an experienced maker, our expert instructor will guide you step-by-step through the process.
-    </p>
-    <p>
-      During this fun and interactive workshop, you'll learn various pottery techniques like hand-building and glazing. Get your hands dirty and shape a one-of-a-kind ceramic mug that will make the perfect personalized gift. Add special touches like initials, patterns, or a heartfelt message.
-    </p>
-    <p>
-      All materials are provided—just bring your enthusiasm and leave with a beautiful masterpiece you’ll treasure forever. Come with your partner, friends, or family and make memories while creating something truly special.
-    </p>
-    <p class="font-medium text-gray-800">Don’t miss out. Book your spot now!</p>
-  </div>
-
-  <!-- The Tickets Include -->
-  <div>
-    <h4 class="text-lg font-semibold text-gray-800 mb-2">The Tickets Include</h4>
-    <ul class="list-disc list-inside space-y-1">
-      <li>Workshop demo instructions</li>
-      <li>All the materials</li>
-      <li>Firing, glazing, and wrapping of your ceramic piece</li>
-      <li>One alcoholic or non-alcoholic drink</li>
-      <li>Charcuterie board and more</li>
-      <li>Unforgettable romantic experience!</li>
-    </ul>
-  </div>
-
-  <!-- Event Info -->
-  <div>
-    <h4 class="text-lg font-semibold text-gray-800 mb-2">Event Details</h4>
-    <ul class="space-y-1">
-      <li><strong>Date:</strong> Sun, Feb 11, 2024</li>
-      <li><strong>Time:</strong> 6:00 PM – 8:00 PM EST</li>
-      <li><strong>Location:</strong> 23 St Johns Rd, Toronto, ON – Lokum Eats Restaurant</li>
-      <li><strong>Refund Policy:</strong> Refunds up to 7 days before the event</li>
-    </ul>
-  </div>
-
-  <!-- FAQ -->
-  <div>
-    <h4 class="text-lg font-semibold text-gray-800 mb-2">Frequently Asked Questions</h4>
-    <ul class="space-y-3">
-      <li>
-        <strong>Will the mugs be glazed and fired?</strong><br>
-        Yes, we’ll complete the entire process to ensure they are food-safe, dishwasher-safe, and microwave-safe.
-      </li>
-      <li>
-        <strong>Can we paint the mugs during the workshop?</strong><br>
-        Yes! Clay paints (underglazes) will be provided on the tables.
-      </li>
-      <li>
-        <strong>Can we take our ceramics home the same day?</strong><br>
-        No, the process takes time. We’ll handle drying, firing, glazing, and packaging. You’ll receive an email with pick-up details once your ceramics are ready.
-      </li>
-    </ul>
-  </div>
-</div>        
-
-
-
-
-      <!-- Modal footer -->
-      <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-        <a href="/register" class="text-white bg-[#b5651d] hover:bg-[#a05a1b] focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
-          Register Now
-        </a>
-        <button data-modal-hide="eventModal1" type="button"
-          class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-orange-700 focus:z-10 focus:ring-4 focus:ring-gray-100">
-          Close
-        </button>
-      </div>
-
-    </div>
-  </div>
-</div>
 
 
 
@@ -559,4 +707,4 @@
 
 
 
-
+<script src="/js/contact_form.js"></script>
