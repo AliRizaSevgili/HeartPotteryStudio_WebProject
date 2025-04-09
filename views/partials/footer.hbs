@@ -1,28 +1,89 @@
-<footer id="hidden-footer" class="bg-[#f1f1f1] text-gray-500 pt-1 pb-2 text-center border-t border-[#6b7280] font-sans transition-opacity duration-500 leading-none opacity-100">
-    <div class="container mx-auto">
-        <div class="mt-0 mb-0"> <!-- Üst boşluğu tamamen kaldırıldı -->
-            <p class="footer-links leading-none">
-                <a href="/terms" class="font-semibold hover:text-[#b5651d] hover:underline">Terms & Conditions</a>
-                <span class="mx-2">|</span>
-                <a href="/privacy" class="hover:text-[#b5651d] hover:underline">Privacy Policy</a>
-                <span class="mx-2">|</span>
-                <a href="/returns" class="hover:text-[#b5651d] hover:underline">Class & Refund Policies</a>
-            </p>
-        </div>
+<footer id="hidden-footer" class="bg-[#f1f1f1] text-gray-500 pt-3 pb-3 text-center font-sans transition-opacity duration-500 leading-none opacity-100">
+  <div class="container mx-auto">
 
-        <div class="flex justify-center space-x-4 mt-0 mb-0 leading-none"> <!-- Satır boşlukları iyice azaltıldı -->
-            <a href="https://www.instagram.com/heart.pottery/" target="_blank" class="hover:opacity-75">Instagram</a>
-            <a href="https://www.facebook.com/people/heartpottery/100064061863570/?mibextid=wwXIfr&rdid=FwH79wxaaqTMiRpg&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1CwLcUMUzi%2F%3Fmibextid%3DwwXIfr" target="_blank" class="hover:opacity-75">Facebook</a>
-            <a href="https://pinterest.com" target="_blank" class="hover:opacity-75">Pinterest</a>
-        </div>
-
-        <!-- Copyright ve Developer Bilgisi -->
-        <div class="mt-0 mb-0 text-sm leading-none"> <!-- Satır boşlukları tamamen kaldırıldı -->
-            <p>©2025 by HeartPottery. All rights reserved.</p>
-            <p class="mt-0 mb-0">Developed by Ali Riza Sevgili |
-                <a href="https://www.linkedin.com/in/alirizasevgili/" target="_blank" class="font-semibold hover:underline">LinkedIn</a> | 
-                <a href="https://github.com/AliRizaSevgili" target="_blank" class="font-semibold hover:underline">GitHub</a>
-            </p>
-        </div>
+    <!-- Hızlı Linkler -->
+    <div class="mt-0 mb-0 text-sm md:text-base leading-none">
+      <p class="footer-links leading-none">
+        <a href="/terms" class="font-semibold hover:text-[#b5651d] hover:underline">Terms & Conditions</a>
+        <span class="mx-2">|</span>
+        <a href="/privacy" class="hover:text-[#b5651d] hover:underline">Privacy Policy</a>
+        <span class="mx-2">|</span>
+        <a href="/returns" class="hover:text-[#b5651d] hover:underline">Class & Refund Policies</a>
+      </p>
     </div>
+
+        <!-- Sosyal Medya İkonları -->
+    <div class="flex justify-center items-center space-x-4 mt-2 mb-2">
+    <!-- Instagram -->
+    <a href="https://www.instagram.com/heart.pottery/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hover:opacity-75">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <rect width="20" height="20" x="2" y="2" rx="5" ry="5" stroke-width="2"/>
+        <path d="M16 11.37a4 4 0 1 1-4.63-4.63A4 4 0 0 1 16 11.37z"/>
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+        </svg>
+    </a>
+
+    <!-- Facebook -->
+    <a href="https://www.facebook.com/people/heartpottery/100064061863570/" 
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hover:opacity-75">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M22 12a10 10 0 1 0-11.5 9.95v-7.05H8v-2.9h2.5V9.5c0-2.48 1.49-3.85 3.77-3.85 1.09 0 2.23.2 2.23.2v2.45H15.9c-1.24 0-1.63.77-1.63 1.56v1.86h2.78l-.44 2.9h-2.34V22A10 10 0 0 0 22 12"/>
+        </svg>
+    </a>
+
+    <!-- Pinterest -->
+    <a href="https://pinterest.com" 
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hover:opacity-75">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 2.04c-5.5 0-9.96 4.46-9.96 9.96 0 4.23 2.63 7.84 6.34 9.27-.09-.79-.17-2.01.03-2.87.19-.81 1.21-5.18 1.21-5.18s-.31-.62-.31-1.53c0-1.43.83-2.5 1.87-2.5.88 0 1.31.66 1.31 1.46 0 .89-.56 2.21-.85 3.43-.25 1.07.52 1.95 1.54 1.95 1.84 0 3.25-1.94 3.25-4.75 0-2.49-1.79-4.23-4.34-4.23-2.96 0-4.7 2.21-4.7 4.49 0 .89.34 1.85.77 2.36.08.1.09.2.07.31-.08.35-.26 1.12-.29 1.27-.04.19-.15.23-.35.14-1.31-.61-2.13-2.52-2.13-4.06 0-3.3 2.4-6.34 6.92-6.34 3.63 0 6.45 2.59 6.45 6.06 0 3.61-2.28 6.52-5.45 6.52-1.06 0-2.05-.55-2.39-1.2l-.65 2.48c-.24.91-.9 2.06-1.34 2.76.98.3 2.02.46 3.1.46 5.5 0 9.96-4.46 9.96-9.96s-4.46-9.96-9.96-9.96z"/>
+        </svg>
+    </a>
+    </div>
+
+
+                    <!-- Telif ve Geliştirici Bilgisi -->
+                <div class="mt-0 mb-0 text-sm leading-none">
+                <p>©2025 by HeartPottery. All rights reserved.</p>
+
+                <!-- Geliştirici Yazısı + İkonlar -->
+                <div class="mt-1 flex justify-center items-center space-x-3">
+                    
+                    <!-- Yazı biraz aşağıya alınır -->
+                    <span class="relative top-[1px]">Developed by Ali Riza Sevgili</span>
+
+                    <!-- LinkedIn -->
+                    <a href="https://www.linkedin.com/in/alirizasevgili/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="hover:opacity-75"
+                    title="LinkedIn">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.5 8.5h4V24h-4V8.5zM8.5 8.5h3.8v2.2h.1c.5-1 1.8-2.2 3.7-2.2 3.9 0 4.6 2.6 4.6 6V24h-4v-8.4c0-2-.03-4.6-2.8-4.6-2.8 0-3.2 2.2-3.2 4.4V24h-4V8.5z"/>
+                    </svg>
+                    </a>
+
+                    <!-- GitHub -->
+                    <a href="https://github.com/AliRizaSevgili"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="hover:opacity-75"
+                    title="GitHub">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0C5.37 0 0 5.4 0 12.08c0 5.34 3.44 9.86 8.21 11.46.6.11.82-.26.82-.58 0-.29-.01-1.25-.02-2.27-3.34.73-4.04-1.62-4.04-1.62-.55-1.41-1.33-1.79-1.33-1.79-1.09-.76.08-.74.08-.74 1.2.09 1.84 1.25 1.84 1.25 1.07 1.85 2.8 1.32 3.49 1.01.11-.8.42-1.32.76-1.62-2.66-.3-5.47-1.35-5.47-6 0-1.33.47-2.42 1.24-3.27-.12-.31-.54-1.56.12-3.25 0 0 1-.33 3.3 1.25a11.4 11.4 0 0 1 3-.4c1.02 0 2.04.14 3 .4 2.3-1.58 3.3-1.25 3.3-1.25.66 1.69.24 2.94.12 3.25.77.85 1.24 1.94 1.24 3.27 0 4.67-2.81 5.7-5.49 6 .43.38.81 1.11.81 2.24 0 1.62-.01 2.92-.01 3.32 0 .32.22.7.83.58C20.57 21.94 24 17.42 24 12.08 24 5.4 18.63 0 12 0z"/>
+                    </svg>
+                    </a>
+
+                </div>
+                </div>
+
+
+
+  </div>
 </footer>
