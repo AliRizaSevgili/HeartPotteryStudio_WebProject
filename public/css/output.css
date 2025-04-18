@@ -1643,6 +1643,38 @@ input:checked + .toggle-bg {
   top: 1px;
 }
 
+.top-\[2px\] {
+  top: 2px;
+}
+
+.top-\[0\.3px\] {
+  top: 0.3px;
+}
+
+.top-\[0\.px\] {
+  top: 0.px;
+}
+
+.top-\[0\.0px\] {
+  top: 0.0px;
+}
+
+.bottom-\[0\.0px\] {
+  bottom: 0.0px;
+}
+
+.bottom-\[0\.5px\] {
+  bottom: 0.5px;
+}
+
+.bottom-\[2px\] {
+  bottom: 2px;
+}
+
+.bottom-\[2\.5px\] {
+  bottom: 2.5px;
+}
+
 .isolate {
   isolation: isolate;
 }
@@ -1816,6 +1848,14 @@ input:checked + .toggle-bg {
 
 .mt-\[200px\] {
   margin-top: 200px;
+}
+
+.mb-10 {
+  margin-bottom: 2.5rem;
+}
+
+.mb-12 {
+  margin-bottom: 3rem;
 }
 
 .block {
@@ -2054,6 +2094,14 @@ input:checked + .toggle-bg {
   max-width: 36rem;
 }
 
+.max-w-3xl {
+  max-width: 48rem;
+}
+
+.max-w-screen-lg {
+  max-width: 1024px;
+}
+
 .flex-1 {
   flex: 1 1 0%;
 }
@@ -2258,6 +2306,10 @@ input:checked + .toggle-bg {
   flex-direction: column;
 }
 
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
 .items-start {
   align-items: flex-start;
 }
@@ -2312,6 +2364,14 @@ input:checked + .toggle-bg {
 
 .gap-8 {
   gap: 2rem;
+}
+
+.gap-1 {
+  gap: 0.25rem;
+}
+
+.gap-4 {
+  gap: 1rem;
 }
 
 .gap-x-12 {
@@ -2382,12 +2442,6 @@ input:checked + .toggle-bg {
   margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
 }
 
-.space-y-16 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-y-reverse: 0;
-  margin-top: calc(4rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(4rem * var(--tw-space-y-reverse));
-}
-
 .overflow-hidden {
   overflow: hidden;
 }
@@ -2430,6 +2484,10 @@ input:checked + .toggle-bg {
 
 .rounded-xl {
   border-radius: 0.75rem;
+}
+
+.rounded {
+  border-radius: 0.25rem;
 }
 
 .rounded-l-lg {
@@ -2819,6 +2877,16 @@ input:checked + .toggle-bg {
   padding-bottom: 1.5rem;
 }
 
+.py-5 {
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+.py-24 {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
 .pb-0 {
   padding-bottom: 0px;
 }
@@ -2891,12 +2959,36 @@ input:checked + .toggle-bg {
   padding-top: 2rem;
 }
 
+.pb-20 {
+  padding-bottom: 5rem;
+}
+
+.pt-16 {
+  padding-top: 4rem;
+}
+
+.pb-8 {
+  padding-bottom: 2rem;
+}
+
+.pb-4 {
+  padding-bottom: 1rem;
+}
+
+.pt-12 {
+  padding-top: 3rem;
+}
+
 .text-left {
   text-align: left;
 }
 
 .text-center {
   text-align: center;
+}
+
+.align-middle {
+  vertical-align: middle;
 }
 
 .font-sans {
@@ -2999,6 +3091,10 @@ input:checked + .toggle-bg {
 
 .leading-relaxed {
   line-height: 1.625;
+}
+
+.leading-8 {
+  line-height: 2rem;
 }
 
 .tracking-normal {
@@ -3132,6 +3228,11 @@ input:checked + .toggle-bg {
 .text-yellow-700 {
   --tw-text-opacity: 1;
   color: rgb(161 98 7 / var(--tw-text-opacity));
+}
+
+.text-indigo-600 {
+  --tw-text-opacity: 1;
+  color: rgb(79 70 229 / var(--tw-text-opacity));
 }
 
 .underline {
@@ -4050,6 +4151,12 @@ select.has-value + label {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.hover\:shadow-lg:hover {
+  --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
 .focus\:animate-none:focus {
   animation: none;
 }
@@ -4388,6 +4495,11 @@ select.has-value + label {
     font-size: 1.25rem;
     line-height: 1.75rem;
   }
+
+  .sm\:text-4xl {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
 }
 
 @media (min-width: 768px) {
@@ -4467,10 +4579,6 @@ select.has-value + label {
     grid-template-columns: 0.6fr 0.4fr;
   }
 
-  .md\:grid-cols-1 {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-  }
-
   .md\:justify-end {
     justify-content: flex-end;
   }
@@ -4501,10 +4609,6 @@ select.has-value + label {
     padding: 2rem;
   }
 
-  .md\:p-6 {
-    padding: 1.5rem;
-  }
-
   .md\:px-12 {
     padding-left: 3rem;
     padding-right: 3rem;
@@ -4515,30 +4619,18 @@ select.has-value + label {
     padding-right: 4rem;
   }
 
-  .md\:px-8 {
-    padding-left: 2rem;
-    padding-right: 2rem;
-  }
-
   .md\:px-4 {
     padding-left: 1rem;
     padding-right: 1rem;
   }
 
-  .md\:pl-6 {
-    padding-left: 1.5rem;
+  .md\:px-8 {
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
 
   .md\:pl-8 {
     padding-left: 2rem;
-  }
-
-  .md\:pr-6 {
-    padding-right: 1.5rem;
-  }
-
-  .md\:pl-4 {
-    padding-left: 1rem;
   }
 
   .md\:pr-8 {
