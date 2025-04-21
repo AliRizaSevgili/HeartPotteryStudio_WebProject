@@ -1,0 +1,73 @@
+<!-- Görsel ve Başlık Bölümü -->
+<section class="bg-white pt-8 pb-0 px-6 sm:px-12 lg:px-24 font-sans text-gray-700 text-center">
+  <div class="max-w-3xl mx-auto mb-6">
+    <img 
+      src="{{classItem.image}}" 
+      alt="{{classItem.title}}" 
+      class="w-full h-[400px] object-cover object-center rounded-lg shadow-lg mx-auto"
+    >
+  </div>
+
+  <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-2">{{classItem.title}}</h1>
+
+  <p class="text-lg text-gray-700">
+    <span class="font-semibold text-gray-900">{{classItem.price}}</span>
+    <span class="text-gray-500"> per person</span>
+  </p>
+</section>
+
+<!-- Detaylar Bölümü -->
+<section class="bg-white pt-4 pb-16 px-6 sm:px-12 lg:px-24 font-sans text-gray-700 text-left animate-slideUpOnVisible opacity-0">
+  <div class="max-w-3xl mx-auto space-y-6">
+
+    <!-- Giriş Paragrafları -->
+    <div class="space-y-2">
+      {{#each classItem.intro}}
+        <p>{{this}}</p>
+      {{/each}}
+    </div>
+
+    <!-- Class Details -->
+    <div>
+      <h2 class="text-xl font-semibold text-[#b5651d] mb-2">Class Details</h2>
+      <ul class="list-disc list-inside space-y-1">
+        {{#each classItem.details}}
+          <li>{{this}}</li>
+        {{/each}}
+      </ul>
+    </div>
+
+    <!-- Price Tekrar -->
+    <div>
+      <h2 class="text-xl font-semibold text-[#b5651d] mb-2">Price</h2>
+      <p>{{classItem.price}}</p>
+    </div>
+
+    <!-- What's Included -->
+    <div>
+      <h2 class="text-xl font-semibold text-[#b5651d] mb-2">What’s Included</h2>
+      <ul class="list-disc list-inside space-y-1">
+        {{#each classItem.included}}
+          <li>{{this}}</li>
+        {{/each}}
+      </ul>
+    </div>
+
+    <!-- Pick-Up Information -->
+    <div>
+      <h2 class="text-xl font-semibold text-[#b5651d] mb-2">Pick-Up Information</h2>
+      <p>{{classItem.pickupInfo}}</p>
+    </div>
+
+    <!-- Notes -->
+    <div>
+      <h2 class="text-xl font-semibold text-[#b5651d] mb-2">Notes</h2>
+      <ul class="list-disc list-inside text-gray-700 space-y-1">
+        {{#each classItem.notes}}
+          <li>{{this}}</li>
+        {{/each}}
+      </ul>
+    </div>
+
+  </div>
+</section>
