@@ -1,13 +1,21 @@
+
+
 require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
 const helmet = require("helmet");
 const connectDB = require("./config/db");
+
 const galleryRoutes = require("./routes/galleryRoutes");
 const contactRoutes = require('./routes/contactRoutes');
+const classRoutes = require('./routes/classRoutes');
+
 const app = express();
 const hbs = require("hbs");
+
+
+
 
 // Middleware
 app.use(express.json());
@@ -60,7 +68,7 @@ connectDB();
 
 app.use('/contact', contactRoutes);
 
-
+app.use('/class', classRoutes);
 // API Routes
 console.log("✅ Server loaded galleryRoutes!");
 app.use("/api/gallery", galleryRoutes);

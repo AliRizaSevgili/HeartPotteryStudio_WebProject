@@ -1,11 +1,30 @@
-{{!-- layout: 'main' --}}
-<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 text-center">
-  <div class="bg-white shadow-lg rounded-lg p-6 max-w-lg">
-    <h1 class="text-4xl font-bold text-red-500">{{errorCode}}</h1>
-    <p class="text-lg text-gray-700 mt-2">{{errorMessage}}</p>
-    <p class="text-gray-500">{{errorDetail}}</p>
-    <a href="/" class="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg text-lg transition-all">
-      Go Back Home
+
+
+
+
+{{!< layouts/main }}
+
+
+<section class="min-h-screen flex items-center justify-center bg-gray-100 font-sans px-6">
+  <div class="bg-white shadow-xl rounded-xl p-10 max-w-xl w-full text-center animate-slideUpOnVisible opacity-0">
+
+    <!-- Error Icon -->
+    <div class="mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12A9 9 0 1 0 3 12a9 9 0 0 0 18 0z" />
+      </svg>
+    </div>
+
+    <!-- Error Code -->
+    <h1 class="text-4xl font-extrabold text-red-500">{{errorCode}}</h1>
+
+    <!-- Message -->
+    <p class="text-lg text-gray-800 mt-4 font-medium">{{errorMessage}}</p>
+    <p class="text-gray-500 text-sm mt-1">{{errorDetail}}</p>
+
+    <!-- Back Button -->
+    <a href="/" class="mt-6 inline-block bg-[#b5651d] hover:bg-[#a0521c] text-white px-6 py-3 rounded-lg text-base transition-all">
+      ⬅️ Back to Home
     </a>
   </div>
-</div>
+</section>
