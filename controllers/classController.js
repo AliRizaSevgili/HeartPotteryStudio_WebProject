@@ -38,7 +38,106 @@ exports.showClassBySlug = (req, res) => {
        ],
        classRefund: "At Heart Pottery Studio, we are dedicated to fostering a warm, inclusive, and creative environment where everyone feels welcome. As an artist-led space, we celebrate diversity and encourage artistic expression from individuals of all backgrounds.\nWe have a zero-tolerance policy for any form of discrimination, harassment, or disrespectful behavior. Ensuring a safe and positive space for all is our priority. Any violation of this policy will result in immediate removal from our studio, with no refund provided. Let's create a supportive and inspiring community together...",
 
+       availableDates: {
+        "April 2025": [
+          {
+            label: "April 7 – April 13",
+            slots: [
+              { day: "Monday", date: "April 7, 2025", time: "6:00 PM – 8:00 PM" },
+              { day: "Tuesday", date: "April 8, 2025", time: "6:00 PM – 8:00 PM" }
+            ]
+          },
+          {
+            label: "April 14 – April 20",
+            slots: [
+              { day: "Monday", date: "April 14, 2025", time: "6:00 PM – 8:00 PM" },
+              { day: "Tuesday", date: "April 15, 2025", time: "6:00 PM – 8:00 PM" }
+            ]
+          },
+          {
+            label: "April 21 – April 27",
+            slots: [
+              { day: "Monday", date: "April 21, 2025", time: "6:00 PM – 8:00 PM" },
+              { day: "Tuesday", date: "April 22, 2025", time: "6:00 PM – 8:00 PM" }
+            ]
+          },
+          {
+            label: "April 28 – May 4",
+            slots: [
+              { day: "Monday", date: "April 28, 2025", time: "6:00 PM – 8:00 PM" },
+              { day: "Tuesday", date: "April 29, 2025", time: "6:00 PM – 8:00 PM" }
+            ]
+          }
+        ],
+      
+        "May 2025": [
+          {
+            label: "May 5 – May 11",
+            slots: [
+              { day: "Monday", date: "May 5, 2025", time: "6:00 PM – 8:00 PM" },
+              { day: "Tuesday", date: "May 6, 2025", time: "6:00 PM – 8:00 PM" }
+            ]
+          },
+          {
+            label: "May 12 – May 18",
+            slots: [
+              { day: "Monday", date: "May 12, 2025", time: "6:00 PM – 8:00 PM" },
+              { day: "Tuesday", date: "May 13, 2025", time: "6:00 PM – 8:00 PM" }
+            ]
+          },
+          {
+            label: "May 19 – May 25",
+            slots: [
+              { day: "Monday", date: "May 19, 2025", time: "6:00 PM – 8:00 PM" },
+              { day: "Tuesday", date: "May 20, 2025", time: "6:00 PM – 8:00 PM" }
+            ]
+          },
+          {
+            label: "May 26 – June 1",
+            slots: [
+              { day: "Monday", date: "May 26, 2025", time: "6:00 PM – 8:00 PM" },
+              { day: "Tuesday", date: "May 27, 2025", time: "6:00 PM – 8:00 PM" }
+            ]
+          }
+        ],
+      
+        "June 2025": [
+          {
+            label: "June 2 – June 8",
+            slots: [
+              { day: "Monday", date: "June 2, 2025", time: "6:00 PM – 8:00 PM" },
+              { day: "Tuesday", date: "June 3, 2025", time: "6:00 PM – 8:00 PM" }
+            ]
+          },
+          {
+            label: "June 9 – June 15",
+            slots: [
+              { day: "Monday", date: "June 9, 2025", time: "6:00 PM – 8:00 PM" },
+              { day: "Tuesday", date: "June 10, 2025", time: "6:00 PM – 8:00 PM" }
+            ]
+          },
+          {
+            label: "June 16 – June 22",
+            slots: [
+              { day: "Monday", date: "June 16, 2025", time: "6:00 PM – 8:00 PM" },
+              { day: "Tuesday", date: "June 17, 2025", time: "6:00 PM – 8:00 PM" }
+            ]
+          },
+          {
+            label: "June 23 – June 29",
+            slots: [
+              { day: "Monday", date: "June 23, 2025", time: "6:00 PM – 8:00 PM" },
+              { day: "Tuesday", date: "June 24, 2025", time: "6:00 PM – 8:00 PM" }
+            ]
+          }
+        ]
+      }
+      
+       
+
     },
+
+      
 
 
     {
@@ -64,6 +163,9 @@ exports.showClassBySlug = (req, res) => {
   res.render("class-details", {
     layout: "layouts/main",
     title: selectedClass.title,
-    classItem: selectedClass
+    classItem: selectedClass,
+    aprilDates: selectedClass.availableDates["April 2025"],
+    mayDates: selectedClass.availableDates["May 2025"],
+    juneDates: selectedClass.availableDates["June 2025"]
   });
 };

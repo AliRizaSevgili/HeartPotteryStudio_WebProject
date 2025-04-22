@@ -88,45 +88,87 @@
   </div>
 </section>
 
-<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+ 
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
 
-    <!-- 🔹 Sol Kısım -->
-    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+   <!-- 🟥 APRIL -->
+<div class="bg-white rounded-lg p-5 shadow space-y-4">
+  <h2 class="text-xl font-bold text-[#b5651d] text-center">April 2025</h2>
 
-      <!-- 📅 Takvim Bölümü -->
-    <div class="bg-white rounded-lg p-4 shadow">
-      <h3 class="text-lg font-semibold mb-2 text-[#b5651d]">Select a Date</h3>
+  {{#each aprilDates}}
+    <details class="group border border-gray-200 rounded">
+      <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-100">
+        <h4 class="text-md text-[#b5651d] font-medium">{{label}}</h4>
+        <span class="transition group-open:rotate-180">
+          <svg fill="none" height="20" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="20">
+            <path d="M6 9l6 6 6-6"></path>
+          </svg>
+        </span>
+      </summary>
 
-      <!-- Seçilen tarih gösterimi -->
-      <div id="selectedDateDisplay" class="text-sm text-gray-600 mb-3">
-        Selected Date: -
-      </div>
-
-      <!-- Takvim -->
-      <div id="inlineCalendar" class="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto overflow-hidden min-w-0"></div>
-
-    </div>
-
-
-      <!-- ⏰ Saat Seçimi -->
-      <div class="bg-white rounded-lg p-5 shadow">
-        <h3 class="text-lg font-semibold mb-2 text-[#b5651d]">Available Times</h3>
-        <div class="min-h-[160px] bg-gray-100 flex items-center justify-center text-gray-500">
-          [ Time Slot Placeholder ]
+      {{#each slots}}
+        <div class="p-4 text-sm bg-white text-gray-700 space-y-2">
+          <p><strong>Day:</strong> {{day}}</p>
+          <p><strong>Date:</strong> {{date}}</p>
+          <p><strong>Time:</strong> {{time}}</p>
+          <button class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
+            Select this slot
+          </button>
         </div>
-      </div>
+      {{/each}}
 
+    </details>
+  {{/each}}
+</div>
+
+
+    <!-- 🟧 MAY -->
+    <div class="bg-white rounded-lg p-5 shadow space-y-4">
+      <h2 class="text-xl font-bold text-[#b5651d] text-center">May 2025</h2>
+      {{#each mayDates}}
+        <details class="group border border-gray-200 rounded">
+          <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-100">
+            <h4 class="text-md text-[#b5651d] font-medium">{{label}}</h4>
+            <span class="transition group-open:rotate-180">
+              <svg fill="none" height="20" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="20">
+                <path d="M6 9l6 6 6-6"></path>
+              </svg>
+            </span>
+          </summary>
+          <div class="p-4 text-sm bg-white text-gray-700 space-y-2">
+            <p><strong>Date:</strong> {{date}}</p>
+            <p><strong>Time:</strong> {{time}}</p>
+            <button class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
+              Select this slot
+            </button>
+          </div>
+        </details>
+      {{/each}}
     </div>
 
-    <!-- 🔸 Sağ Kısım -->
-    <div class="bg-white rounded-lg p-5 shadow space-y-4 h-full">
-      <h2 class="text-lg font-semibold text-[#b5651d]">Class Summary</h2>
-      <p class="text-gray-700">{{classItem.description}}</p>
-      <p class="text-lg font-bold text-gray-900">{{classItem.price}}</p>
-      <a href="/checkout" class="inline-block mt-4 bg-[#b5651d] text-white px-4 py-1 rounded hover:bg-[#8c4516] transition">
-        Next →
-      </a>
+    <!-- 🟩 JUNE -->
+    <div class="bg-white rounded-lg p-5 shadow space-y-4">
+      <h2 class="text-xl font-bold text-[#b5651d] text-center">June 2025</h2>
+      {{#each juneDates}}
+        <details class="group border border-gray-200 rounded">
+          <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-100">
+            <h4 class="text-md text-[#b5651d] font-medium">{{label}}</h4>
+            <span class="transition group-open:rotate-180">
+              <svg fill="none" height="20" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="20">
+                <path d="M6 9l6 6 6-6"></path>
+              </svg>
+            </span>
+          </summary>
+          <div class="p-4 text-sm bg-white text-gray-700 space-y-2">
+            <p><strong>Date:</strong> {{date}}</p>
+            <p><strong>Time:</strong> {{time}}</p>
+            <button class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
+              Select this slot
+            </button>
+          </div>
+        </details>
+      {{/each}}
     </div>
 
   </div>
@@ -138,25 +180,7 @@
 
 
 
+
+
 <script src="/js/scroll.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-
-<!-- Flatpickr -->
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    flatpickr("#inlineCalendar", {
-      inline: true,
-      static: true, // ✅ Eklendi
-      defaultDate: "today",
-      dateFormat: "Y-m-d",
-      onChange: function(selectedDates, dateStr, instance) {
-        // Tarihi göster
-        const display = document.getElementById("selectedDateDisplay");
-        display.textContent = "Selected Date: " + dateStr;
-      }
-    });
-  });
-</script>
