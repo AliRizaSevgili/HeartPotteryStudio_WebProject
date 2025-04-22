@@ -35,7 +35,9 @@ exports.showClassBySlug = (req, res) => {
         "Make-up classes and rescheduling are not available, so please ensure you're able to attend all sessions",
         "Aprons are provided",
         "Wear comfy clothes (avoid short skirts/dresses), and keep nails trimmed for better control at the wheel"
-      ]
+       ],
+       classRefund: "At Heart Pottery Studio, we are dedicated to fostering a warm, inclusive, and creative environment where everyone feels welcome. As an artist-led space, we celebrate diversity and encourage artistic expression from individuals of all backgrounds.\nWe have a zero-tolerance policy for any form of discrimination, harassment, or disrespectful behavior. Ensuring a safe and positive space for all is our priority. Any violation of this policy will result in immediate removal from our studio, with no refund provided. Let's create a supportive and inspiring community together...",
+
     },
 
 
