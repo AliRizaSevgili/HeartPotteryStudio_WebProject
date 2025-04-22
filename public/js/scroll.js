@@ -63,4 +63,22 @@ if (withusLine) {
   observer.observe(withusLine);
 }
 
+// Scroll-triggered reveal for elements with .animate-slideUpOnVisible
+const revealTargets = document.querySelectorAll(".animate-slideUpOnVisible");
+
+if (revealTargets.length > 0) {
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("animate-slideUp");
+        entry.target.classList.remove("opacity-0");
+      }
+    });
+  }, {
+    threshold: 0.2,
+  });
+
+  revealTargets.forEach((target) => revealObserver.observe(target));
+}
+
 });

@@ -1,3 +1,6 @@
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
 <!-- Görsel ve Başlık Bölümü -->
 <section class="bg-white pt-8 pb-0 px-6 sm:px-12 lg:px-24 font-sans text-gray-700 text-center">
   <div class="max-w-3xl mx-auto mb-6">
@@ -17,7 +20,7 @@
 </section>
 
 <!-- Detaylar Bölümü -->
-<section class="bg-white pt-4 pb-16 px-6 sm:px-12 lg:px-24 font-sans text-gray-700 text-left animate-slideUpOnVisible opacity-0">
+<section class="bg-white pt-4 pb-8 px-6 sm:px-12 lg:px-24 font-sans text-gray-700 text-left animate-slideUpOnVisible opacity-0">
   <div class="max-w-3xl mx-auto space-y-6">
 
     <!-- Giriş Paragrafları -->
@@ -69,5 +72,91 @@
       </ul>
     </div>
 
+    <!-- Pick-Up Information -->
+    <div>
+      <h2 class="text-xl font-semibold text-[#b5651d] mb-2">Cancellation Policies & Disclaimer</h2>
+      <p class="whitespace-pre-line">{{classItem.classRefund}}</p>
+      
+      <!-- Go to Full Policy -->
+    <div class="mt-2">
+    <a href="/returns" target="_blank" class="text-base text-[#b5651d] hover:underline hover:text-[#8c4516] transition">
+      Transparency matters — read our full policy →
+    </a>
+  </div>
+
+
   </div>
 </section>
+
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+
+    <!-- 🔹 Sol Kısım -->
+    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <!-- 📅 Takvim Bölümü -->
+    <div class="bg-white rounded-lg p-4 shadow">
+      <h3 class="text-lg font-semibold mb-2 text-[#b5651d]">Select a Date</h3>
+
+      <!-- Seçilen tarih gösterimi -->
+      <div id="selectedDateDisplay" class="text-sm text-gray-600 mb-3">
+        Selected Date: -
+      </div>
+
+      <!-- Takvim -->
+      <div id="inlineCalendar" class="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto overflow-hidden min-w-0"></div>
+
+    </div>
+
+
+      <!-- ⏰ Saat Seçimi -->
+      <div class="bg-white rounded-lg p-5 shadow">
+        <h3 class="text-lg font-semibold mb-2 text-[#b5651d]">Available Times</h3>
+        <div class="min-h-[160px] bg-gray-100 flex items-center justify-center text-gray-500">
+          [ Time Slot Placeholder ]
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 🔸 Sağ Kısım -->
+    <div class="bg-white rounded-lg p-5 shadow space-y-4 h-full">
+      <h2 class="text-lg font-semibold text-[#b5651d]">Class Summary</h2>
+      <p class="text-gray-700">{{classItem.description}}</p>
+      <p class="text-lg font-bold text-gray-900">{{classItem.price}}</p>
+      <a href="/checkout" class="inline-block mt-4 bg-[#b5651d] text-white px-4 py-1 rounded hover:bg-[#8c4516] transition">
+        Next →
+      </a>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/scroll.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+<!-- Flatpickr -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    flatpickr("#inlineCalendar", {
+      inline: true,
+      static: true, // ✅ Eklendi
+      defaultDate: "today",
+      dateFormat: "Y-m-d",
+      onChange: function(selectedDates, dateStr, instance) {
+        // Tarihi göster
+        const display = document.getElementById("selectedDateDisplay");
+        display.textContent = "Selected Date: " + dateStr;
+      }
+    });
+  });
+</script>

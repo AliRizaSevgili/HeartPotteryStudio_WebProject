@@ -461,3 +461,9 @@
 }
 
 
+.flatpickr-calendar {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  inset: 0 !important;
+}
+
