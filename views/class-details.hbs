@@ -123,33 +123,40 @@
 </div>
 
 
-    <!-- 🟧 MAY -->
-    <div class="bg-white rounded-lg p-5 shadow space-y-4">
-      <h2 class="text-xl font-bold text-[#b5651d] text-center">May 2025</h2>
-      {{#each mayDates}}
-        <details class="group border border-gray-200 rounded">
-          <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-100">
-            <h4 class="text-md text-[#b5651d] font-medium">{{label}}</h4>
-            <span class="transition group-open:rotate-180">
-              <svg fill="none" height="20" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="20">
-                <path d="M6 9l6 6 6-6"></path>
-              </svg>
-            </span>
-          </summary>
-          <div class="p-4 text-sm bg-white text-gray-700 space-y-2">
-            <p><strong>Date:</strong> {{date}}</p>
-            <p><strong>Time:</strong> {{time}}</p>
-            <button class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
-              Select this slot
-            </button>
-          </div>
-        </details>
-      {{/each}}
-    </div>
+   <!-- 🟧 MAY -->
+      <div class="bg-white rounded-lg p-5 shadow space-y-4">
+        <h2 class="text-xl font-bold text-[#b5651d] text-center">May 2025</h2>
 
-    <!-- 🟩 JUNE -->
+        {{#each mayDates}}
+          <details class="group border border-gray-200 rounded">
+            <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-100">
+              <h4 class="text-md text-[#b5651d] font-medium">{{label}}</h4>
+              <span class="transition group-open:rotate-180">
+                <svg fill="none" height="20" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="20">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
+              </span>
+            </summary>
+
+            {{#each slots}}
+              <div class="p-4 text-sm bg-white text-gray-700 space-y-2">
+                <p><strong>Day:</strong> {{day}}</p>
+                <p><strong>Date:</strong> {{date}}</p>
+                <p><strong>Time:</strong> {{time}}</p>
+                <button class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
+                  Select this slot
+                </button>
+              </div>
+            {{/each}}
+          </details>
+        {{/each}}
+      </div>
+
+
+      <!-- 🟩 JUNE -->
     <div class="bg-white rounded-lg p-5 shadow space-y-4">
       <h2 class="text-xl font-bold text-[#b5651d] text-center">June 2025</h2>
+
       {{#each juneDates}}
         <details class="group border border-gray-200 rounded">
           <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-100">
@@ -160,16 +167,21 @@
               </svg>
             </span>
           </summary>
-          <div class="p-4 text-sm bg-white text-gray-700 space-y-2">
-            <p><strong>Date:</strong> {{date}}</p>
-            <p><strong>Time:</strong> {{time}}</p>
-            <button class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
-              Select this slot
-            </button>
-          </div>
+
+          {{#each slots}}
+            <div class="p-4 text-sm bg-white text-gray-700 space-y-2">
+              <p><strong>Day:</strong> {{day}}</p>
+              <p><strong>Date:</strong> {{date}}</p>
+              <p><strong>Time:</strong> {{time}}</p>
+              <button class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
+                Select this slot
+              </button>
+            </div>
+          {{/each}}
         </details>
       {{/each}}
     </div>
+
 
   </div>
 </div>
