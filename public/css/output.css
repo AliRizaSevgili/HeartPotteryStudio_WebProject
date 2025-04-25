@@ -1798,10 +1798,6 @@ input:checked + .toggle-bg {
   margin-top: 0.625rem;
 }
 
-.mt-24 {
-  margin-top: 6rem;
-}
-
 .mt-3 {
   margin-top: 0.75rem;
 }
@@ -1832,6 +1828,10 @@ input:checked + .toggle-bg {
 
 .mt-\[200px\] {
   margin-top: 200px;
+}
+
+.-mt-\[80px\] {
+  margin-top: -80px;
 }
 
 .block {
@@ -1916,6 +1916,10 @@ input:checked + .toggle-bg {
 
 .h-\[150px\] {
   height: 150px;
+}
+
+.h-\[300px\] {
+  height: 300px;
 }
 
 .h-\[320px\] {
@@ -2761,6 +2765,11 @@ input:checked + .toggle-bg {
 .object-cover {
   -o-object-fit: cover;
      object-fit: cover;
+}
+
+.object-\[center_40\%\] {
+  -o-object-position: center 40%;
+     object-position: center 40%;
 }
 
 .object-center {
@@ -4574,10 +4583,6 @@ select.has-value + label {
     margin-left: 5rem;
   }
 
-  .md\:mt-0 {
-    margin-top: 0px;
-  }
-
   .md\:mt-12 {
     margin-top: 3rem;
   }
@@ -4592,6 +4597,10 @@ select.has-value + label {
 
   .md\:h-6 {
     height: 1.5rem;
+  }
+
+  .md\:h-\[450px\] {
+    height: 450px;
   }
 
   .md\:min-h-\[360px\] {
@@ -4746,6 +4755,10 @@ select.has-value + label {
 
   .lg\:mt-20 {
     margin-top: 5rem;
+  }
+
+  .lg\:h-\[550px\] {
+    height: 550px;
   }
 
   .lg\:w-\[40\%\] {
