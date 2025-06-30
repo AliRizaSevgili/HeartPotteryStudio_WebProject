@@ -4629,6 +4629,10 @@ select.has-value + label {
     margin-top: 2rem;
   }
 
+  .md\:ml-16 {
+    margin-left: 4rem;
+  }
+
   .md\:flex {
     display: flex;
   }
@@ -4673,6 +4677,14 @@ select.has-value + label {
     width: 70%;
   }
 
+  .md\:w-\[80\%\] {
+    width: 80%;
+  }
+
+  .md\:w-\[85\%\] {
+    width: 85%;
+  }
+
   .md\:max-w-\[280px\] {
     max-width: 280px;
   }
@@ -4695,6 +4707,10 @@ select.has-value + label {
 
   .md\:flex-row {
     flex-direction: row;
+  }
+
+  .md\:items-start {
+    align-items: flex-start;
   }
 
   .md\:justify-end {
@@ -4819,6 +4835,10 @@ select.has-value + label {
     margin-top: 5rem;
   }
 
+  .lg\:ml-24 {
+    margin-left: 6rem;
+  }
+
   .lg\:h-\[550px\] {
     height: 550px;
   }
@@ -4829,6 +4849,10 @@ select.has-value + label {
 
   .lg\:w-\[60\%\] {
     width: 60%;
+  }
+
+  .lg\:w-\[80\%\] {
+    width: 80%;
   }
 
   .lg\:max-w-4xl {
@@ -4882,8 +4906,16 @@ select.has-value + label {
     margin-top: 3rem;
   }
 
+  .xl\:ml-32 {
+    margin-left: 8rem;
+  }
+
   .xl\:w-\[40\%\] {
     width: 40%;
+  }
+
+  .xl\:w-\[75\%\] {
+    width: 75%;
   }
 
   .xl\:bg-opacity-20 {
@@ -4904,8 +4936,16 @@ select.has-value + label {
     margin-top: 4rem;
   }
 
+  .\32xl\:ml-40 {
+    margin-left: 10rem;
+  }
+
   .\32xl\:w-\[32\%\] {
     width: 32%;
+  }
+
+  .\32xl\:w-\[70\%\] {
+    width: 70%;
   }
 
   .\32xl\:bg-opacity-10 {
