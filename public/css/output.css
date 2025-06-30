@@ -1615,10 +1615,6 @@ input:checked + .toggle-bg {
   right: 0.75rem;
 }
 
-.right-auto {
-  right: auto;
-}
-
 .top-0 {
   top: 0px;
 }
@@ -1637,10 +1633,6 @@ input:checked + .toggle-bg {
 
 .top-6 {
   top: 1.5rem;
-}
-
-.top-8 {
-  top: 2rem;
 }
 
 .top-\[-10rem\] {
@@ -1757,6 +1749,10 @@ input:checked + .toggle-bg {
 
 .ml-1 {
   margin-left: 0.25rem;
+}
+
+.ml-2 {
+  margin-left: 0.5rem;
 }
 
 .ml-3 {
@@ -1959,6 +1955,10 @@ input:checked + .toggle-bg {
   max-height: 500px;
 }
 
+.max-h-\[70vh\] {
+  max-height: 70vh;
+}
+
 .max-h-\[calc\(100vh-220px\)\] {
   max-height: calc(100vh - 220px);
 }
@@ -2039,8 +2039,8 @@ input:checked + .toggle-bg {
   width: 36.125rem;
 }
 
-.w-\[90\%\] {
-  width: 90%;
+.w-\[96\%\] {
+  width: 96%;
 }
 
 .w-auto {
@@ -2698,6 +2698,10 @@ input:checked + .toggle-bg {
 
 .bg-opacity-40 {
   --tw-bg-opacity: 0.4;
+}
+
+.bg-opacity-60 {
+  --tw-bg-opacity: 0.6;
 }
 
 .bg-gradient-to-b {
@@ -3391,14 +3395,14 @@ input:checked + .toggle-bg {
   transition-duration: 150ms;
 }
 
-.transition-transform {
-  transition-property: transform;
+.transition-shadow {
+  transition-property: box-shadow;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
 
-.transition-shadow {
-  transition-property: box-shadow;
+.transition-transform {
+  transition-property: transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
@@ -4487,6 +4491,10 @@ select.has-value + label {
     margin-left: 3rem;
   }
 
+  .sm\:ml-4 {
+    margin-left: 1rem;
+  }
+
   .sm\:mt-10 {
     margin-top: 2.5rem;
   }
@@ -4495,12 +4503,20 @@ select.has-value + label {
     margin-top: 5rem;
   }
 
+  .sm\:mt-4 {
+    margin-top: 1rem;
+  }
+
   .sm\:w-1\/2 {
     width: 50%;
   }
 
   .sm\:w-\[72\.1875rem\] {
     width: 72.1875rem;
+  }
+
+  .sm\:w-\[90\%\] {
+    width: 90%;
   }
 
   .sm\:grid-cols-2 {
@@ -4577,14 +4593,6 @@ select.has-value + label {
 }
 
 @media (min-width: 768px) {
-  .md\:left-8 {
-    left: 2rem;
-  }
-
-  .md\:top-16 {
-    top: 4rem;
-  }
-
   .md\:order-1 {
     order: 1;
   }
@@ -4609,8 +4617,16 @@ select.has-value + label {
     margin-left: 5rem;
   }
 
+  .md\:ml-8 {
+    margin-left: 2rem;
+  }
+
   .md\:mt-12 {
     margin-top: 3rem;
+  }
+
+  .md\:mt-8 {
+    margin-top: 2rem;
   }
 
   .md\:flex {
@@ -4653,8 +4669,8 @@ select.has-value + label {
     width: 180px;
   }
 
-  .md\:w-\[50\%\] {
-    width: 50%;
+  .md\:w-\[70\%\] {
+    width: 70%;
   }
 
   .md\:max-w-\[280px\] {
@@ -4689,6 +4705,10 @@ select.has-value + label {
     --tw-bg-opacity: 0;
   }
 
+  .md\:bg-opacity-40 {
+    --tw-bg-opacity: 0.4;
+  }
+
   .md\:object-bottom {
     -o-object-position: bottom;
        object-position: bottom;
@@ -4709,6 +4729,10 @@ select.has-value + label {
 
   .md\:p-16 {
     padding: 4rem;
+  }
+
+  .md\:p-6 {
+    padding: 1.5rem;
   }
 
   .md\:p-8 {
@@ -4779,12 +4803,16 @@ select.has-value + label {
 }
 
 @media (min-width: 1024px) {
-  .lg\:left-16 {
-    left: 4rem;
+  .lg\:ml-12 {
+    margin-left: 3rem;
   }
 
   .lg\:ml-32 {
     margin-left: 8rem;
+  }
+
+  .lg\:mt-10 {
+    margin-top: 2.5rem;
   }
 
   .lg\:mt-20 {
@@ -4795,8 +4823,8 @@ select.has-value + label {
     height: 550px;
   }
 
-  .lg\:w-\[40\%\] {
-    width: 40%;
+  .lg\:w-\[54\%\] {
+    width: 54%;
   }
 
   .lg\:w-\[60\%\] {
@@ -4809,6 +4837,10 @@ select.has-value + label {
 
   .lg\:max-w-\[300px\] {
     max-width: 300px;
+  }
+
+  .lg\:bg-opacity-30 {
+    --tw-bg-opacity: 0.3;
   }
 
   .lg\:p-12 {
@@ -4830,9 +4862,9 @@ select.has-value + label {
     padding-bottom: 5rem;
   }
 
-  .lg\:text-3xl {
-    font-size: 1.875rem;
-    line-height: 2.25rem;
+  .lg\:text-2xl {
+    font-size: 1.5rem;
+    line-height: 2rem;
   }
 
   .lg\:text-5xl {
@@ -4841,9 +4873,56 @@ select.has-value + label {
   }
 }
 
+@media (min-width: 1280px) {
+  .xl\:ml-20 {
+    margin-left: 5rem;
+  }
+
+  .xl\:mt-12 {
+    margin-top: 3rem;
+  }
+
+  .xl\:w-\[40\%\] {
+    width: 40%;
+  }
+
+  .xl\:bg-opacity-20 {
+    --tw-bg-opacity: 0.2;
+  }
+
+  .xl\:p-6 {
+    padding: 1.5rem;
+  }
+}
+
 @media (min-width: 1536px) {
+  .\32xl\:ml-32 {
+    margin-left: 8rem;
+  }
+
+  .\32xl\:mt-16 {
+    margin-top: 4rem;
+  }
+
+  .\32xl\:w-\[32\%\] {
+    width: 32%;
+  }
+
+  .\32xl\:bg-opacity-10 {
+    --tw-bg-opacity: 0.1;
+  }
+
   .\32xl\:object-center {
     -o-object-position: center;
        object-position: center;
+  }
+
+  .\32xl\:p-8 {
+    padding: 2rem;
+  }
+
+  .\32xl\:text-3xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
   }
 }
