@@ -1,7 +1,6 @@
-
-
 require("dotenv").config();
 const express = require("express");
+const app = express();
 const path = require("path");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -10,14 +9,15 @@ const connectDB = require("./config/db");
 const galleryRoutes = require("./routes/galleryRoutes");
 const contactRoutes = require('./routes/contactRoutes');
 const classRoutes = require('./routes/classRoutes');
-
-const app = express();
+const paymentRoutes = require('./routes/paymentRoutes');
 const hbs = require("hbs");
 
+// --- MIDDLEWARE SIRASI ÖNEMLİ ---
 
+// Sadece webhook endpoint'i için raw body parser
+app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
 
-
-// Middleware
+// Diğer tüm endpoint'ler için JSON parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
@@ -27,6 +27,7 @@ app.use(
   })
 );
 
+// Statik dosyalar
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/css", express.static(path.join(__dirname, "public/css")));
 app.use("/js", express.static(path.join(__dirname, "public/js")));
@@ -59,17 +60,16 @@ app.use(
   })
 );
 
-
 //Contact Routes
 app.use(express.static(path.join(__dirname, "public")));
 
 // MongoDB 
 connectDB();
 
+// --- ROUTES ---
+app.use('/api/payment', paymentRoutes);
 app.use('/contact', contactRoutes);
-
 app.use('/class', classRoutes);
-// API Routes
 console.log("✅ Server loaded galleryRoutes!");
 app.use("/api/gallery", galleryRoutes);
 
@@ -92,7 +92,6 @@ app.get("/about", (req, res) => {
     title: "About",
     activeAbout: true
   });
-  
 });
 
 app.get("/events", (req, res) => {
@@ -101,7 +100,6 @@ app.get("/events", (req, res) => {
     title: "Events",
     activeGallery: true
   });
-  
 });
 
 app.get("/learn", (req, res) => {
@@ -110,7 +108,6 @@ app.get("/learn", (req, res) => {
     title: "Learn Pottery",
     activeLearn: true
   });
-  
 });
 
 app.get("/join", (req, res) => {
@@ -119,21 +116,19 @@ app.get("/join", (req, res) => {
     title: "Join the Studio", 
     activeJoin: true
   });
-  
 });
 
 app.get("/contact", (req, res) => {
   res.render("contact", { 
-  layout: "layouts/main", 
-  title: "Contact | FQA",
-  activeContact: true
+    layout: "layouts/main", 
+    title: "Contact | FQA",
+    activeContact: true
    });
 });
 
 app.get("/login", (req, res) => {
   res.render("login", { layout: "layouts/main", title: "Sign In" });
 });
-
 
 app.get("/terms", (req, res) => {
   res.render("terms", { 
@@ -156,9 +151,6 @@ app.get("/returns", (req, res) => {
   });
 });
 
-
-
-
 // Handle 404 errors
 app.use((req, res) => {
   res.status(404).json({ error: "Not Found" });
@@ -167,11 +159,8 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server is running on port ${PORT}`));
 
+// Content Security Policy header
 app.use((req, res, next) => {
   res.setHeader("Content-Security-Policy", "frame-src 'self' https://www.google.com https://maps.google.com;");
   next();
 });
-
-
-
-

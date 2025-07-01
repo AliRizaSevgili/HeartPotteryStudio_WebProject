@@ -1,0 +1,62 @@
+const express = require('express');
+const router = express.Router();
+const Stripe = require('stripe');
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
+// POST /api/payment/checkout
+router.post('/checkout', async (req, res) => {
+  try {
+    const { amount, currency, success_url, cancel_url } = req.body;
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: currency || 'cad',
+            product_data: {
+              name: 'Pottery Class',
+            },
+            unit_amount: amount, // Örneğin: 2000 = 20.00 CAD
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: success_url || 'https://yourdomain.com/success',
+      cancel_url: cancel_url || 'https://yourdomain.com/cancel',
+    });
+
+    res.json({ id: session.id, url: session.url });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Stripe Webhook endpoint
+router.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET // Bunu Stripe panelinden alacaksın!
+    );
+  } catch (err) {
+    console.error('Webhook signature verification failed:', err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  // Ödeme başarılıysa burada işle
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    // TODO: DB'ye yaz, e-posta gönder, logla vs.
+    console.log('✅ Payment succeeded:', session.id);
+  }
+
+  res.json({ received: true });
+});
+
+module.exports = router;
