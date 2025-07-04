@@ -3,40 +3,56 @@ const router = express.Router();
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const Order = require('../models/Order');
+const { body, validationResult } = require('express-validator');
 
 // POST /api/payment/checkout
-router.post('/checkout', async (req, res) => {
-  try {
-    const { amount, currency, productName, success_url, cancel_url } = req.body;
-    console.log('Gelen productName:', productName); // <-- LOG EKLENDİ
+router.post(
+  '/checkout',
+  [
+    body('amount').isInt({ min: 1 }).withMessage('Amount must be a positive integer'),
+    body('currency').isString().notEmpty().withMessage('Currency is required'),
+    body('productName').isString().notEmpty().withMessage('Product name is required'),
+    body('success_url').isURL().withMessage('Success URL must be valid'),
+    body('cancel_url').isURL().withMessage('Cancel URL must be valid')
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: currency || 'cad',
-            product_data: {
-              name: productName || 'Pottery Class' // Dinamik ürün adı
+    try {
+      const { amount, currency, productName, success_url, cancel_url } = req.body;
+      console.log('Gelen productName:', productName);
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price_data: {
+              currency: currency || 'cad',
+              product_data: {
+                name: productName // Artık boş olamaz, validation var
+              },
+              unit_amount: amount,
             },
-            unit_amount: amount,
+            quantity: 1,
           },
-          quantity: 1,
-        },
-      ],
-      mode: 'payment',
-      success_url: success_url || 'https://yourdomain.com/success',
-      cancel_url: cancel_url || 'https://yourdomain.com/cancel',
-      metadata: {
-        productName: productName || 'Pottery Class'
-      }
-    });
+        ],
+        mode: 'payment',
+        success_url,
+        cancel_url,
+        metadata: {
+          productName: productName
+        }
+      });
 
-    res.json({ id: session.id, url: session.url });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+      res.json({ id: session.id, url: session.url });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
   }
-});
+);
 
 // Stripe Webhook endpoint
 router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
@@ -57,14 +73,14 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   // Ödeme başarılıysa burada işle
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    console.log('Session metadata:', session.metadata); // <-- LOG EKLENDİ
+    console.log('Session metadata:', session.metadata);
     try {
       await Order.create({
         sessionId: session.id,
         email: session.customer_details?.email,
         amount: session.amount_total,
         currency: session.currency,
-        productName: session.metadata?.productName, // Stripe metadata'dan ürün adı
+        productName: session.metadata?.productName,
         createdAt: new Date()
       });
       console.log('✅ Order saved to DB:', session.id);
@@ -75,6 +91,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   }
 
   res.json({ received: true });
-});
+  
+  });
 
 module.exports = router;
