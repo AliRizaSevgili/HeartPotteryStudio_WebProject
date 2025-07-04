@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+const Order = require('../models/Order');
 
 // POST /api/payment/checkout
 router.post('/checkout', async (req, res) => {
@@ -34,7 +35,7 @@ router.post('/checkout', async (req, res) => {
 });
 
 // Stripe Webhook endpoint
-router.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
   let event;
 
@@ -52,7 +53,19 @@ router.post('/webhook', express.raw({ type: 'application/json' }), (req, res) =>
   // Ödeme başarılıysa burada işle
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    // TODO: DB'ye yaz, e-posta gönder, logla vs.
+    // DB'ye yaz
+    try {
+      await Order.create({
+        sessionId: session.id,
+        email: session.customer_details?.email,
+        amount: session.amount_total,
+        currency: session.currency,
+        createdAt: new Date()
+      });
+      console.log('✅ Order saved to DB:', session.id);
+    } catch (dbErr) {
+      console.error('❌ Order save error:', dbErr);
+    }
     console.log('✅ Payment succeeded:', session.id);
   }
 
