@@ -7,7 +7,8 @@ const Order = require('../models/Order');
 // POST /api/payment/checkout
 router.post('/checkout', async (req, res) => {
   try {
-    const { amount, currency, success_url, cancel_url } = req.body;
+    const { amount, currency, productName, success_url, cancel_url } = req.body;
+    console.log('Gelen productName:', productName); // <-- LOG EKLENDİ
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -16,9 +17,9 @@ router.post('/checkout', async (req, res) => {
           price_data: {
             currency: currency || 'cad',
             product_data: {
-              name: 'Pottery Class',
+              name: productName || 'Pottery Class' // Dinamik ürün adı
             },
-            unit_amount: amount, // Örneğin: 2000 = 20.00 CAD
+            unit_amount: amount,
           },
           quantity: 1,
         },
@@ -26,6 +27,9 @@ router.post('/checkout', async (req, res) => {
       mode: 'payment',
       success_url: success_url || 'https://yourdomain.com/success',
       cancel_url: cancel_url || 'https://yourdomain.com/cancel',
+      metadata: {
+        productName: productName || 'Pottery Class'
+      }
     });
 
     res.json({ id: session.id, url: session.url });
@@ -43,7 +47,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
     event = stripe.webhooks.constructEvent(
       req.body,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET // Bunu Stripe panelinden alacaksın!
+      process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
     console.error('Webhook signature verification failed:', err.message);
@@ -53,13 +57,14 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   // Ödeme başarılıysa burada işle
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    // DB'ye yaz
+    console.log('Session metadata:', session.metadata); // <-- LOG EKLENDİ
     try {
       await Order.create({
         sessionId: session.id,
         email: session.customer_details?.email,
         amount: session.amount_total,
         currency: session.currency,
+        productName: session.metadata?.productName, // Stripe metadata'dan ürün adı
         createdAt: new Date()
       });
       console.log('✅ Order saved to DB:', session.id);

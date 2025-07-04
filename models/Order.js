@@ -5,6 +5,7 @@ const OrderSchema = new mongoose.Schema({
   email: String,
   amount: Number,
   currency: String,
+  productName: String, 
   createdAt: { type: Date, default: Date.now }
 });
 
