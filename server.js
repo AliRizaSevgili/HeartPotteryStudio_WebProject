@@ -26,7 +26,11 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        imgSrc: ["'self'", "https://res.cloudinary.com"],
+        imgSrc: [
+          "'self'",
+          "https://res.cloudinary.com",
+          "data:" // <-- Bunu ekle!
+        ],
         mediaSrc: [
           "'self'",
           "https://res.cloudinary.com",
@@ -45,7 +49,7 @@ app.use(
           "'unsafe-inline'",
           "https://cdn.jsdelivr.net"
         ],
-        scriptSrcAttr: ["'unsafe-inline'"], // <-- Bunu ekle!
+        scriptSrcAttr: ["'unsafe-inline'"],
         styleSrc: [
           "'self'",
           "'unsafe-inline'",

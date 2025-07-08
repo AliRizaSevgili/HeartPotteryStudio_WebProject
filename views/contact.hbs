@@ -358,20 +358,22 @@
   <label for="message" class="block text-sm/6 font-semibold text-gray-500">Message</label>
   <div class="mt-2.5">
     <textarea
-      name="message"
-      id="message"
-      rows="4"
-       required
-      placeholder="Enter your message"
-      class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-700
-             border border-gray-300
-             focus:border-transparent 
-             focus:outline-none focus:ring-2 focus:ring-pink-100
-             shadow-none appearance-none
-             placeholder:text-gray-400 placeholder:text-sm
-             font-sans  
-             transition-all duration-200"
-    ></textarea>
+  name="message"
+  id="message"
+  rows="4"
+  required
+  minlength="10"
+  placeholder="Enter your message"
+  title="Message must be at least 10 characters"
+  class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-700
+         border border-gray-300
+         focus:border-transparent 
+         focus:outline-none focus:ring-2 focus:ring-pink-100
+         shadow-none appearance-none
+         placeholder:text-gray-400 placeholder:text-sm
+         font-sans  
+         transition-all duration-200"
+></textarea>
   </div>
 </div>
 
@@ -445,4 +447,21 @@
 <script src="/js/fqa.js"></script>
 <script src="/js/contact_form.js"></script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const form = document.querySelector("form");
+  const message = document.getElementById("message");
+  if (form && message) {
+    form.addEventListener("submit", function(e) {
+      if (message.value.trim().length < 10) {
+        message.setCustomValidity("Message must be at least 10 characters.");
+        message.reportValidity();
+        e.preventDefault();
+      } else {
+        message.setCustomValidity("");
+      }
+    });
+  }
+});
+</script>
 

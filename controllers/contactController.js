@@ -6,11 +6,23 @@ require("dotenv").config(); // 🆕 .env dosyasını yükler
 
 
 exports.validateContactForm = [
-  body('firstName').trim().notEmpty().withMessage('First name is required'),
-  body('lastName').trim().notEmpty().withMessage('Last name is required'),
-  body('email').isEmail().withMessage('Valid email is required'),
-  body('contactNumber').optional().isMobilePhone().withMessage('Valid phone number required'),
-  body('message').trim().notEmpty().withMessage('Message is required'),
+  body('firstName')
+    .trim()
+    .notEmpty().withMessage('First name is required')
+    .isAlpha('en-US', { ignore: ' ' }).withMessage('First name must contain only letters'),
+  body('lastName')
+    .trim()
+    .notEmpty().withMessage('Last name is required')
+    .isAlpha('en-US', { ignore: ' ' }).withMessage('Last name must contain only letters'),
+  body('email')
+    .isEmail().withMessage('Valid email is required'),
+  body('contactNumber')
+    .optional()
+    .isMobilePhone().withMessage('Valid phone number required'),
+  body('message')
+    .trim()
+    .notEmpty().withMessage('Message is required')
+    .isLength({ min: 10 }).withMessage('Message must be at least 10 characters'),
 ];
 
 
