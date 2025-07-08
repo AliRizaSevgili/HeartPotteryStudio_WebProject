@@ -23,7 +23,43 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(
   helmet({
-    contentSecurityPolicy: false, 
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        imgSrc: ["'self'", "https://res.cloudinary.com"],
+        mediaSrc: [
+          "'self'",
+          "https://res.cloudinary.com",
+          "https://www.youtube.com",
+          "https://player.vimeo.com"
+        ],
+        frameSrc: [
+          "'self'",
+          "https://www.google.com",
+          "https://maps.google.com",
+          "https://www.youtube.com",
+          "https://player.vimeo.com"
+        ],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://cdn.jsdelivr.net"
+        ],
+        scriptSrcAttr: ["'unsafe-inline'"], // <-- Bunu ekle!
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://unpkg.com",
+          "https://cdn.jsdelivr.net",
+          "https://fonts.googleapis.com"
+        ],
+        fontSrc: [
+          "'self'",
+          "https://fonts.gstatic.com"
+        ],
+        connectSrc: ["'self'"]
+      }
+    }
   })
 );
 
@@ -159,8 +195,3 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server is running on port ${PORT}`));
 
-// Content Security Policy header
-app.use((req, res, next) => {
-  res.setHeader("Content-Security-Policy", "frame-src 'self' https://www.google.com https://maps.google.com;");
-  next();
-});

@@ -51,34 +51,12 @@
 <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 
 <!-- scroll.js animasyonları -->
-<script src="/js/scroll.js"></script> <!-- 🔸 Bunu mutlaka ekle -->
+<script src="/js/scroll.js"></script> 
 
 
 
 
-<!-- Diğer animasyon script'in zaten burada -->
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const targets = document.querySelectorAll(".animate-slideUpOnVisible");
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("animate-slideUp");
-          entry.target.classList.remove("opacity-0");
-        } else {
-          entry.target.classList.remove("animate-slideUp");
-          entry.target.classList.add("opacity-0");
-        }
-      });
-    }, {
-      threshold: 0.3
-    });
-
-    targets.forEach(target => observer.observe(target));
-  });
-</script>
-
+<script src="/js/slideup.js"></script>
 
 
 </body>
