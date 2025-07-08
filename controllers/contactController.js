@@ -1,8 +1,18 @@
 
-
+const { body, validationResult } = require('express-validator');
 const Contact = require("../models/Contact");
 const nodemailer = require("nodemailer");
 require("dotenv").config(); // 🆕 .env dosyasını yükler
+
+
+exports.validateContactForm = [
+  body('firstName').trim().notEmpty().withMessage('First name is required'),
+  body('lastName').trim().notEmpty().withMessage('Last name is required'),
+  body('email').isEmail().withMessage('Valid email is required'),
+  body('contactNumber').optional().isMobilePhone().withMessage('Valid phone number required'),
+  body('message').trim().notEmpty().withMessage('Message is required'),
+];
+
 
 // Gmail transport ayarı
 const transporter = nodemailer.createTransport({
@@ -14,6 +24,10 @@ const transporter = nodemailer.createTransport({
 });
 
 exports.submitContactForm = async (req, res) => {
+  const errors = validationResult(req); 
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ success: false, errors: errors.array() });
+  }
   try {
     
     console.log("📥 Form Data:", req.body);
