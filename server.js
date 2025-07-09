@@ -12,12 +12,24 @@ const classRoutes = require('./routes/classRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const hbs = require("hbs");
 
+const rateLimit = require('express-rate-limit');
+const paymentLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 dakika
+  max: 20,
+  message: "Too many payment requests from this IP, please try again later."
+});
+const contactLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: "Too many contact form submissions from this IP, please try again later."
+});
+
 // --- MIDDLEWARE SIRASI ÖNEMLİ ---
 
-// Sadece webhook endpoint'i için raw body parser
+//  raw body parser
 app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
 
-// Diğer tüm endpoint'ler için JSON parser
+// JSON parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
@@ -107,6 +119,9 @@ app.use(express.static(path.join(__dirname, "public")));
 connectDB();
 
 // --- ROUTES ---
+app.use('/api/payment', paymentLimiter);
+app.use('/contact', contactLimiter);
+
 app.use('/api/payment', paymentRoutes);
 app.use('/contact', contactRoutes);
 app.use('/class', classRoutes);
