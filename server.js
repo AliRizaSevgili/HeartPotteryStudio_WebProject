@@ -26,6 +26,18 @@ const contactLimiter = rateLimit({
 
 // --- MIDDLEWARE SIRASI ÖNEMLİ ---
 
+// HTTP'den HTTPS'ye yönlendirme (sadece production'da)
+app.use((req, res, next) => {
+  if (
+    process.env.NODE_ENV === 'production' &&
+    req.headers['x-forwarded-proto'] &&
+    req.headers['x-forwarded-proto'] !== 'https'
+  ) {
+    return res.redirect('https://' + req.headers.host + req.url);
+  }
+  next();
+});
+
 //  raw body parser
 app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
 
