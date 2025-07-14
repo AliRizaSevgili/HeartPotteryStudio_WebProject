@@ -288,7 +288,7 @@
                 </div>
 
                 <!-- Form -->
-                <form action="/contact" method="POST" class="mx-auto mt-16 max-w-xl sm:mt-20">
+                <form action="/events" method="POST" class="mx-auto mt-16 max-w-xl sm:mt-20">
                   <div class="grid grid-cols-1 gap-x-12 gap-y-6 sm:grid-cols-2">
 
                 <!-- First Name -->
@@ -484,28 +484,34 @@
                 </button>
               </div>
 
-
-                
-                
+              <input type="hidden" name="fromEvents" value="1">
+              
+              <input type="hidden" name="recaptchaToken" id="recaptchaToken">
+              
                 </form>
                 <!-- ✅ Success Message (Animated & Styled) -->
-                <div id="success-message"
-                  class="hidden mt-6 flex items-center gap-3 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-green-800 shadow-sm transition-all duration-300 ease-in-out animate-fade-in">
-
-                <!-- Icon -->
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                    class="h-8 w-8 text-green-600">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M4.5 12.75l6 6 9-13.5"/>
-                </svg>
-                
-                <!-- Message -->
-                  <p class="text-sm font-medium">
-                  Thank you! Your message has been successfully sent.
-                  </p>
+                {{#if success}}
+                  <div id="success-message"
+                     class="mt-6 flex items-center gap-3 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-green-800 shadow-sm transition-all duration-300 ease-in-out animate-fade-in">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                       viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                       class="h-8 w-8 text-green-600">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M4.5 12.75l6 6 9-13.5"/>
+                   </svg>
+                    <p class="text-sm font-medium">
+                      Thank you! Your message has been successfully sent.
+                    </p>
                   </div>
-
+                  <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                      var msg = document.getElementById("success-message");
+                      if (msg) {
+                        msg.scrollIntoView({ behavior: "smooth", block: "center" });
+                      }
+                    });
+                  </script>
+                {{/if}}
               </section>
 
 
@@ -537,7 +543,7 @@
   <div class="bg-white rounded-lg flex flex-col h-full shadow-sm hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.015] transform transition-all duration-300">
 
   <img
-    src="https://res.cloudinary.com/dnemf1asq/image/upload/v1743878192/https___cdn.evbuc.com_images_685848579_1658413204063_1_original_mfadc4_c_pad_b_gen_fill_w_6016_h_4016_gwwnpa.avif"
+    src="https://res.cloudinary.com/dnemf1asq/image/upload_v1743878192/https___cdn.evbuc.com_images_685848579_1658413204063_1_original_mfadc4_c_pad_b_gen_fill_w_6016_h_4016_gwwnpa.avif"
     class="w-full h-64 object-cover mb-2">
 
   <div class="p-4 pt-2 flex flex-col flex-grow justify-between">
@@ -591,7 +597,7 @@
 
 
   <img
-    src="https://res.cloudinary.com/dnemf1asq/image/upload/v1743879029/020A0186_neobdk_c_fill_w_6016_h_4016_rzi9uo.jpg"
+    src="https://res.cloudinary.com/dnemf1asq/image/upload_v1743879029/020A0186_neobdk_c_fill_w_6016_h_4016_rzi9uo.jpg"
     class="w-full h-64 object-cover mb-2">
 
   <div class="p-4 pt-2 flex flex-col flex-grow justify-between">
@@ -642,7 +648,7 @@
 
 
   <img
-    src="https://res.cloudinary.com/dnemf1asq/image/upload/v1744161394/WhatsApp_Image_2025-04-08_at_21.15.51_9c33ffee_ica1kt.jpg"
+    src="https://res.cloudinary.com/dnemf1asq/image/upload_v1744161394/WhatsApp_Image_2025-04-08_at_21.15.51_9c33ffee_ica1kt.jpg"
     class="w-full h-64 object-cover mb-2">
 
   <div class="p-4 pt-2 flex flex-col flex-grow justify-between">
@@ -876,7 +882,6 @@
 
 
 
-
       <button data-modal-hide="eventModal2" type="button"
         class="text-gray-600 bg-gray-100 hover:bg-gray-200 font-medium rounded-lg text-sm px-4 py-2 mr-2">
         Cancel
@@ -967,7 +972,6 @@
 
 
 
-
       <button data-modal-hide="eventModal3" type="button"
         class="text-gray-600 bg-gray-100 hover:bg-gray-200 font-medium rounded-lg text-sm px-4 py-2 mr-2">
         Cancel
@@ -988,12 +992,44 @@
 
 
 
-
 <!-- Flowbite JS -->
 <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 
 
 
-<script src="/js/contact_form.js"></script>
+<script src="https://www.google.com/recaptcha/api.js?render=6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const form = document.querySelector("form[action='/events']");
+  const toggle = document.getElementById("toggle-agreement");
+  const toggleError = document.getElementById("toggle-error");
+  let submitting = false;
+
+  if (form) {
+    form.onsubmit = null;
+    form.addEventListener("submit", function(e) {
+      if (submitting) return;
+      if (toggle && !toggle.checked) {
+        if (toggleError) toggleError.classList.remove("hidden");
+        e.preventDefault();
+        return;
+      } else {
+        if (toggleError) toggleError.classList.add("hidden");
+      }
+      e.preventDefault();
+      grecaptcha.ready(function() {
+        grecaptcha.execute('6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI', {action: 'submit'}).then(function(token) {
+          document.getElementById('recaptchaToken').value = token;
+          submitting = true;
+          form.submit();
+        });
+      });
+    });
+  }
+});
+</script>
+
+
+
 
 

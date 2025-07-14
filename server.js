@@ -8,9 +8,11 @@ const connectDB = require("./config/db");
 
 const galleryRoutes = require("./routes/galleryRoutes");
 const contactRoutes = require('./routes/contactRoutes');
+const { verifyRecaptcha } = require('./routes/contactRoutes'); // <-- EKLE
 const classRoutes = require('./routes/classRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const hbs = require("hbs");
+const contactController = require('./controllers/contactController'); // <-- EKLE
 
 const rateLimit = require('express-rate-limit');
 const paymentLimiter = rateLimit({
@@ -70,14 +72,18 @@ app.use(
         frameSrc: [
           "'self'",
           "https://www.google.com",
-          "https://maps.google.com",
-          "https://www.youtube.com",
-          "https://player.vimeo.com"
+          "https://www.gstatic.com",
+          "https://www.google.com/recaptcha/",
+          "https://www.recaptcha.net"
         ],
         scriptSrc: [
           "'self'",
           "'unsafe-inline'",
-          "https://cdn.jsdelivr.net"
+          "https://cdn.jsdelivr.net",
+          "https://www.google.com",
+          "https://www.gstatic.com",
+          "https://www.google.com/recaptcha/",
+          "https://www.recaptcha.net"
         ],
         scriptSrcAttr: ["'unsafe-inline'"],
         styleSrc: [
@@ -91,7 +97,13 @@ app.use(
           "'self'",
           "https://fonts.gstatic.com"
         ],
-        connectSrc: ["'self'"]
+        connectSrc: [
+          "'self'",
+          "https://www.google.com",
+          "https://www.gstatic.com",
+          "https://www.google.com/recaptcha/",
+          "https://www.recaptcha.net"
+        ]
       }
     }
   })
@@ -223,6 +235,48 @@ app.get("/returns", (req, res) => {
     title: "Return & Refund" 
   });
 });
+
+// Homepage POST (form action="/")
+app.post(
+  "/",
+  verifyRecaptcha,
+  contactController.validateContactForm,
+  (req, res) => {
+    // fromHomepage flag'i ekle
+    req.body.fromHomepage = true;
+    contactController.submitContactForm(req, res);
+  }
+);
+
+// Events POST (form action="/events")
+app.post(
+  "/events",
+  verifyRecaptcha,
+  contactController.validateContactForm,
+  (req, res) => {
+    req.body.fromEvents = true;
+    contactController.submitContactForm(req, res);
+  }
+);
+
+// Studio POST (form action="/join")
+app.post(
+  "/join",
+  verifyRecaptcha,
+  contactController.validateContactForm,
+  (req, res) => {
+    req.body.fromJoin = true;
+    contactController.submitContactForm(req, res);
+  }
+);
+
+// Contact POST (form action="/contact")
+app.post(
+  "/contact",
+  verifyRecaptcha,
+  contactController.validateContactForm,
+  contactController.submitContactForm
+);
 
 // Handle 404 errors
 app.use((req, res) => {

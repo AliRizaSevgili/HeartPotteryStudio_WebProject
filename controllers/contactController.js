@@ -1,4 +1,3 @@
-
 const { body, validationResult } = require('express-validator');
 const Contact = require("../models/Contact");
 const nodemailer = require("nodemailer");
@@ -36,9 +35,43 @@ const transporter = nodemailer.createTransport({
 });
 
 exports.submitContactForm = async (req, res) => {
+  console.log("Formdan gelen fromEvents:", req.body.fromEvents);
+  console.log("Formdan gelen fromJoin:", req.body.fromJoin);
+  console.log("Formdan gelen fromHomepage:", req.body.fromHomepage);
   const errors = validationResult(req); 
   if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array() });
+    if (req.body.fromEvents) {
+      return res.render("events", {
+        layout: "layouts/main",
+        title: "Events",
+        activeGallery: true,
+        errors: errors.array(),
+        fromEvents: true // <-- ekle
+      });
+    } else if (req.body.fromJoin) {
+      return res.render("studio", {
+        layout: "layouts/main",
+        title: "Join the Studio",
+        activeJoin: true,
+        errors: errors.array(),
+        fromJoin: true // <-- ekle
+      });
+    } else if (req.body.fromHomepage) {
+      return res.render("homepage", {
+        layout: "layouts/main",
+        title: "Home",
+        activeHome: true,
+        errors: errors.array(),
+        fromHomepage: true // <-- ekle
+      });
+    } else {
+      return res.render("contact", {
+        layout: "layouts/main",
+        title: "Contact | FQA",
+        activeContact: true,
+        errors: errors.array()
+      });
+    }
   }
   try {
     
@@ -84,9 +117,77 @@ exports.submitContactForm = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
 
-    res.status(200).json({ success: true, message: "Form submitted successfully" });
+    // Doğru sayfayı render et
+    if (req.body.fromEvents) {
+      
+      return res.render("events", {
+        layout: "layouts/main",
+        title: "Events",
+        activeGallery: true,
+        success: true,
+        fromEvents: true // <-- ekle
+      });
+    } else if (req.body.fromJoin) {
+      console.log("### STUDIO SAYFASI RENDER EDİLİYOR");
+      return res.render("studio", {
+        layout: "layouts/main",
+        title: "Join the Studio",
+        activeJoin: true,
+        success: true,
+        fromJoin: true // <-- ekle
+      });
+    } else if (req.body.fromHomepage) {
+      console.log("### HOMEPAGE RENDER EDİLİYOR");
+      return res.render("homepage", {
+        layout: "layouts/main",
+        title: "Home",
+        activeHome: true,
+        success: true,
+        fromHomepage: true // <-- ekle
+      });
+    } else {
+      console.log("### CONTACT SAYFASI RENDER EDİLİYOR");
+      return res.render("contact", {
+        layout: "layouts/main",
+        title: "Contact | FQA",
+        activeContact: true,
+        success: true
+      });
+    }
   } catch (error) {
     console.error("Form submission error:", error);
-    res.status(500).json({ success: false, message: "Failed to submit form" });
+    if (req.body.fromJoin) {
+      return res.render("studio", {
+        layout: "layouts/main",
+        title: "Join the Studio",
+        activeJoin: true,
+        error: "Failed to submit form",
+        fromJoin: true // <-- ekle
+      });
+    } else if (req.body.fromHomepage) {
+      return res.render("homepage", {
+        layout: "layouts/main",
+        title: "Home",
+        activeHome: true,
+        error: "Failed to submit form",
+        fromHomepage: true // <-- ekle
+      });
+    } else if (req.body.fromEvents) {
+      return res.render("events", {
+        layout: "layouts/main",
+        title: "Events",
+        activeGallery: true,
+        error: "Failed to submit form",
+        fromEvents: true // <-- ekle
+      });
+    } else {
+      return res.render("contact", {
+        layout: "layouts/main",
+        title: "Contact | FQA",
+        activeContact: true,
+        error: "Failed to submit form"
+      });
+    }
   }
 };
+

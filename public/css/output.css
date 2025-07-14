@@ -2591,6 +2591,11 @@ input:checked + .toggle-bg {
   background-color: rgb(210 124 58 / var(--tw-bg-opacity));
 }
 
+.bg-\[\#e18188\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(225 129 136 / var(--tw-bg-opacity));
+}
+
 .bg-\[\#f1f1f1\] {
   --tw-bg-opacity: 1;
   background-color: rgb(241 241 241 / var(--tw-bg-opacity));
@@ -2816,6 +2821,10 @@ input:checked + .toggle-bg {
 
 .p-6 {
   padding: 1.5rem;
+}
+
+.p-8 {
+  padding: 2rem;
 }
 
 .px-1 {
@@ -4110,6 +4119,11 @@ select.has-value + label {
 .hover\:bg-\[\#a05a1b\]:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(160 90 27 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-\[\#d16b74\]:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(209 107 116 / var(--tw-bg-opacity));
 }
 
 .hover\:bg-\[\#e5833a\]:hover {

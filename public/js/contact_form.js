@@ -7,58 +7,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ✅ Toggle onay kontrolü
+  // ✅ Toggle onay kontrolü (sadece hata mesajı göster/gizle)
   const form = document.querySelector("form");
   const toggle = document.getElementById("toggle-agreement");
   const toggleError = document.getElementById("toggle-error");
-  const successMessage = document.getElementById("success-message");
 
-  if (form) {
-    form.addEventListener("submit", async function (e) {
-      e.preventDefault(); // Default form gönderimini durdur
-
-      // Onay kutusu kontrolü
+  if (form && toggle && toggleError) {
+    form.addEventListener("submit", function () {
       if (!toggle.checked) {
-        if (toggleError) toggleError.classList.remove("hidden");
-        return;
+        toggleError.classList.remove("hidden");
       } else {
-        if (toggleError) toggleError.classList.add("hidden");
-      }
-
-      // Form verilerini JSON formatına çevir
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData.entries());
-
-      try {
-        const response = await fetch("/contact", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json", // JSON formatı olarak gönder
-          },
-          body: JSON.stringify(data),
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          successMessage?.classList.remove("hidden");
-          form.reset();
-
-          setTimeout(() => {
-            successMessage?.classList.add("hidden");
-          }, 5000);
-        } else {
-          alert("Something went wrong. Please try again later.");
-        }
-      } catch (err) {
-        console.error("Form error:", err);
-        alert("Failed to submit the form.");
+        toggleError.classList.add("hidden");
       }
     });
 
-    // Onay kutusundaki değişiklikte hata mesajını gizle
     toggle.addEventListener("change", function () {
-      if (toggle.checked && toggleError) {
+      if (toggle.checked) {
         toggleError.classList.add("hidden");
       }
     });

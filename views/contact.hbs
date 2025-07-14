@@ -1,4 +1,5 @@
 
+{{! filepath: c:\HeartPottery\views\contact.hbs }}
 <div class="py-4 bg-white font-sans mt-40">
 
     <div class="max-w-screen-md mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between">
@@ -158,26 +159,22 @@
 
 
 <section class="relative isolate bg-white px-6 pt-2 sm:pt-8 sm:pb-0 lg:px-8 mt-0 font-sans text-gray-700">
-
     <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:py-20 lg:px-8">
         <div class="max-w-2xl lg:max-w-4xl mx-auto text-center">
             <h2 class="text-3xl font-extrabold text-gray-900">Visit Our Location</h2>
-            
         </div>
         <div class="mt-16 lg:mt-20">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 ">
                 <div class="rounded-lg overflow-hidden">
-                    
-                <iframe 
-                  class="w-full h-[450px]" 
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2642.744856485339!2d-79.4105620243007!3d43.64618395288534!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x882b34e150a4ea73%3A0xda4979d6b1cbf162!2s777%20Queen%20St%20W%2C%20Toronto%2C%20ON%20M6J%201G1!5e1!3m2!1sen!2sca!4v1742359694451!5m2!1sen!2sca" 
-                  style="border:0;" 
-                  allowfullscreen="" 
-                  loading="lazy" 
-                  referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
+                    <iframe 
+                      class="w-full h-[450px]" 
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2642.744856485339!2d-79.4105620243007!3d43.64618395288534!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x882b34e150a4ea73%3A0xda4979d6b1cbf162!2s777%20Queen%20St%20W%2C%20Toronto%2C%20ON%20M6J%201G1!5e1!3m2!1sen!2sca!4v1742359694451!5m2!1sen!2sca" 
+                      style="border:0;" 
+                      allowfullscreen="" 
+                      loading="lazy" 
+                      referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
                 </div>
-                
                 <div>
                     <div class="max-w-full mx-auto rounded-lg overflow-hidden mt-[-28px]">
                         <div class="px-6 py-4">
@@ -206,8 +203,6 @@
 
 
 <section class="relative isolate bg-white px-6 pt-0 pb-24 sm:pt-0 sm:pb-32 lg:px-8 mt-0 font-sans text-gray-700">
-
-
   <!-- Arka plan şekli (blur & gradient) -->
   <div class="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]" aria-hidden="true">
     <div class="relative left-1/2 -z-10 aspect-1155/678 w-[36.125rem] max-w-none -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-40rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)">
@@ -419,47 +414,66 @@
   </button>
 </div>
 
-
-  
-  
+<!-- Add this hidden input inside your form -->
+<input type="hidden" name="recaptchaToken" id="recaptchaToken">
   </form>
-   <!-- ✅ Success Message (Animated & Styled) -->
-  <div id="success-message"
-     class="hidden mt-6 flex items-center gap-3 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-green-800 shadow-sm transition-all duration-300 ease-in-out animate-fade-in">
 
-  <!-- Icon -->
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-       viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-       class="h-8 w-8 text-green-600">
-      <path stroke-linecap="round" stroke-linejoin="round"
-          d="M4.5 12.75l6 6 9-13.5"/>
-   </svg>
-  
-  <!-- Message -->
-    <p class="text-sm font-medium">
-    Thank you! Your message has been successfully sent.
-    </p>
+  {{#if success}}
+  <!-- ✅ Success Message (Animated & Styled) -->
+  <div class="flex justify-center">
+    <div id="success-message"
+      style="scroll-margin-top: 120px;"
+      class="mt-6 flex items-center gap-3 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-green-800 shadow-sm transition-all duration-300 ease-in-out animate-fade-in max-w-xl w-full">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="h-8 w-8 text-green-600">
+        <path stroke-linecap="round" stroke-linejoin="round"
+            d="M4.5 12.75l6 6 9-13.5"/>
+      </svg>
+      <p class="text-sm font-medium">
+        Thank you! Your message has been successfully sent.
+      </p>
     </div>
-
+  </div>
+  <script>
+    // Başarı mesajı geldiğinde otomatik olarak mesajı görünür alana kaydır
+    document.addEventListener("DOMContentLoaded", function() {
+      var msg = document.getElementById("success-message");
+      if (msg) {
+        msg.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    });
+  </script>
+  {{/if}}
 </section>
 
 
 <script src="/js/fqa.js"></script>
-<script src="/js/contact_form.js"></script>
-
+<script src="https://www.google.com/recaptcha/api.js?render=6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  const form = document.querySelector("form");
-  const message = document.getElementById("message");
-  if (form && message) {
+  const form = document.querySelector("form[action='/contact']");
+  const toggle = document.getElementById("toggle-agreement");
+  const toggleError = document.getElementById("toggle-error");
+  
+  if (form) {
+    form.onsubmit = null;
     form.addEventListener("submit", function(e) {
-      if (message.value.trim().length < 10) {
-        message.setCustomValidity("Message must be at least 10 characters.");
-        message.reportValidity();
+      // Önce toggle kontrolü
+      if (toggle && !toggle.checked) {
+        if (toggleError) toggleError.classList.remove("hidden");
         e.preventDefault();
+        return;
       } else {
-        message.setCustomValidity("");
+        if (toggleError) toggleError.classList.add("hidden");
       }
+      e.preventDefault();
+      grecaptcha.ready(function() {
+        grecaptcha.execute('6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI', {action: 'submit'}).then(function(token) {
+          document.getElementById('recaptchaToken').value = token;
+          form.submit();
+        });
+      });
     });
   }
 });
