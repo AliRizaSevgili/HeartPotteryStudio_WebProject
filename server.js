@@ -13,7 +13,9 @@ const classRoutes = require('./routes/classRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const hbs = require("hbs");
 const contactController = require('./controllers/contactController'); // <-- EKLE
+const logger = require('./logger'); // Winston logger'ı ekle
 
+// Rate limiting aktif:
 const rateLimit = require('express-rate-limit');
 const paymentLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 dakika
@@ -40,7 +42,7 @@ app.use((req, res, next) => {
   next();
 });
 
-//  raw body parser
+// raw body parser (Stripe webhook için)
 app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
 
 // JSON parser
@@ -278,6 +280,11 @@ app.post(
   contactController.submitContactForm
 );
 
+// Test error route
+app.get('/test-error', (req, res) => {
+  throw new Error('Winston test error!');
+});
+
 // Handle 404 errors
 app.use((req, res) => {
   res.status(404).json({ error: "Not Found" });
@@ -285,10 +292,10 @@ app.use((req, res) => {
 
 // Genel hata yakalayıcı middleware (en sona ekle)
 app.use((err, req, res, next) => {
-  // Hataları sunucuya logla
-  console.error(err);
+  // Winston ile logla
+  logger.error(err);
 
-    if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production') {
     res.status(500).json({ error: "Something went wrong." });
   } else {
     res.status(500).json({ error: err.message, stack: err.stack });
