@@ -270,6 +270,14 @@ app.get("/checkout", (req, res) => {
   });
 });
 
+// Payment success page
+app.get("/payment-success", (req, res) => {
+  res.render("payment-success", {
+    layout: "layouts/main",
+    title: "Payment Successful"
+  });
+});
+
 // Homepage POST (form action="/")
 app.post(
   "/",
