@@ -1,4 +1,3 @@
-
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 <!-- Görsel ve Başlık Bölümü -->
@@ -112,9 +111,18 @@
           <p><strong>Day:</strong> {{day}}</p>
           <p><strong>Date:</strong> {{date}}</p>
           <p><strong>Time:</strong> {{time}}</p>
-          <button class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
+          <form method="GET" action="/checkout">
+          <input type="hidden" name="classId" value="{{../classItem._id}}">
+          <input type="hidden" name="classTitle" value="{{../classItem.title}}">
+          <input type="hidden" name="classImage" value="{{../classItem.image}}">
+          <input type="hidden" name="classPrice" value="{{../classItem.price}}">
+          <input type="hidden" name="slotDay" value="{{day}}">
+          <input type="hidden" name="slotDate" value="{{date}}">
+          <input type="hidden" name="slotTime" value="{{time}}">
+          <button type="submit" class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
             Select this slot
           </button>
+        </form>
         </div>
       {{/each}}
 
@@ -143,9 +151,18 @@
           <p><strong>Day:</strong> {{day}}</p>
           <p><strong>Date:</strong> {{date}}</p>
           <p><strong>Time:</strong> {{time}}</p>
-          <button class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
+          <form method="GET" action="/checkout">
+          <input type="hidden" name="classId" value="{{../classItem._id}}">
+          <input type="hidden" name="classTitle" value="{{../classItem.title}}">
+          <input type="hidden" name="classImage" value="{{../classItem.image}}">
+          <input type="hidden" name="classPrice" value="{{../classItem.price}}">
+          <input type="hidden" name="slotDay" value="{{day}}">
+          <input type="hidden" name="slotDate" value="{{date}}">
+          <input type="hidden" name="slotTime" value="{{time}}">
+          <button type="submit" class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
             Select this slot
           </button>
+        </form>
         </div>
       {{/each}}
     </details>
@@ -175,9 +192,18 @@
               <p><strong>Day:</strong> {{day}}</p>
               <p><strong>Date:</strong> {{date}}</p>
               <p><strong>Time:</strong> {{time}}</p>
-              <button class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
+              <form method="GET" action="/checkout">
+          <input type="hidden" name="classId" value="{{../classItem._id}}">
+          <input type="hidden" name="classTitle" value="{{../classItem.title}}">
+          <input type="hidden" name="classImage" value="{{../classItem.image}}">
+          <input type="hidden" name="classPrice" value="{{../classItem.price}}">
+          <input type="hidden" name="slotDay" value="{{day}}">
+          <input type="hidden" name="slotDate" value="{{date}}">
+          <input type="hidden" name="slotTime" value="{{time}}">
+          <button type="submit" class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
                 Select this slot
               </button>
+        </form>
             </div>
           {{/each}}
         </details>
@@ -206,9 +232,18 @@
           <p><strong>Day:</strong> {{day}}</p>
           <p><strong>Date:</strong> {{date}}</p>
           <p><strong>Time:</strong> {{time}}</p>
-          <button class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
+          <form method="GET" action="/checkout">
+          <input type="hidden" name="classId" value="{{../classItem._id}}">
+          <input type="hidden" name="classTitle" value="{{../classItem.title}}">
+          <input type="hidden" name="classImage" value="{{../classItem.image}}">
+          <input type="hidden" name="classPrice" value="{{../classItem.price}}">
+          <input type="hidden" name="slotDay" value="{{day}}">
+          <input type="hidden" name="slotDate" value="{{date}}">
+          <input type="hidden" name="slotTime" value="{{time}}">
+          <button type="submit" class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
             Select this slot
           </button>
+        </form>
         </div>
       {{/each}}
     </details>

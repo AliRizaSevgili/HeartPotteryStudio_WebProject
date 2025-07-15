@@ -239,9 +239,34 @@ app.get("/returns", (req, res) => {
 });
 
 app.get("/checkout", (req, res) => {
+  // Query string'den bilgileri al
+  const {
+    classId,
+    classTitle,
+    classImage,
+    classPrice,
+    slotDay,
+    slotDate,
+    slotTime
+  } = req.query;
+
+  let selectedClass = null;
+  if (classId && classTitle && classImage && classPrice && slotDay && slotDate && slotTime) {
+    selectedClass = {
+      id: classId,
+      title: classTitle,
+      image: classImage,
+      price: classPrice,
+      slotDay,
+      slotDate,
+      slotTime
+    };
+  }
+
   res.render("checkout", {
     layout: "layouts/main",
-    title: "Checkout"
+    title: "Checkout",
+    selectedClass
   });
 });
 
