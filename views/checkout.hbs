@@ -143,7 +143,7 @@
 </div>
 
 <!-- Delivery Details Section (başlangıçta gizli) -->
-<section id="delivery-section" class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
+<section id="delivery-section" class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16 hidden">
   <form action="#" class="mx-auto max-w-screen-xl px-4 2xl:px-0">
     <div class="mt-6 sm:mt-8 lg:flex lg:items-start lg:gap-12 xl:gap-16">
       <div class="min-w-0 flex-1 space-y-8">
@@ -414,7 +414,7 @@
           </div>
         </div>
         <!-- Buton eklendi -->
-        <button type="submit" class="flex w-full items-center justify-center rounded-lg bg-[#b5651d] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#a05a1b] focus:outline-none focus:ring-4 focus:ring-[#f8dce2] dark:bg-[#b5651d] dark:hover:bg-[#a05a1b] dark:focus:ring-[#f8dce2]">Proceed to Payment</button>
+        <button type="submit" id="go-to-payment" class="flex w-full items-center justify-center rounded-lg bg-[#b5651d] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#a05a1b] focus:outline-none focus:ring-4 focus:ring-[#f8dce2] dark:bg-[#b5651d] dark:hover:bg-[#a05a1b] dark:focus:ring-[#f8dce2]">Proceed to Payment</button>
       </div>
       
 
@@ -426,7 +426,7 @@
 </section>
 
 <!-- Payment Section (başlangıçta gizli) -->
-<section id="payment-section" class="bg-gray-100 py-20 px-6">
+<section id="payment-section" class="bg-gray-100 py-20 px-6 hidden">
   <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
     
     <!-- Checkout Form -->
@@ -501,10 +501,13 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  const goToDelivery = document.getElementById('go-to-delivery');
+  const cartSection = document.getElementById('cart-section');
   const deliverySection = document.getElementById('delivery-section');
   const paymentSection = document.getElementById('payment-section');
+  const goToDelivery = document.getElementById('go-to-delivery');
+  const goToPayment = document.getElementById('go-to-payment');
 
+  // 1. Checkout tıklanınca: Delivery göster (Cart kaybolmaz)
   if (goToDelivery && deliverySection) {
     goToDelivery.addEventListener('click', function(e) {
       e.preventDefault();
@@ -513,9 +516,8 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // Delivery'den ödeme adımına geçiş
-  const goToPayment = document.querySelector('#delivery-section button[type="submit"], #delivery-section button[type="button"]');
-  if (goToPayment && paymentSection && deliverySection) {
+  // 2. Proceed to Payment tıklanınca: Payment göster (Delivery ve Cart kaybolmaz)
+  if (goToPayment && paymentSection) {
     goToPayment.addEventListener('click', function(e) {
       e.preventDefault();
       paymentSection.classList.remove('hidden');
@@ -524,16 +526,9 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 </script>
-  if (goToPayment && paymentSection && deliverySection) {
-    goToPayment.addEventListener('click', function(e) {
-      e.preventDefault();
-      paymentSection.classList.remove('hidden');
-      window.scrollTo({ top: paymentSection.offsetTop - 40, behavior: 'smooth' });
-    });
-  }
-});
-</script>
-</section>
+
+
+
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -560,14 +555,8 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 </script>
-</script>
                 
-       
-
       
-    </div>
-  </form>
-</section>
 
 <!-- Payment Section (başlangıçta gizli) -->
 <section id="payment-section" class="bg-gray-100 py-20 px-6 hidden">
