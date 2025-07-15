@@ -292,7 +292,13 @@ app.use((req, res) => {
 
 // Genel hata yakalayıcı middleware (en sona ekle)
 app.use((err, req, res, next) => {
-  // Winston ile logla
+  // Hassas veri maskesi
+  if (req && req.body) {
+    if (req.body.email) req.body.email = '[MASKED]';
+    if (req.body.contactNumber) req.body.contactNumber = '[MASKED]';
+    if (req.body.password) req.body.password = '[MASKED]';
+    if (req.body.cardNumber) req.body.cardNumber = '[MASKED]';
+  }
   logger.error(err);
 
   if (process.env.NODE_ENV === 'production') {

@@ -75,7 +75,11 @@ exports.submitContactForm = async (req, res) => {
   }
   try {
     
-    console.log("📥 Form Data:", req.body);
+    // Hassas veri maskesi
+    const safeLog = { ...req.body };
+    if (safeLog.email) safeLog.email = '[MASKED]';
+    if (safeLog.contactNumber) safeLog.contactNumber = '[MASKED]';
+    console.log("📥 Form Data (masked):", safeLog);
 
     const {
       firstName,
