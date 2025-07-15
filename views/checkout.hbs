@@ -1,3 +1,27 @@
+<!-- Stepper/Progress Bar -->
+<div class="w-full max-w-2xl mx-auto flex justify-between items-center my-8">
+  <div class="flex-1 flex flex-col items-center">
+    <button id="step-cart-btn" type="button" class="focus:outline-none">
+      <div id="step-cart" class="w-8 h-8 rounded-full flex items-center justify-center bg-indigo-500 text-white font-bold transition-colors">1</div>
+    </button>
+    <span class="mt-2 text-sm font-semibold text-indigo-700">Cart</span>
+  </div>
+  <div class="flex-1 border-t-2 border-indigo-300 mx-2"></div>
+  <div class="flex-1 flex flex-col items-center">
+    <button id="step-delivery-btn" type="button" class="focus:outline-none">
+      <div id="step-delivery" class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200 text-gray-700 font-bold transition-colors">2</div>
+    </button>
+    <span class="mt-2 text-sm font-semibold text-gray-700">Delivery</span>
+  </div>
+  <div class="flex-1 border-t-2 border-indigo-300 mx-2"></div>
+  <div class="flex-1 flex flex-col items-center">
+    <button id="step-payment-btn" type="button" class="focus:outline-none">
+      <div id="step-payment" class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200 text-gray-700 font-bold transition-colors">3</div>
+    </button>
+    <span class="mt-2 text-sm font-semibold text-gray-700">Payment</span>
+  </div>
+</div>
+
 <!-- Cart Section -->
 <div id="cart-section" class="container mx-auto mt-10">
   <div class="sm:flex shadow-md my-10">
@@ -414,11 +438,9 @@
           </div>
         </div>
         <!-- Buton eklendi -->
-        <button type="submit" id="go-to-payment" class="flex w-full items-center justify-center rounded-lg bg-[#b5651d] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#a05a1b] focus:outline-none focus:ring-4 focus:ring-[#f8dce2] dark:bg-[#b5651d] dark:hover:bg-[#a05a1b] dark:focus:ring-[#f8dce2]">Proceed to Payment</button>
-      </div>
-      
-
-          
+        <div class="flex gap-4 mt-8">
+          <button type="button" id="back-to-cart" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded">Back to Cart</button>
+          <button type="submit" id="go-to-payment" class="flex-1 rounded-lg bg-[#b5651d] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#a05a1b] focus:outline-none focus:ring-4 focus:ring-[#f8dce2]">Proceed to Payment</button>
         </div>
       </div>
     </div>
@@ -428,7 +450,6 @@
 <!-- Payment Section (başlangıçta gizli) -->
 <section id="payment-section" class="bg-gray-100 py-20 px-6 hidden">
   <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
-    
     <!-- Checkout Form -->
     <div class="p-8">
       <h2 class="text-2xl font-bold text-gray-800 mb-4">Payment Details</h2>
@@ -451,7 +472,10 @@
             <input type="text" placeholder="123" class="w-full border px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
           </div>
         </div>
-        <button type="submit" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white text-lg py-3 rounded-lg transition">Pay $49.99</button>
+        <div class="flex gap-4 mt-8">
+          <button type="button" id="back-to-delivery" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded">Back to Delivery</button>
+          <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-lg py-3 rounded-lg transition">Pay $49.99</button>
+        </div>
       </form>
     </div>
 
@@ -499,15 +523,13 @@
   </div>
 </section>
 
+<!-- Önceki (eski) script blokları -->
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  const cartSection = document.getElementById('cart-section');
+  const goToDelivery = document.getElementById('go-to-delivery');
   const deliverySection = document.getElementById('delivery-section');
   const paymentSection = document.getElementById('payment-section');
-  const goToDelivery = document.getElementById('go-to-delivery');
-  const goToPayment = document.getElementById('go-to-payment');
 
-  // 1. Checkout tıklanınca: Delivery göster (Cart kaybolmaz)
   if (goToDelivery && deliverySection) {
     goToDelivery.addEventListener('click', function(e) {
       e.preventDefault();
@@ -516,8 +538,9 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // 2. Proceed to Payment tıklanınca: Payment göster (Delivery ve Cart kaybolmaz)
-  if (goToPayment && paymentSection) {
+  // Delivery'den ödeme adımına geçiş
+  const goToPayment = document.querySelector('#delivery-section button[type="submit"], #delivery-section button[type="button"]');
+  if (goToPayment && paymentSection && deliverySection) {
     goToPayment.addEventListener('click', function(e) {
       e.preventDefault();
       paymentSection.classList.remove('hidden');
@@ -526,9 +549,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 </script>
-
-
-
+</section>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -555,13 +576,11 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 </script>
-                
-      
 
+<!-- Sonrası (yeni) -->
 <!-- Payment Section (başlangıçta gizli) -->
 <section id="payment-section" class="bg-gray-100 py-20 px-6 hidden">
   <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
-    
     <!-- Checkout Form -->
     <div class="p-8">
       <h2 class="text-2xl font-bold text-gray-800 mb-4">Payment Details</h2>
@@ -584,7 +603,10 @@ document.addEventListener("DOMContentLoaded", function() {
             <input type="text" placeholder="123" class="w-full border px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
           </div>
         </div>
-        <button type="submit" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white text-lg py-3 rounded-lg transition">Pay $49.99</button>
+        <div class="flex gap-4 mt-8">
+          <button type="button" id="back-to-delivery" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded">Back to Delivery</button>
+          <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-lg py-3 rounded-lg transition">Pay $49.99</button>
+        </div>
       </form>
     </div>
 
@@ -634,51 +656,109 @@ document.addEventListener("DOMContentLoaded", function() {
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  const goToDelivery = document.getElementById('go-to-delivery');
+  // Bölümler
+  const cartSection = document.getElementById('cart-section');
   const deliverySection = document.getElementById('delivery-section');
   const paymentSection = document.getElementById('payment-section');
+  // Stepper
+  const stepCart = document.getElementById('step-cart');
+  const stepDelivery = document.getElementById('step-delivery');
+  const stepPayment = document.getElementById('step-payment');
+  // Butonlar
+  const goToDelivery = document.getElementById('go-to-delivery');
+  const goToPayment = document.getElementById('go-to-payment');
+  const backToCart = document.getElementById('back-to-cart');
+  const backToDelivery = document.getElementById('back-to-delivery');
+  // Stepper buttonlar
+  const stepCartBtn = document.getElementById('step-cart-btn');
+  const stepDeliveryBtn = document.getElementById('step-delivery-btn');
+  const stepPaymentBtn = document.getElementById('step-payment-btn');
 
-  if (goToDelivery && deliverySection) {
+  function setStep(step) {
+    stepCart.className = "w-8 h-8 rounded-full flex items-center justify-center font-bold transition-colors " + (step === 1 ? "bg-indigo-500 text-white" : "bg-gray-200 text-gray-700");
+    stepDelivery.className = "w-8 h-8 rounded-full flex items-center justify-center font-bold transition-colors " + (step === 2 ? "bg-indigo-500 text-white" : "bg-gray-200 text-gray-700");
+    stepPayment.className = "w-8 h-8 rounded-full flex items-center justify-center font-bold transition-colors " + (step === 3 ? "bg-indigo-500 text-white" : "bg-gray-200 text-gray-700");
+  }
+
+  // Başlangıç: sadece Cart açık
+  cartSection.classList.remove('hidden');
+  deliverySection.classList.add('hidden');
+  paymentSection.classList.add('hidden');
+  setStep(1);
+
+  // Cart → Delivery
+  if (goToDelivery) {
     goToDelivery.addEventListener('click', function(e) {
       e.preventDefault();
+      cartSection.classList.add('hidden');
       deliverySection.classList.remove('hidden');
+      paymentSection.classList.add('hidden');
+      setStep(2);
       window.scrollTo({ top: deliverySection.offsetTop - 40, behavior: 'smooth' });
     });
   }
 
-  // Delivery'den ödeme adımına geçiş
-  const goToPayment = document.querySelector('#delivery-section button[type="submit"], #delivery-section button[type="button"]');
-  if (goToPayment && paymentSection && deliverySection) {
+  // Delivery → Payment
+  if (goToPayment) {
     goToPayment.addEventListener('click', function(e) {
       e.preventDefault();
+      cartSection.classList.add('hidden');
+      deliverySection.classList.add('hidden');
       paymentSection.classList.remove('hidden');
+      setStep(3);
       window.scrollTo({ top: paymentSection.offsetTop - 40, behavior: 'smooth' });
     });
   }
-});
-</script>
-</section>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const goToDelivery = document.getElementById('go-to-delivery');
-  const deliverySection = document.getElementById('delivery-section');
-  const paymentSection = document.getElementById('payment-section');
-
-  if (goToDelivery && deliverySection) {
-    goToDelivery.addEventListener('click', function(e) {
+  // Delivery → Cart (geri)
+  if (backToCart) {
+    backToCart.addEventListener('click', function(e) {
       e.preventDefault();
+      cartSection.classList.remove('hidden');
+      deliverySection.classList.add('hidden');
+      paymentSection.classList.add('hidden');
+      setStep(1);
+      window.scrollTo({ top: cartSection.offsetTop - 40, behavior: 'smooth' });
+    });
+  }
+
+  // Payment → Delivery (geri)
+  if (backToDelivery) {
+    backToDelivery.addEventListener('click', function(e) {
+      e.preventDefault();
+      cartSection.classList.add('hidden');
       deliverySection.classList.remove('hidden');
+      paymentSection.classList.add('hidden');
+      setStep(2);
       window.scrollTo({ top: deliverySection.offsetTop - 40, behavior: 'smooth' });
     });
   }
 
-  // Delivery'den ödeme adımına geçiş
-  const goToPayment = document.querySelector('#delivery-section button[type="submit"], #delivery-section button[type="button"]');
-  if (goToPayment && paymentSection && deliverySection) {
-    goToPayment.addEventListener('click', function(e) {
-      e.preventDefault();
+  // Stepper tıklanabilirlik
+  if (stepCartBtn) {
+    stepCartBtn.addEventListener('click', function() {
+      cartSection.classList.remove('hidden');
+      deliverySection.classList.add('hidden');
+      paymentSection.classList.add('hidden');
+      setStep(1);
+      window.scrollTo({ top: cartSection.offsetTop - 40, behavior: 'smooth' });
+    });
+  }
+  if (stepDeliveryBtn) {
+    stepDeliveryBtn.addEventListener('click', function() {
+      cartSection.classList.add('hidden');
+      deliverySection.classList.remove('hidden');
+      paymentSection.classList.add('hidden');
+      setStep(2);
+      window.scrollTo({ top: deliverySection.offsetTop - 40, behavior: 'smooth' });
+    });
+  }
+  if (stepPaymentBtn) {
+    stepPaymentBtn.addEventListener('click', function() {
+      cartSection.classList.add('hidden');
+      deliverySection.classList.add('hidden');
       paymentSection.classList.remove('hidden');
+      setStep(3);
       window.scrollTo({ top: paymentSection.offsetTop - 40, behavior: 'smooth' });
     });
   }
