@@ -238,6 +238,13 @@ app.get("/returns", (req, res) => {
   });
 });
 
+app.get("/checkout", (req, res) => {
+  res.render("checkout", {
+    layout: "layouts/main",
+    title: "Checkout"
+  });
+});
+
 // Homepage POST (form action="/")
 app.post(
   "/",
