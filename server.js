@@ -391,6 +391,19 @@ app.use((err, req, res, next) => {
   }
 });
 
+// Handlebars helper
+hbs.registerHelper('sum', function(array, field) {
+  let total = 0;
+  if (Array.isArray(array)) {
+    array.forEach(item => {
+      let val = item[field];
+      if (typeof val === "string") val = val.replace(/[^0-9.]/g, "");
+      total += parseFloat(val) || 0;
+    });
+  }
+  return total.toFixed(2);
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server is running on port ${PORT}`));
 
