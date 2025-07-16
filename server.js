@@ -239,7 +239,6 @@ app.get("/returns", (req, res) => {
 });
 
 app.get("/checkout", (req, res) => {
-  // Query string'den bilgileri al
   const {
     classId,
     classTitle,

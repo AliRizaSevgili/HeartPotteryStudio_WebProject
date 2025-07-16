@@ -39,26 +39,22 @@
           </h2>
         </div>
         {{#if selectedClass}}
-        <div class="md:flex items-strech py-8 md:py-10 lg:py-8 border-t border-gray-50">
+        <!-- Seçilen slot ve class bilgileri -->
+        <div class="md:flex items-stretch py-8 md:py-10 lg:py-8 border-t border-gray-50">
           <div class="md:w-4/12 2xl:w-1/4 w-full">
-            <img src="{{selectedClass.image}}" alt="{{selectedClass.title}}" class="h-full object-center object-cover md:block hidden" />
-            <img src="{{selectedClass.image}}" alt="{{selectedClass.title}}" class="md:hidden w-full h-full object-center object-cover" />
+            <img src="{{selectedClass.image}}" alt="{{selectedClass.title}}" class="h-full object-center object-cover rounded-lg" />
           </div>
           <div class="md:pl-3 md:w-8/12 2xl:w-3/4 flex flex-col justify-center">
-            <p class="text-xs leading-3 text-gray-800 md:pt-0 pt-4">{{selectedClass.title}}</p>
-            <div class="flex items-center justify-between w-full">
-              <p class="text-base font-black leading-none text-gray-800">{{selectedClass.title}}</p>
-              <span class="py-2 px-1 border border-gray-200 mr-6">1</span>
-            </div>
-            <p class="text-xs leading-3 text-gray-600 pt-2">Day: {{selectedClass.slotDay}}</p>
-            <p class="text-xs leading-3 text-gray-600">Date: {{selectedClass.slotDate}}</p>
-            <p class="text-xs leading-3 text-gray-600">Time: {{selectedClass.slotTime}}</p>
+            <p class="text-base font-bold text-gray-800 mb-2">{{selectedClass.title}}</p>
+            <p class="text-sm text-gray-600 mb-1"><strong>Day:</strong> {{selectedClass.slotDay}}</p>
+            <p class="text-sm text-gray-600 mb-1"><strong>Date:</strong> {{selectedClass.slotDate}}</p>
+            <p class="text-sm text-gray-600 mb-1"><strong>Time:</strong> {{selectedClass.slotTime}}</p>
             <div class="flex items-center justify-between pt-5">
               <div class="flex items-center">
                 <p class="text-xs leading-3 underline text-gray-800 cursor-pointer">Add to favorites</p>
                 <p class="text-xs leading-3 underline text-red-500 pl-5 cursor-pointer">Remove</p>
               </div>
-              <p class="text-base font-black leading-none text-gray-800">${{selectedClass.price}}</p>
+              <p class="text-base font-black leading-none text-gray-800">{{selectedClass.price}}</p>
             </div>
           </div>
         </div>
@@ -106,7 +102,7 @@
             {{#if selectedClass}}
             <li class="flex justify-between py-2">
               <span class="text-sm text-gray-700">{{selectedClass.title}} ({{selectedClass.slotDate}} {{selectedClass.slotTime}})</span>
-              <span class="text-sm font-semibold text-gray-900">${{selectedClass.price}}</span>
+              <span class="text-sm font-semibold text-gray-900">{{selectedClass.price}}</span>
             </li>
             {{else}}
             <li class="flex justify-between py-2">
