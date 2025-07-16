@@ -305,6 +305,23 @@ app.get("/add-to-cart", (req, res) => {
   res.redirect("/checkout");
 });
 
+// Remove from cart route
+app.post("/remove-from-cart", (req, res) => {
+  const { classId, slotDay, slotDate, slotTime } = req.body;
+  if (!req.session.cart) return res.redirect("/checkout");
+
+  req.session.cart = req.session.cart.filter(
+    item =>
+      !(
+        item.classId === classId &&
+        item.slotDay === slotDay &&
+        item.slotDate === slotDate &&
+        item.slotTime === slotTime
+      )
+  );
+  res.redirect("/checkout");
+});
+
 // Homepage POST (form action="/")
 app.post(
   "/",

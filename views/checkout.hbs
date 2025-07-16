@@ -35,7 +35,11 @@
         <div class="flex justify-between border-b pb-8">
           <h1 class="font-semibold text-2xl">Cart</h1>
           <h2 class="font-semibold text-2xl">
-            {{#if selectedClass}}1 Item{{else}}3 Items{{/if}}
+            {{#if cart.length}}
+              {{cart.length}} Items
+            {{else}}
+              0 Items
+            {{/if}}
           </h2>
         </div>
         {{#if selectedClass}}
@@ -73,6 +77,15 @@
                 <p class="text-sm text-gray-600 mb-1"><strong>Time:</strong> {{slotTime}}</p>
                 <div class="flex items-center justify-between pt-5">
                   <p class="text-base font-black leading-none text-gray-800">{{classPrice}}</p>
+                  <form method="POST" action="/remove-from-cart" class="ml-4">
+                    <input type="hidden" name="classId" value="{{classId}}">
+                    <input type="hidden" name="slotDay" value="{{slotDay}}">
+                    <input type="hidden" name="slotDate" value="{{slotDate}}">
+                    <input type="hidden" name="slotTime" value="{{slotTime}}">
+                    <button type="submit" class="text-xs leading-3 underline text-red-500 cursor-pointer hover:text-red-700 transition">
+                      Remove
+                    </button>
+                  </form>
                 </div>
               </div>
             </div>
@@ -104,7 +117,11 @@
         </div>
         <div class="flex justify-between mt-10 mb-5">
           <span class="font-semibold text-sm uppercase">
-            {{#if selectedClass}}Item 1{{else}}Items 3{{/if}}
+            {{#if cart.length}}
+              Items {{cart.length}}
+            {{else}}
+              Items 0
+            {{/if}}
           </span>
           <span class="font-semibold text-sm">
             {{#if selectedClass}}${{selectedClass.price}}{{else}}$590{{/if}}
