@@ -5,6 +5,7 @@ const path = require("path");
 const cors = require("cors");
 const helmet = require("helmet");
 const connectDB = require("./config/db");
+const session = require('express-session');
 
 const galleryRoutes = require("./routes/galleryRoutes");
 const contactRoutes = require('./routes/contactRoutes');
@@ -150,6 +151,14 @@ app.use(express.static(path.join(__dirname, "public")));
 // MongoDB 
 connectDB();
 
+// --- SESSION MIDDLEWARE ---
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'heartpotterysecret',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // production'da true yapabilirsin
+}));
+
 // --- ROUTES ---
 app.use('/api/payment', paymentLimiter);
 app.use('/contact', contactLimiter);
@@ -239,33 +248,11 @@ app.get("/returns", (req, res) => {
 });
 
 app.get("/checkout", (req, res) => {
-  const {
-    classId,
-    classTitle,
-    classImage,
-    classPrice,
-    slotDay,
-    slotDate,
-    slotTime
-  } = req.query;
-
-  let selectedClass = null;
-  if (classId && classTitle && classImage && classPrice && slotDay && slotDate && slotTime) {
-    selectedClass = {
-      id: classId,
-      title: classTitle,
-      image: classImage,
-      price: classPrice,
-      slotDay,
-      slotDate,
-      slotTime
-    };
-  }
-
+  const cart = req.session.cart || [];
   res.render("checkout", {
     layout: "layouts/main",
     title: "Checkout",
-    selectedClass
+    cart
   });
 });
 
@@ -277,13 +264,53 @@ app.get("/payment-success", (req, res) => {
   });
 });
 
+// Sepete Ekleme Route'u
+app.get("/add-to-cart", (req, res) => {
+  const {
+    classId,
+    classTitle,
+    classImage,
+    classPrice,
+    slotDay,
+    slotDate,
+    slotTime
+  } = req.query;
+
+  if (!classId || !classTitle || !classImage || !classPrice || !slotDay || !slotDate || !slotTime) {
+    return res.redirect("/learn");
+  }
+
+  if (!req.session.cart) req.session.cart = [];
+
+  // Aynı slot birden fazla eklenmesin
+  const exists = req.session.cart.some(
+    item =>
+      item.classId === classId &&
+      item.slotDay === slotDay &&
+      item.slotDate === slotDate &&
+      item.slotTime === slotTime
+  );
+  if (!exists) {
+    req.session.cart.push({
+      classId,
+      classTitle,
+      classImage,
+      classPrice,
+      slotDay,
+      slotDate,
+      slotTime
+    });
+  }
+
+  res.redirect("/checkout");
+});
+
 // Homepage POST (form action="/")
 app.post(
   "/",
   verifyRecaptcha,
   contactController.validateContactForm,
   (req, res) => {
-    // fromHomepage flag'i ekle
     req.body.fromHomepage = true;
     contactController.submitContactForm(req, res);
   }

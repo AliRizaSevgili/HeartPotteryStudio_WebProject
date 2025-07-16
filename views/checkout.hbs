@@ -60,33 +60,27 @@
         </div>
         {{else}}
         <!-- Demo ürünler -->
-        <div class="md:flex items-strech py-8 md:py-10 lg:py-8 border-t border-gray-50">
-          <div class="md:w-4/12 2xl:w-1/4 w-full">
-            <img src="https://i.ibb.co/6gzWwSq/Rectangle-20-1.png" alt="Black Leather Purse" class="h-full object-center object-cover md:block hidden" />
-            <img src="https://i.ibb.co/TTnzMTf/Rectangle-21.png" alt="Black Leather Purse" class="md:hidden w-full h-full object-center object-cover" />
-          </div>
-          <div class="md:pl-3 md:w-8/12 2xl:w-3/4 flex flex-col justify-center">
-            <p class="text-xs leading-3 text-gray-800 md:pt-0 pt-4">RF293</p>
-            <p class="text-base font-black leading-none text-gray-800">Luxe card holder</p>
-            <p class="text-xs leading-3 text-gray-600 pt-2">Height: 10 inches</p>
-            <p class="text-xs leading-3 text-gray-600 py-4">Color: Black</p>
-            <p class="w-96 text-xs leading-3 text-gray-600">Composition: 100% calf leather</p>
-          </div>
-        </div>
+        {{#if cart.length}}
+          {{#each cart}}
+            <div class="md:flex items-stretch py-8 md:py-10 lg:py-8 border-t border-gray-50">
+              <div class="md:w-4/12 2xl:w-1/4 w-full">
+                <img src="{{classImage}}" alt="{{classTitle}}" class="h-full object-center object-cover rounded-lg" />
+              </div>
+              <div class="md:pl-3 md:w-8/12 2xl:w-3/4 flex flex-col justify-center">
+                <p class="text-base font-bold text-gray-800 mb-2">{{classTitle}}</p>
+                <p class="text-sm text-gray-600 mb-1"><strong>Day:</strong> {{slotDay}}</p>
+                <p class="text-sm text-gray-600 mb-1"><strong>Date:</strong> {{slotDate}}</p>
+                <p class="text-sm text-gray-600 mb-1"><strong>Time:</strong> {{slotTime}}</p>
+                <div class="flex items-center justify-between pt-5">
+                  <p class="text-base font-black leading-none text-gray-800">{{classPrice}}</p>
+                </div>
+              </div>
+            </div>
+          {{/each}}
+        {{else}}
+          <p>Your cart is empty.</p>
+        {{/if}}
 
-        <div class="md:flex items-strech py-8 md:py-10 lg:py-8 border-t border-gray-50">
-          <div class="md:w-4/12 2xl:w-1/4 w-full">
-            <img src="https://i.ibb.co/6gzWwSq/Rectangle-20-1.png" alt="Black Leather Purse" class="h-full object-center object-cover md:block hidden" />
-            <img src="https://i.ibb.co/TTnzMTf/Rectangle-21.png" alt="Black Leather Purse" class="md:hidden w-full h-full object-center object-cover" />
-          </div>
-          <div class="md:pl-3 md:w-8/12 2xl:w-3/4 flex flex-col justify-center">
-            <p class="text-xs leading-3 text-gray-800 md:pt-0 pt-4">RF293</p>
-            <p class="text-base font-black leading-none text-gray-800">Luxe card holder</p>
-            <p class="text-xs leading-3 text-gray-600 pt-2">Height: 10 inches</p>
-            <p class="text-xs leading-3 text-gray-600 py-4">Color: Black</p>
-            <p class="w-96 text-xs leading-3 text-gray-600">Composition: 100% calf leather</p>
-          </div>
-        </div>
         <a href="#" class="flex font-semibold text-indigo-600 text-sm mt-10">
           <svg class="fill-current mr-2 text-indigo-600 w-4" viewBox="0 0 448 512">
             <path d="M134.059 296H436c6.627 0 12-5.373 12-12v-56c0-6.627-5.373-12-12-12H134.059v-46.059c0-21.382-25.851-32.09-40.971-16.971L7.029 239.029c-9.373 9.373-9.373 24.569 0 33.941l86.059 86.059c15.119 15.119 40.971 4.411 40.971-16.971V296z"/>
@@ -98,26 +92,14 @@
       <div id="summary" class="w-full sm:w-1/4 md:w-1/2 px-8 py-10">
         <h1 class="font-semibold text-2xl border-b pb-8">Order Summary</h1>
         <div class="mt-8 mb-5">
+          <!-- Order Summary -->
           <ul class="divide-y divide-gray-200">
-            {{#if selectedClass}}
-            <li class="flex justify-between py-2">
-              <span class="text-sm text-gray-700">{{selectedClass.title}} ({{selectedClass.slotDate}} {{selectedClass.slotTime}})</span>
-              <span class="text-sm font-semibold text-gray-900">{{selectedClass.price}}</span>
-            </li>
-            {{else}}
-            <li class="flex justify-between py-2">
-              <span class="text-sm text-gray-700">Luxe card holder</span>
-              <span class="text-sm font-semibold text-gray-900">$300</span>
-            </li>
-            <li class="flex justify-between py-2">
-              <span class="text-sm text-gray-700">Classic mug</span>
-              <span class="text-sm font-semibold text-gray-900">$190</span>
-            </li>
-            <li class="flex justify-between py-2">
-              <span class="text-sm text-gray-700">Handmade bowl</span>
-              <span class="text-sm font-semibold text-gray-900">$100</span>
-            </li>
-            {{/if}}
+            {{#each cart}}
+              <li class="flex justify-between py-2">
+                <span class="text-sm text-gray-700">{{classTitle}} ({{slotDate}} {{slotTime}})</span>
+                <span class="text-sm font-semibold text-gray-900">{{classPrice}}</span>
+              </li>
+            {{/each}}
           </ul>
         </div>
         <div class="flex justify-between mt-10 mb-5">
