@@ -1776,6 +1776,10 @@ input:checked + .toggle-bg {
   margin-left: 0.75rem;
 }
 
+.ml-4 {
+  margin-left: 1rem;
+}
+
 .ml-6 {
   margin-left: 1.5rem;
 }
@@ -1858,10 +1862,6 @@ input:checked + .toggle-bg {
 
 .mt-\[200px\] {
   margin-top: 200px;
-}
-
-.ml-4 {
-  margin-left: 1rem;
 }
 
 .block {
@@ -2070,10 +2070,6 @@ input:checked + .toggle-bg {
 
 .w-8 {
   width: 2rem;
-}
-
-.w-96 {
-  width: 24rem;
 }
 
 .w-\[150px\] {
@@ -3633,6 +3629,10 @@ input:checked + .toggle-bg {
   transition-duration: 700ms;
 }
 
+.duration-150 {
+  transition-duration: 150ms;
+}
+
 .ease-in-out {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -4397,6 +4397,16 @@ select.has-value + label {
   background-color: rgb(202 138 4 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-indigo-50:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(238 242 255 / var(--tw-bg-opacity));
+}
+
+.hover\:text-base:hover {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
 .hover\:text-\[\#8c4516\]:hover {
   --tw-text-opacity: 1;
   color: rgb(140 69 22 / var(--tw-text-opacity));
@@ -4440,6 +4450,11 @@ select.has-value + label {
 .hover\:text-red-700:hover {
   --tw-text-opacity: 1;
   color: rgb(185 28 28 / var(--tw-text-opacity));
+}
+
+.hover\:text-indigo-800:hover {
+  --tw-text-opacity: 1;
+  color: rgb(55 48 163 / var(--tw-text-opacity));
 }
 
 .hover\:underline:hover {
@@ -4980,10 +4995,6 @@ select.has-value + label {
     margin-top: 6rem;
   }
 
-  .md\:block {
-    display: block;
-  }
-
   .md\:flex {
     display: flex;
   }
@@ -5146,10 +5157,6 @@ select.has-value + label {
 
   .md\:pr-8 {
     padding-right: 2rem;
-  }
-
-  .md\:pt-0 {
-    padding-top: 0px;
   }
 
   .md\:text-right {

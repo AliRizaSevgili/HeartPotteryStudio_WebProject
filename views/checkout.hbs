@@ -94,7 +94,7 @@
           <p>Your cart is empty.</p>
         {{/if}}
 
-        <a href="javascript:history.back()" class="flex font-semibold text-indigo-600 text-sm mt-10">
+        <a href="#" onclick="window.history.length > 1 ? history.back() : window.location.href='/learn'" class="flex font-semibold text-indigo-600 text-sm mt-10 transition-all duration-150 hover:text-indigo-800 hover:text-base">
           <svg class="fill-current mr-2 text-indigo-600 w-4" viewBox="0 0 448 512">
             <path d="M134.059 296H436c6.627 0 12-5.373 12-12v-56c0-6.627-5.373-12-12-12H134.059v-46.059c0-21.382-25.851-32.09-40.971-16.971L7.029 239.029c-9.373 9.373-9.373 24.569 0 33.941l86.059 86.059c15.119 15.119 40.971 4.411 40.971-16.971V296z"/>
           </svg>
@@ -131,45 +131,62 @@
             {{/if}}
           </span>
         </div>
-        <div class="py-10">
+        <form method="POST" action="/apply-promo" class="mb-2">
           <label for="promo" class="font-semibold inline-block mb-3 text-sm uppercase">
             Promo Code
           </label>
           <input
             type="text"
             id="promo"
+            name="promo"
             placeholder="Enter your code"
             class="p-2 text-sm w-full"
           />
-        </div>
-        <button class="bg-red-500 hover:bg-red-600 px-5 py-2 text-sm text-white uppercase">
-          Apply
-        </button>
+          <button class="bg-red-500 hover:bg-red-600 px-5 py-2 text-sm text-white uppercase mt-2" type="submit">
+            Apply
+          </button>
+        </form>
+        {{#if promoMessage}}
+          <div class="text-xs text-indigo-700 mb-2">{{promoMessage}}</div>
+        {{/if}}
         <div class="border-t mt-8">
           <div class="space-y-1 mb-4 mt-4">
             <div class="flex justify-between text-sm text-gray-700">
               <span>Subtotal</span>
               <span>
-                {{#if selectedClass}}${{selectedClass.price}}{{else}}$590{{/if}}
+                {{#if cart.length}}
+                  ${{sum cart "classPrice"}}
+                {{else}}
+                  $0
+                {{/if}}
               </span>
             </div>
             <div class="flex justify-between text-sm text-gray-700">
               <span>Savings</span>
-              <span>0</span>
+              <span>
+                {{#if promo}}
+                  -${{discountAmount cart promo.discount}}
+                {{else}}
+                  $0
+                {{/if}}
+              </span>
             </div>
+            <!-- Canada GST satırı kaldırıldı -->
             <div class="flex justify-between text-sm text-gray-700">
-              <span>Store Pickup</span>
-              <span>$99</span>
-            </div>
-            <div class="flex justify-between text-sm text-gray-700">
-              <span>Tax</span>
-              <span>$199</span>
+              <span>Tax (HST 13%)</span>
+              <span>
+                ${{taxAmount cart 0.13}}
+              </span>
             </div>
           </div>
           <div class="flex font-semibold justify-between py-6 text-sm uppercase">
             <span>Total cost</span>
             <span>
-              {{#if selectedClass}}${{selectedClass.price}}{{else}}$600{{/if}}
+              {{#if promo}}
+                ${{discountedTotal cart promo.discount}}
+              {{else}}
+                ${{sum cart "classPrice"}}
+              {{/if}}
             </span>
           </div>
           <button id="go-to-delivery" class="bg-indigo-500 font-semibold hover:bg-indigo-600 py-3 text-sm text-white uppercase w-full">

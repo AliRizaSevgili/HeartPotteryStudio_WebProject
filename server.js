@@ -247,12 +247,17 @@ app.get("/returns", (req, res) => {
   });
 });
 
+// Checkout route'da promo ve mesajı view'a gönder
 app.get("/checkout", (req, res) => {
   const cart = req.session.cart || [];
+  const promo = req.session.promo || null;
+  const promoMessage = req.session.promoMessage || null;
   res.render("checkout", {
     layout: "layouts/main",
     title: "Checkout",
-    cart
+    cart,
+    promo,
+    promoMessage
   });
 });
 
@@ -302,14 +307,18 @@ app.get("/add-to-cart", (req, res) => {
     });
   }
 
+  // Yeni ürün eklenince promo kodunu sıfırla
+  req.session.promo = null;
+  req.session.promoMessage = null;
+
   res.redirect("/checkout");
 });
 
-// Remove from cart route
 app.post("/remove-from-cart", (req, res) => {
   const { classId, slotDay, slotDate, slotTime } = req.body;
   if (!req.session.cart) return res.redirect("/checkout");
 
+  // Cart'tan item silindiğinde, eğer cart tamamen boşsa promo kodunu sıfırla
   req.session.cart = req.session.cart.filter(
     item =>
       !(
@@ -319,6 +328,30 @@ app.post("/remove-from-cart", (req, res) => {
         item.slotTime === slotTime
       )
   );
+  if (!req.session.cart.length) {
+    req.session.promo = null;
+    req.session.promoMessage = null;
+  }
+  res.redirect("/checkout");
+});
+
+// Promo code application route (aktif ve sade)
+app.post("/apply-promo", (req, res) => {
+  const { promo } = req.body;
+  const validCode = "HEART10";
+  const discount = 0.10; // %10 indirim
+
+  // Kod doğruysa session'a indirim bilgisini ekle
+  if (promo && promo.trim().toUpperCase() === validCode && req.session.cart && req.session.cart.length > 0) {
+    req.session.promo = { code: promo, discount };
+    req.session.promoMessage = "Promo code applied! 10% discount.";
+  } else if (!req.session.cart || req.session.cart.length === 0) {
+    req.session.promo = null;
+    req.session.promoMessage = "Add items to cart before applying promo code.";
+  } else {
+    req.session.promo = null;
+    req.session.promoMessage = "Invalid promo code.";
+  }
   res.redirect("/checkout");
 });
 
@@ -402,6 +435,42 @@ hbs.registerHelper('sum', function(array, field) {
     });
   }
   return total.toFixed(2);
+});
+
+hbs.registerHelper('discountedTotal', function(array, discount) {
+  let total = 0;
+  if (Array.isArray(array)) {
+    array.forEach(item => {
+      let val = item["classPrice"];
+      if (typeof val === "string") val = val.replace(/[^0-9.]/g, "");
+      total += parseFloat(val) || 0;
+    });
+  }
+  return (total * (1 - (discount || 0))).toFixed(2);
+});
+
+hbs.registerHelper('discountAmount', function(array, discount) {
+  let total = 0;
+  if (Array.isArray(array)) {
+    array.forEach(item => {
+      let val = item["classPrice"];
+      if (typeof val === "string") val = val.replace(/[^0-9.]/g, "");
+      total += parseFloat(val) || 0;
+    });
+  }
+  return (total * (discount || 0)).toFixed(2);
+});
+
+hbs.registerHelper('taxAmount', function(array, rate) {
+  let total = 0;
+  if (Array.isArray(array)) {
+    array.forEach(item => {
+      let val = item["classPrice"];
+      if (typeof val === "string") val = val.replace(/[^0-9.]/g, "");
+      total += parseFloat(val) || 0;
+    });
+  }
+  return (total * (rate || 0)).toFixed(2);
 });
 
 const PORT = process.env.PORT || 5000;
