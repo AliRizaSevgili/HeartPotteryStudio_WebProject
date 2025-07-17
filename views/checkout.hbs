@@ -3,21 +3,21 @@
   <div class="w-full max-w-2xl mx-auto flex justify-between items-center mt-40 mb-12">
     <div class="flex-1 flex flex-col items-center">
       <button id="step-cart-btn" type="button" class="focus:outline-none">
-        <div id="step-cart" class="w-8 h-8 rounded-full flex items-center justify-center bg-indigo-500 text-white font-bold transition-colors">1</div>
+        <div id="step-cart" class="step-circle w-8 h-8 rounded-full bg-indigo-500 text-white font-bold">1</div>
       </button>
       <span class="mt-2 text-sm font-semibold text-indigo-700">Cart</span>
     </div>
     <div class="flex-1 border-t-2 border-indigo-300 mx-2"></div>
     <div class="flex-1 flex flex-col items-center">
       <button id="step-delivery-btn" type="button" class="focus:outline-none">
-        <div id="step-delivery" class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200 text-gray-700 font-bold transition-colors">2</div>
+        <div id="step-delivery" class="step-circle w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-bold">2</div>
       </button>
-      <span class="mt-2 text-sm font-semibold text-gray-700">Delivery</span>
+      <span class="mt-2 text-sm font-semibold text-gray-700">Info</span>
     </div>
     <div class="flex-1 border-t-2 border-indigo-300 mx-2"></div>
     <div class="flex-1 flex flex-col items-center">
       <button id="step-payment-btn" type="button" class="focus:outline-none">
-        <div id="step-payment" class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200 text-gray-700 font-bold transition-colors">3</div>
+        <div id="step-payment" class="step-circle w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-bold">3</div>
       </button>
       <span class="mt-2 text-sm font-semibold text-gray-700">Payment</span>
     </div>
@@ -207,93 +207,137 @@
     <div class="mt-6 sm:mt-8 lg:flex lg:items-start lg:gap-12 xl:gap-16">
       <div class="min-w-0 flex-1 space-y-8">
         <div class="space-y-4">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Delivery Details</h2>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Participant Information</h2>
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label for="your_name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Your name </label>
-              <input type="text" id="your_name" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d] dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-[#b5651d] dark:focus:ring-[#b5651d]" placeholder="Bonnie Green" required />
+              <label for="your_name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Your Name*</label>
+              <input type="text" id="your_name" name="your_name" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d]" placeholder="Please enter your name" required />
             </div>
             <div>
-              <label for="your_email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Your email* </label>
-              <input type="email" id="your_email" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d] dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-[#b5651d] dark:focus:ring-[#b5651d]" placeholder="name@flowbite.com" required />
+              <label for="your_email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Email*</label>
+              <input type="email" id="your_email" name="your_email" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d]" placeholder="email@email.com" required />
             </div>
             <div>
-              <div class="mb-2 flex items-center gap-2">
-                <label for="select-country-input-3" class="block text-sm font-medium text-gray-900 dark:text-white"> Country* </label>
-              </div>
-              <select id="select-country-input-3" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d] dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-[#b5651d] dark:focus:ring-[#b5651d]">
-                <option selected>United States</option>
-                <option value="AS">Australia</option>
-                <option value="FR">France</option>
-                <option value="ES">Spain</option>
-                <option value="UK">United Kingdom</option>
-              </select>
-            </div>
-            <div>
-              <div class="mb-2 flex items-center gap-2">
-                <label for="select-city-input-3" class="block text-sm font-medium text-gray-900 dark:text-white"> City* </label>
-              </div>
-              <select id="select-city-input-3" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d] dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-[#b5651d] dark:focus:ring-[#b5651d]">
-                <option selected>San Francisco</option>
-                <option value="NY">New York</option>
-                <option value="LA">Los Angeles</option>
-                <option value="CH">Chicago</option>
-                <option value="HU">Houston</option>
-              </select>
-            </div>
-            <div>
-              <label for="phone-input-3" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Phone Number* </label>
+              <label for="phone-input" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Phone Number*</label>
               <div class="flex items-center">
-                <button id="dropdown-phone-button-3" data-dropdown-toggle="dropdown-phone-3" class="z-10 inline-flex shrink-0 items-center rounded-s-lg border border-gray-300 bg-gray-100 px-4 py-2.5 text-center text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-700" type="button">
-                  <svg fill="none" aria-hidden="true" class="me-2 h-4 w-4" viewBox="0 0 20 15">
-                    <rect width="19.6" height="14" y=".5" fill="#fff" rx="2" />
-                    <mask id="a" style="mask-type:luminance" width="20" height="15" x="0" y="0" maskUnits="userSpaceOnUse">
-                      <rect width="19.6" height="14" y=".5" fill="#fff" rx="2" />
-                    </mask>
-                    <g mask="url(#a)">
-                      <path fill="#D02F44" fill-rule="evenodd" d="M19.6.5H0v.933h19.6V.5zm0 1.867H0V3.3h19.6v-.933zM0 4.233h19.6v.934H0v-.934zM19.6 6.1H0v.933h19.6V6.1zM0 7.967h19.6V8.9H0v-.933zm19.6 1.866H0v.934h19.6v-.934zM0 11.7h19.6v.933H0V11.7zm19.6 1.867H0v.933h19.6v-.933z" clip-rule="evenodd" />
-                      <path fill="#46467F" d="M0 .5h8.4v6.533H0z" />
-                      <!-- ...svg details... -->
-                    </g>
-                  </svg>
-                  +1
-                  <svg class="-me-0.5 ms-2 h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7" />
-                  </svg>
-                </button>
-                <div id="dropdown-phone-3" class="z-10 hidden w-56 divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700">
-                  <!-- ...dropdown options... -->
-                </div>
-                <div class="relative w-full">
-                  <input type="text" id="phone-input" class="z-20 block w-full rounded-e-lg border border-s-0 border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d] dark:border-gray-600 dark:border-s-gray-700  dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-[#b5651d] dark:focus:ring-[#b5651d]" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="123-456-7890" required />
-                </div>
+                <select id="country-code" name="countryCode" class="rounded-s-lg border border-gray-300 bg-gray-100 px-2 py-2.5 text-sm text-gray-900">
+                  <option value="+1">🇨🇦 +1</option>      <!-- Canada -->
+                  <option value="+1">🇺🇸 +1</option>      <!-- United States -->
+                  <option value="+91">🇮🇳 +91</option>    <!-- India -->
+                  <option value="+86">🇨🇳 +86</option>    <!-- China -->
+                  <option value="+63">🇵🇭 +63</option>    <!-- Philippines -->
+                  <option value="+92">🇵🇰 +92</option>    <!-- Pakistan -->
+                  <option value="+98">🇮🇷 +98</option>    <!-- Iran -->
+                  <option value="+33">🇫🇷 +33</option>    <!-- France -->
+                  <option value="+39">🇮🇹 +39</option>    <!-- Italy -->
+                  <option value="+49">🇩🇪 +49</option>    <!-- Germany -->
+                  <option value="+82">🇰🇷 +82</option>    <!-- South Korea -->
+                  <option value="+84">🇻🇳 +84</option>    <!-- Vietnam -->
+                  <option value="+961">🇱🇧 +961</option>  <!-- Lebanon -->
+                  <option value="+90">🇹🇷 +90</option>    <!-- Turkey -->
+                  <option value="+44">🇬🇧 +44</option>    <!-- United Kingdom -->
+                  <option value="+34">🇪🇸 +34</option>    <!-- Spain -->
+                  <option value="+55">🇧🇷 +55</option>    <!-- Brazil -->
+                  <option value="+27">🇿🇦 +27</option>    <!-- South Africa -->
+                  <option value="+81">🇯🇵 +81</option>    <!-- Japan -->
+                  <option value="+966">🇸🇦 +966</option>  <!-- Saudi Arabia -->
+                  <option value="+971">🇦🇪 +971</option>  <!-- United Arab Emirates -->
+                  <option value="+234">🇳🇬 +234</option>  <!-- Nigeria -->
+                  <option value="+48">🇵🇱 +48</option>    <!-- Poland -->
+                  <option value="+420">🇨🇿 +420</option>  <!-- Czech Republic -->
+                  <option value="+421">🇸🇰 +421</option>  <!-- Slovakia -->
+                  <option value="+36">🇭🇺 +36</option>    <!-- Hungary -->
+                  <option value="+30">🇬🇷 +30</option>    <!-- Greece -->
+                  <option value="+353">🇮🇪 +353</option>  <!-- Ireland -->
+                  <option value="+43">🇦🇹 +43</option>    <!-- Austria -->
+                  <option value="+31">🇳🇱 +31</option>    <!-- Netherlands -->
+                  <option value="+32">🇧🇪 +32</option>    <!-- Belgium -->
+                  <option value="+40">🇷🇴 +40</option>    <!-- Romania -->
+                  <option value="+421">🇸🇰 +421</option>  <!-- Slovakia -->
+                  <option value="+385">🇭🇷 +385</option>  <!-- Croatia -->
+                  <option value="+381">🇷🇸 +381</option>  <!-- Serbia -->
+                  <option value="+382">🇲🇪 +382</option>  <!-- Montenegro -->
+                  <option value="+387">🇧🇦 +387</option>  <!-- Bosnia & Herzegovina -->
+                  <option value="+359">🇧🇬 +359</option>  <!-- Bulgaria -->
+                  <option value="+372">🇪🇪 +372</option>  <!-- Estonia -->
+                  <option value="+371">🇱🇻 +371</option>  <!-- Latvia -->
+                  <option value="+370">🇱🇹 +370</option>  <!-- Lithuania -->
+                  <option value="+356">🇲🇹 +356</option>  <!-- Malta -->
+                  <option value="+357">🇨🇾 +357</option>  <!-- Cyprus -->
+                  <option value="+47">🇳🇴 +47</option>    <!-- Norway -->
+                  <option value="+45">🇩🇰 +45</option>    <!-- Denmark -->
+                  <option value="+358">🇫🇮 +358</option>  <!-- Finland -->
+                  <option value="+46">🇸🇪 +46</option>    <!-- Sweden -->
+                  <option value="+41">🇨🇭 +41</option>    <!-- Switzerland -->
+                  <option value="+7">🇷🇺 +7</option>      <!-- Russia -->
+                  <option value="+994">🇦🇿 +994</option>  <!-- Azerbaijan -->
+                  <option value="+374">🇦🇲 +374</option>  <!-- Armenia -->
+                  <option value="+995">🇬🇪 +995</option>  <!-- Georgia -->
+                  <option value="+81">🇯🇵 +81</option>    <!-- Japan -->
+                  <option value="+82">🇰🇷 +82</option>    <!-- South Korea -->
+                  <option value="+86">🇨🇳 +86</option>    <!-- China -->
+                  <option value="+66">🇹🇭 +66</option>    <!-- Thailand -->
+                  <option value="+84">🇻🇳 +84</option>    <!-- Vietnam -->
+                  <option value="+62">🇮🇩 +62</option>    <!-- Indonesia -->
+                  <option value="+63">🇵🇭 +63</option>    <!-- Philippines -->
+                  <option value="+60">🇲🇾 +60</option>    <!-- Malaysia -->
+                  <option value="+65">🇸🇬 +65</option>    <!-- Singapore -->
+                  <option value="+856">🇱🇦 +856</option>  <!-- Laos -->
+                  <option value="+855">🇰🇭 +855</option>  <!-- Cambodia -->
+                  <option value="+880">🇧🇩 +880</option>  <!-- Bangladesh -->
+                  <option value="+977">🇳🇵 +977</option>  <!-- Nepal -->
+                  <option value="+94">🇱🇰 +94</option>    <!-- Sri Lanka -->
+                  <option value="+92">🇵🇰 +92</option>    <!-- Pakistan -->
+                  <option value="+98">🇮🇷 +98</option>    <!-- Iran -->
+                  <option value="+964">🇮🇶 +964</option>  <!-- Iraq -->
+                  <option value="+962">🇯🇴 +962</option>  <!-- Jordan -->
+                  <option value="+961">🇱🇧 +961</option>  <!-- Lebanon -->
+                  <option value="+972">🇮🇱 +972</option>  <!-- Israel -->
+                  <option value="+963">🇸🇾 +963</option>  <!-- Syria -->
+                  <option value="+965">🇰🇼 +965</option>  <!-- Kuwait -->
+                  <option value="+968">🇴🇲 +968</option>  <!-- Oman -->
+                  <option value="+971">🇦🇪 +971</option>  <!-- United Arab Emirates -->
+                  <option value="+966">🇸🇦 +966</option>  <!-- Saudi Arabia -->
+                  <option value="+20">🇪🇬 +20</option>    <!-- Egypt -->
+                  <!-- ...existing code... -->
+                </select>
+                <input type="text" id="phone-input" name="phone" class="z-20 block w-full rounded-e-lg border border-s-0 border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d]" placeholder="555-555-5555" required />
               </div>
             </div>
             <div>
-              <label for="email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Email </label>
-              <input type="email" id="email" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d] dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-[#b5651d] dark:focus:ring-[#b5651d]" placeholder="name@flowbite.com" required />
+              <label for="select-city-input-3" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">City*</label>
+              <input type="text" id="select-city-input-3" name="city" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d]" placeholder="Enter your city" required />
             </div>
             <div>
-              <label for="company_name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Company name </label>
-              <input type="text" id="company_name" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d] dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-[#b5651d] dark:focus:ring-[#b5651d]" placeholder="Flowbite LLC" required />
+              <label for="address-input" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Address*</label>
+              <input type="text" id="address-input" name="address" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d]" placeholder="123 Main St, City, Country" required />
             </div>
             <div>
-              <label for="vat_number" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> VAT number </label>
-              <input type="text" id="vat_number" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d] dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-[#b5651d] dark:focus:ring-[#b5651d]" placeholder="DE42313253" required />
+              <label for="postal_code" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Postal Code*</label>
+              <input type="text" id="postal_code" name="postal_code" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d]" placeholder="A1A 1A1" required />
             </div>
-            <div class="sm:col-span-2">
-              <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">
-                <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
-                </svg>
-                Add new address
-              </button>
+            <!-- Opsiyonel alanlar -->
+            <div>
+              <label for="company_name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Company Name (optional)</label>
+              <input type="text" id="company_name" name="company_name" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d]" placeholder="" />
             </div>
           </div>
         </div>
-        <div class="flex gap-4 mt-8">
-          <button type="button" id="back-to-cart" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded">Back to Cart</button>
-          <button type="submit" id="go-to-payment" class="flex-1 rounded-lg bg-[#b5651d] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#a05a1b] focus:outline-none focus:ring-4 focus:ring-[#f8dce2]">Proceed to Payment</button>
+        <div class="flex items-center justify-center gap-4 mt-8">
+          <button type="button" id="back-to-cart"
+            class="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg shadow-sm hover:bg-gray-100 transition-all duration-150">
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+            Back to Cart
+          </button>
+          <button type="submit" id="go-to-payment"
+            class="flex items-center justify-center w-auto rounded-xl bg-[#b5651d] px-10 py-2.5 text-lg font-bold text-white shadow-lg hover:bg-[#a05a1b] transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#f8dce2]">
+            Pay Now
+            <svg class="w-5 h-5 ml-2 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -378,18 +422,5 @@
     </div>
   </div>
 </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <script src="/js/checkout_steps.js"></script>
