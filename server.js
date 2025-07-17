@@ -12,6 +12,7 @@ const contactRoutes = require('./routes/contactRoutes');
 const { verifyRecaptcha } = require('./routes/contactRoutes'); // <-- EKLE
 const classRoutes = require('./routes/classRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const infoRoutes = require("./routes/info");
 const hbs = require("hbs");
 const contactController = require('./controllers/contactController'); // <-- EKLE
 const logger = require('./logger'); // Winston logger'ı ekle
@@ -166,6 +167,7 @@ app.use('/contact', contactLimiter);
 app.use('/api/payment', paymentRoutes);
 app.use('/contact', contactRoutes);
 app.use('/class', classRoutes);
+app.use(infoRoutes);
 console.log("✅ Server loaded galleryRoutes!");
 app.use("/api/gallery", galleryRoutes);
 
@@ -472,6 +474,27 @@ hbs.registerHelper('taxAmount', function(array, rate) {
   }
   return (total * (rate || 0)).toFixed(2);
 });
+
+hbs.registerHelper('totalCost', function(array, discount, taxRate) {
+  let subtotal = 0;
+  if (Array.isArray(array)) {
+    array.forEach(item => {
+      let val = item["classPrice"];
+      if (typeof val === "string") val = val.replace(/[^0-9.]/g, "");
+      subtotal += parseFloat(val) || 0;
+    });
+  }
+  // İndirim varsa uygula
+  if (discount) {
+    subtotal = subtotal * (1 - discount);
+  }
+  // Vergiyi ekle
+  let tax = subtotal * (taxRate || 0);
+  // Toplamı döndür
+  return (subtotal + tax).toFixed(2);
+});
+
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server is running on port ${PORT}`));

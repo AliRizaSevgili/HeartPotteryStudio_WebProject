@@ -183,9 +183,9 @@
             <span>Total cost</span>
             <span>
               {{#if promo}}
-                ${{discountedTotal cart promo.discount}}
+                ${{totalCost cart promo.discount 0.13}}
               {{else}}
-                ${{sum cart "classPrice"}}
+                ${{totalCost cart 0 0.13}}
               {{/if}}
             </span>
           </div>
@@ -202,150 +202,164 @@
 
 
 <!-- Delivery Details Section (başlangıçta gizli) -->
-<section id="delivery-section" class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16 hidden">
-  <form action="#" class="mx-auto max-w-screen-xl px-4 2xl:px-0">
-    <div class="mt-6 sm:mt-8 lg:flex lg:items-start lg:gap-12 xl:gap-16">
-      <div class="min-w-0 flex-1 space-y-8">
-        <div class="space-y-4">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Participant Information</h2>
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label for="your_name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Your Name*</label>
-              <input type="text" id="your_name" name="your_name" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d]" placeholder="Please enter your name" required />
-            </div>
-            <div>
-              <label for="your_email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Email*</label>
-              <input type="email" id="your_email" name="your_email" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d]" placeholder="email@email.com" required />
-            </div>
-            <div>
-              <label for="phone-input" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Phone Number*</label>
-              <div class="flex items-center">
-                <select id="country-code" name="countryCode" class="rounded-s-lg border border-gray-300 bg-gray-100 px-2 py-2.5 text-sm text-gray-900">
-                  <option value="+1">🇨🇦 +1</option>      <!-- Canada -->
-                  <option value="+1">🇺🇸 +1</option>      <!-- United States -->
-                  <option value="+91">🇮🇳 +91</option>    <!-- India -->
-                  <option value="+86">🇨🇳 +86</option>    <!-- China -->
-                  <option value="+63">🇵🇭 +63</option>    <!-- Philippines -->
-                  <option value="+92">🇵🇰 +92</option>    <!-- Pakistan -->
-                  <option value="+98">🇮🇷 +98</option>    <!-- Iran -->
-                  <option value="+33">🇫🇷 +33</option>    <!-- France -->
-                  <option value="+39">🇮🇹 +39</option>    <!-- Italy -->
-                  <option value="+49">🇩🇪 +49</option>    <!-- Germany -->
-                  <option value="+82">🇰🇷 +82</option>    <!-- South Korea -->
-                  <option value="+84">🇻🇳 +84</option>    <!-- Vietnam -->
-                  <option value="+961">🇱🇧 +961</option>  <!-- Lebanon -->
-                  <option value="+90">🇹🇷 +90</option>    <!-- Turkey -->
-                  <option value="+44">🇬🇧 +44</option>    <!-- United Kingdom -->
-                  <option value="+34">🇪🇸 +34</option>    <!-- Spain -->
-                  <option value="+55">🇧🇷 +55</option>    <!-- Brazil -->
-                  <option value="+27">🇿🇦 +27</option>    <!-- South Africa -->
-                  <option value="+81">🇯🇵 +81</option>    <!-- Japan -->
-                  <option value="+966">🇸🇦 +966</option>  <!-- Saudi Arabia -->
-                  <option value="+971">🇦🇪 +971</option>  <!-- United Arab Emirates -->
-                  <option value="+234">🇳🇬 +234</option>  <!-- Nigeria -->
-                  <option value="+48">🇵🇱 +48</option>    <!-- Poland -->
-                  <option value="+420">🇨🇿 +420</option>  <!-- Czech Republic -->
-                  <option value="+421">🇸🇰 +421</option>  <!-- Slovakia -->
-                  <option value="+36">🇭🇺 +36</option>    <!-- Hungary -->
-                  <option value="+30">🇬🇷 +30</option>    <!-- Greece -->
-                  <option value="+353">🇮🇪 +353</option>  <!-- Ireland -->
-                  <option value="+43">🇦🇹 +43</option>    <!-- Austria -->
-                  <option value="+31">🇳🇱 +31</option>    <!-- Netherlands -->
-                  <option value="+32">🇧🇪 +32</option>    <!-- Belgium -->
-                  <option value="+40">🇷🇴 +40</option>    <!-- Romania -->
-                  <option value="+421">🇸🇰 +421</option>  <!-- Slovakia -->
-                  <option value="+385">🇭🇷 +385</option>  <!-- Croatia -->
-                  <option value="+381">🇷🇸 +381</option>  <!-- Serbia -->
-                  <option value="+382">🇲🇪 +382</option>  <!-- Montenegro -->
-                  <option value="+387">🇧🇦 +387</option>  <!-- Bosnia & Herzegovina -->
-                  <option value="+359">🇧🇬 +359</option>  <!-- Bulgaria -->
-                  <option value="+372">🇪🇪 +372</option>  <!-- Estonia -->
-                  <option value="+371">🇱🇻 +371</option>  <!-- Latvia -->
-                  <option value="+370">🇱🇹 +370</option>  <!-- Lithuania -->
-                  <option value="+356">🇲🇹 +356</option>  <!-- Malta -->
-                  <option value="+357">🇨🇾 +357</option>  <!-- Cyprus -->
-                  <option value="+47">🇳🇴 +47</option>    <!-- Norway -->
-                  <option value="+45">🇩🇰 +45</option>    <!-- Denmark -->
-                  <option value="+358">🇫🇮 +358</option>  <!-- Finland -->
-                  <option value="+46">🇸🇪 +46</option>    <!-- Sweden -->
-                  <option value="+41">🇨🇭 +41</option>    <!-- Switzerland -->
-                  <option value="+7">🇷🇺 +7</option>      <!-- Russia -->
-                  <option value="+994">🇦🇿 +994</option>  <!-- Azerbaijan -->
-                  <option value="+374">🇦🇲 +374</option>  <!-- Armenia -->
-                  <option value="+995">🇬🇪 +995</option>  <!-- Georgia -->
-                  <option value="+81">🇯🇵 +81</option>    <!-- Japan -->
-                  <option value="+82">🇰🇷 +82</option>    <!-- South Korea -->
-                  <option value="+86">🇨🇳 +86</option>    <!-- China -->
-                  <option value="+66">🇹🇭 +66</option>    <!-- Thailand -->
-                  <option value="+84">🇻🇳 +84</option>    <!-- Vietnam -->
-                  <option value="+62">🇮🇩 +62</option>    <!-- Indonesia -->
-                  <option value="+63">🇵🇭 +63</option>    <!-- Philippines -->
-                  <option value="+60">🇲🇾 +60</option>    <!-- Malaysia -->
-                  <option value="+65">🇸🇬 +65</option>    <!-- Singapore -->
-                  <option value="+856">🇱🇦 +856</option>  <!-- Laos -->
-                  <option value="+855">🇰🇭 +855</option>  <!-- Cambodia -->
-                  <option value="+880">🇧🇩 +880</option>  <!-- Bangladesh -->
-                  <option value="+977">🇳🇵 +977</option>  <!-- Nepal -->
-                  <option value="+94">🇱🇰 +94</option>    <!-- Sri Lanka -->
-                  <option value="+92">🇵🇰 +92</option>    <!-- Pakistan -->
-                  <option value="+98">🇮🇷 +98</option>    <!-- Iran -->
-                  <option value="+964">🇮🇶 +964</option>  <!-- Iraq -->
-                  <option value="+962">🇯🇴 +962</option>  <!-- Jordan -->
-                  <option value="+961">🇱🇧 +961</option>  <!-- Lebanon -->
-                  <option value="+972">🇮🇱 +972</option>  <!-- Israel -->
-                  <option value="+963">🇸🇾 +963</option>  <!-- Syria -->
-                  <option value="+965">🇰🇼 +965</option>  <!-- Kuwait -->
-                  <option value="+968">🇴🇲 +968</option>  <!-- Oman -->
-                  <option value="+971">🇦🇪 +971</option>  <!-- United Arab Emirates -->
-                  <option value="+966">🇸🇦 +966</option>  <!-- Saudi Arabia -->
-                  <option value="+20">🇪🇬 +20</option>    <!-- Egypt -->
-                  <!-- ...existing code... -->
-                </select>
-                <input type="text" id="phone-input" name="phone" class="z-20 block w-full rounded-e-lg border border-s-0 border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d]" placeholder="555-555-5555" required />
-              </div>
-            </div>
-            <div>
-              <label for="select-city-input-3" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">City*</label>
-              <input type="text" id="select-city-input-3" name="city" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d]" placeholder="Enter your city" required />
-            </div>
-            <div>
-              <label for="address-input" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Address*</label>
-              <input type="text" id="address-input" name="address" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d]" placeholder="123 Main St, City, Country" required />
-            </div>
-            <div>
-              <label for="postal_code" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Postal Code*</label>
-              <input type="text" id="postal_code" name="postal_code" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d]" placeholder="A1A 1A1" required />
-            </div>
-            <!-- Opsiyonel alanlar -->
-            <div>
-              <label for="company_name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Company Name (optional)</label>
-              <input type="text" id="company_name" name="company_name" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-[#b5651d] focus:ring-[#b5651d]" placeholder="" />
-            </div>
-          </div>
+<section id="delivery-section" class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16 hidden" style="margin-top:-80px;">
+  <!-- Form -->
+  <form id="checkout-info-form" action="/checkout-info" method="POST" class="mx-auto mt-4 max-w-xl sm:mt-6">
+    <div class="grid grid-cols-1 gap-x-12 gap-y-6 sm:grid-cols-2">
+      <!-- First Name -->
+      <div>
+        <label for="firstName" class="block text-sm/6 font-semibold text-gray-500">First name</label>
+        <div class="mt-2.5">
+          <input
+            type="text"
+            name="firstName"
+            id="firstName"
+            placeholder="Enter your first name"
+            autocomplete="given-name"
+            required
+            class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-700 border border-gray-300 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-pink-100 shadow-none appearance-none placeholder:text-gray-400 placeholder:text-sm transition-all duration-200"
+          />
         </div>
-        <div class="flex items-center justify-center gap-4 mt-8">
-          <button type="button" id="back-to-cart"
-            class="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg shadow-sm hover:bg-gray-100 transition-all duration-150">
-            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-    </svg>
+      </div>
+      <!-- Last Name -->
+      <div>
+        <label for="lastName" class="block text-sm/6 font-semibold text-gray-500">Last name</label>
+        <div class="mt-2.5">
+          <input
+            type="text"
+            name="lastName"
+            id="lastName"
+            placeholder="Enter your last name"
+            autocomplete="family-name"
+            required
+            class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-700 border border-gray-300 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-pink-100 shadow-none appearance-none placeholder:text-gray-400 placeholder:text-sm transition-all duration-200"
+          />
+        </div>
+      </div>
+      <!-- Company -->
+      <div class="sm:col-span-2">
+        <label for="company" class="block text-sm/6 font-semibold text-gray-500">Company <span class="text-gray-400 font-normal">(optional)</span></label>
+        <div class="mt-2.5">
+          <input
+            type="text"
+            name="company"
+            id="company"
+            placeholder="Enter your company"
+            autocomplete="organization"
+            class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-700 border border-gray-300 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-pink-100 shadow-none appearance-none placeholder:text-gray-400 placeholder:text-sm transition-all duration-200"
+          />
+        </div>
+      </div>
+      <!-- Phone Number -->
+      <div>
+        <label for="contactNumber" class="block text-sm/6 font-semibold text-gray-500">Phone Number</label>
+        <div class="relative mt-2.5">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-slate-600">
+              <path fill-rule="evenodd" d="M1.5 4.5a3 3 0 0 1 3-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 0 1-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 0 0 6.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 0 1 1.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 0 1-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5Z" clip-rule="evenodd" />
+          </div>
+          <input
+            id="contactNumber"
+            name="contactNumber"
+            type="tel"
+            placeholder=""
+            class="peer w-full bg-transparent placeholder:text-slate-400 text-gray-700 text-sm border border-gray-300 rounded-md pr-3 pl-10 py-2 focus:outline-none focus:border-transparent focus:ring-2 focus:ring-pink-100 shadow-none appearance-none transition duration-200 ease-in-out"
+            pattern="^\+\d{1,3}\s\d{1,3}-\d{3}-\d{4}$"
+            title="Phone number must be in the format: +1 123-456-7890"
+            maxlength="16"
+            required
+            oninput="this.classList.toggle('has-value', this.value.trim().length > 0)"
+          />
+          <label for="contactNumber"
+            class="absolute cursor-text bg-white px-1 left-9 top-2.5 text-slate-400 text-sm transition-all transform origin-left peer-focus:-top-2 peer-focus:left-10 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90 has-value:-top-2 has-value:left-10 has-value:text-xs has-value:text-slate-400 has-value:scale-90">
+            e.g., +1 123-456-7890
+          </label>
+        </div>
+      </div>
+      <!-- Email -->
+      <div>
+        <label for="email" class="block text-sm/6 font-semibold text-gray-500">Email</label>
+        <div class="mt-2.5">
+          <input
+            type="email"
+            name="email"
+            id="email"
+            placeholder="Enter your email"
+            autocomplete="email"
+            required
+            class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-700 border border-gray-300 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-pink-100 shadow-none appearance-none placeholder:text-gray-400 placeholder:text-sm transition-all duration-200"
+          />
+        </div>
+      </div>
+      <!-- Address -->
+      <div class="sm:col-span-2">
+        <label for="address" class="block text-sm/6 font-semibold text-gray-500">Address</label>
+        <div class="mt-2.5">
+          <input
+            type="text"
+            name="address"
+            id="address"
+            placeholder="Enter your address"
+            autocomplete="street-address"
+            required
+            class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-700 border border-gray-300 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-pink-100 shadow-none appearance-none placeholder:text-gray-400 placeholder:text-sm transition-all duration-200"
+          />
+        </div>
+      </div>
+      <!-- Toggle -->
+      <div class="flex gap-x-4 sm:col-span-2 mt-6">
+        <label class="inline-flex items-center cursor-pointer">
+          <!-- Gizli checkbox (peer) -->
+          <input type="checkbox" class="sr-only peer" id="toggle-agreement" />
+
+          <!-- Toggle çubuğu -->
+          <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-pink-100 rounded-full 
+                      peer-checked:after:translate-x-full 
+                      rtl:peer-checked:after:-translate-x-full
+                      peer-checked:after:border-white 
+                      after:content-[''] after:absolute after:top-[2px] after:start-[2px] 
+                      after:bg-white after:border-gray-300 after:border 
+                      after:rounded-full after:h-5 after:w-5 after:transition-all 
+                      peer-checked:bg-pink-200">
+          </div>
+
+          <!-- Açıklama metni -->
+          <span class="ms-3 text-sm font-medium text-gray-700" id="switch-1-label">
+            By selecting this, you agree to our
+            <a href="#" class="font-semibold text-pink-400 hover:text-pink-500">privacy&nbsp;policy</a>.
+          </span>
+        </label>
+
+        <!-- ❗ Hata mesajı -->
+        <p id="toggle-error" class="mt-2 text-sm text-pink-500 hidden">
+          Please agree to the privacy policy.
+        </p>
+      </div>
+      <div class="mt-10 flex w-full">
+        <div class="mx-auto flex gap-4" style="width:340px;">
+          <button
+            type="button"
+            id="back-to-cart"
+            class="rounded-md bg-white px-3 py-2 text-center text-base font-semibold text-gray-700 border border-gray-300 shadow-none hover:bg-gray-100 focus:outline-none focus:ring-0 transition-all duration-200"
+            style="min-width:120px;"
+          >
             Back to Cart
           </button>
-          <button type="submit" id="go-to-payment"
-            class="flex items-center justify-center w-auto rounded-xl bg-[#b5651d] px-10 py-2.5 text-lg font-bold text-white shadow-lg hover:bg-[#a05a1b] transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#f8dce2]">
-            Pay Now
-            <svg class="w-5 h-5 ml-2 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-    </svg>
+          <button
+            type="submit"
+            id="pay-now-btn"
+            class="rounded-md bg-[#f8dce2] px-3.5 py-2.5 text-center text-base font-semibold text-[#5a3a3c] shadow-none hover:bg-[#f4cdd7] focus:outline-none focus:ring-0 border-none transition-all duration-200"
+            style="min-width:160px;"
+          >
+            Pay now 
           </button>
         </div>
       </div>
+      <!-- Add this hidden input inside your form -->
+      <input type="hidden" name="recaptchaToken" id="recaptchaToken">
     </div>
   </form>
 </section>
-
-
-
 
 <!-- Payment Section (başlangıçta gizli) -->
 <section id="payment-section" class="bg-gray-100 py-20 px-6 hidden">
@@ -373,7 +387,7 @@
           </div>
         </div>
         <div class="flex gap-4 mt-8">
-          <button type="button" id="back-to-delivery" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded">Back to Delivery</button>
+          <button type="button" id="back-to-delivery" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded">Back to Info</button>
           <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-lg py-3 rounded-lg transition">Pay $49.99</button>
         </div>
       </form>
@@ -424,3 +438,46 @@
 </section>
 
 <script src="/js/checkout_steps.js"></script>
+<script>
+  // Enable Pay Now only if all required fields are valid
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('checkout-info-form');
+    const payBtn = document.getElementById('pay-now-btn');
+    const deliverySection = document.getElementById('delivery-section');
+    const paymentSection = document.getElementById('payment-section');
+    const stepDelivery = document.getElementById('step-delivery');
+    const stepPayment = document.getElementById('step-payment');
+    const stepDeliveryBtn = document.getElementById('step-delivery-btn');
+    const stepPaymentBtn = document.getElementById('step-payment-btn');
+
+    form.addEventListener('input', function() {
+      payBtn.disabled = !form.checkValidity();
+    });
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (form.checkValidity()) {
+        deliverySection.classList.add('hidden');
+        paymentSection.classList.remove('hidden');
+        // Progress bar: activate step 3, deactivate step 2
+        stepDelivery.classList.remove('bg-indigo-500', 'text-white');
+        stepDelivery.classList.add('bg-gray-200', 'text-gray-700');
+        stepPayment.classList.remove('bg-gray-200', 'text-gray-700');
+        stepPayment.classList.add('bg-indigo-500', 'text-white');
+        // Optionally, highlight text label
+        stepDeliveryBtn.nextElementSibling.classList.remove('text-indigo-700');
+        stepDeliveryBtn.nextElementSibling.classList.add('text-gray-700');
+        stepPaymentBtn.nextElementSibling.classList.remove('text-gray-700');
+        stepPaymentBtn.nextElementSibling.classList.add('text-indigo-700');
+        window.scrollTo({ top: paymentSection.offsetTop, behavior: 'smooth' });
+      }
+    });
+  });
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById("checkout-info-form");
+    if (form) {
+      form.onsubmit = null; // Eğer bir onsubmit olayı varsa, bunu kaldırıyoruz.
+    }
+  });
+</script>
