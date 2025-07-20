@@ -1848,6 +1848,10 @@ input:checked + .toggle-bg {
   margin-top: 200px;
 }
 
+.mr-3 {
+  margin-right: 0.75rem;
+}
+
 .block {
   display: block;
 }

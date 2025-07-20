@@ -474,7 +474,7 @@
             Back to Info
           </button>
           <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-lg py-3 rounded-lg transition">
-            Pay $49.99
+            Pay 
           </button>
         </div>
       </form>
@@ -486,21 +486,33 @@
 
       <div class="space-y-4">
         <!-- Credit Card -->
-        <div class="flex items-center p-4 bg-white rounded-lg shadow-sm border hover:shadow-md transition">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Visa.svg/512px-Visa.svg.png" class="h-6 mr-4" alt="Visa" />
-          <p class="text-gray-700 font-medium">Credit / Debit Card</p>
+        <div class="flex items-center p-3 bg-white rounded-lg shadow-sm border hover:shadow-md transition">
+          <img src="https://res.cloudinary.com/dnemf1asq/image/upload/v1753052690/Visa.svg_xtirgr.png" class="h-5 mr-3" alt="Visa" />
+          <p class="text-gray-700 font-medium text-sm">Credit / Debit Card</p>
         </div>
-        
+
+        <!-- Mastercard -->
+        <div class="flex items-center p-3 bg-white rounded-lg shadow-sm border hover:shadow-md transition">
+          <img src="https://res.cloudinary.com/dnemf1asq/image/upload/v1753052688/Mastercard-logo.svg_shnyvd.png" class="h-5 mr-3" alt="Mastercard" />
+          <p class="text-gray-700 font-medium text-sm">Credit / Debit Card</p>
+        </div>
+
         <!-- PayPal -->
-        <div class="flex items-center p-4 bg-white rounded-lg shadow-sm border hover:shadow-md transition">
-          <img src="https://www.paypalobjects.com/webstatic/icon/pp258.png" class="h-6 mr-4" alt="PayPal" />
-          <p class="text-gray-700 font-medium">PayPal</p>
+        <div class="flex items-center p-3 bg-white rounded-lg shadow-sm border hover:shadow-md transition">
+          <img src="https://res.cloudinary.com/dnemf1asq/image/upload/v1753052688/pp258_qlombh.png" class="h-5 mr-3" alt="PayPal" />
+          <p class="text-gray-700 font-medium text-sm">PayPal</p>
         </div>
 
         <!-- Apple Pay -->
-        <div class="flex items-center p-4 bg-white rounded-lg shadow-sm border hover:shadow-md transition">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" class="h-6 mr-4" alt="Apple" />
-          <p class="text-gray-700 font-medium">Apple Pay</p>
+        <div class="flex items-center p-3 bg-white rounded-lg shadow-sm border hover:shadow-md transition">
+          <img src="https://res.cloudinary.com/dnemf1asq/image/upload/v1753053035/Apple_Pay_logo.svg_rwuopy.png" class="h-5 mr-3" alt="Apple Pay" />
+          <p class="text-gray-700 font-medium text-sm">Apple Pay</p>
+        </div>
+
+        <!-- Google Pay -->
+        <div class="flex items-center p-3 bg-white rounded-lg shadow-sm border hover:shadow-md transition">
+          <img src="https://res.cloudinary.com/dnemf1asq/image/upload/v1753053036/Google_Pay_Logo.svg_pntpzz.png" class="h-5 mr-3" alt="Google Pay" />
+          <p class="text-gray-700 font-medium text-sm">Google Pay</p>
         </div>
       </div>
 
@@ -508,16 +520,34 @@
       <div class="mt-10 border-t pt-6">
         <h4 class="text-gray-700 font-semibold mb-2">Order Summary</h4>
         <div class="flex justify-between text-gray-600">
-          <span>Subscription Plan</span>
-          <span>$49.99</span>
+          <span>Subtotal</span>
+          <span>
+            {{#if cart.length}}
+              ${{sum cart "classPrice"}}
+            {{else}}
+              $0.00
+            {{/if}}
+          </span>
         </div>
         <div class="flex justify-between text-gray-600 mt-1">
-          <span>Tax</span>
-          <span>$0.00</span>
+          <span>Tax (HST 13%)</span>
+          <span>
+            {{#if cart.length}}
+              ${{taxAmount cart 0.13}}
+            {{else}}
+              $0.00
+            {{/if}}
+          </span>
         </div>
         <div class="flex justify-between text-lg font-bold text-gray-800 mt-4">
           <span>Total</span>
-          <span>$49.99</span>
+          <span>
+            {{#if cart.length}}
+              ${{totalCost cart 0 0.13}}
+            {{else}}
+              $0.00
+            {{/if}}
+          </span>
         </div>
       </div>
     </div>
