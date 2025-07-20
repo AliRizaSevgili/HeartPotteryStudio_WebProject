@@ -485,34 +485,23 @@
       <h3 class="text-xl font-semibold text-gray-700 mb-6">Choose Payment Method</h3>
 
       <div class="space-y-4">
-        <!-- Credit Card -->
+        <!-- Visa & Mastercard -->
         <div class="flex items-center p-3 bg-white rounded-lg shadow-sm border hover:shadow-md transition">
           <img src="https://res.cloudinary.com/dnemf1asq/image/upload/v1753052690/Visa.svg_xtirgr.png" class="h-5 mr-3" alt="Visa" />
-          <p class="text-gray-700 font-medium text-sm">Credit / Debit Card</p>
-        </div>
-
-        <!-- Mastercard -->
-        <div class="flex items-center p-3 bg-white rounded-lg shadow-sm border hover:shadow-md transition">
           <img src="https://res.cloudinary.com/dnemf1asq/image/upload/v1753052688/Mastercard-logo.svg_shnyvd.png" class="h-5 mr-3" alt="Mastercard" />
           <p class="text-gray-700 font-medium text-sm">Credit / Debit Card</p>
         </div>
 
-        <!-- PayPal -->
-        <div class="flex items-center p-3 bg-white rounded-lg shadow-sm border hover:shadow-md transition">
-          <img src="https://res.cloudinary.com/dnemf1asq/image/upload/v1753052688/pp258_qlombh.png" class="h-5 mr-3" alt="PayPal" />
-          <p class="text-gray-700 font-medium text-sm">PayPal</p>
+        <!-- Google Pay -->
+        <div id="google-pay-button" class="flex items-center p-3 bg-white rounded-lg shadow-sm border hover:shadow-md transition">
+          <img src="https://res.cloudinary.com/dnemf1asq/image/upload/v1753053036/Google_Pay_Logo.svg_pntpzz.png" class="h-5 mr-3" alt="Google Pay" />
+          <p class="text-gray-700 font-medium text-sm">Google Pay</p>
         </div>
 
         <!-- Apple Pay -->
-        <div class="flex items-center p-3 bg-white rounded-lg shadow-sm border hover:shadow-md transition">
+        <div id="apple-pay-button" class="flex items-center p-3 bg-white rounded-lg shadow-sm border hover:shadow-md transition">
           <img src="https://res.cloudinary.com/dnemf1asq/image/upload/v1753053035/Apple_Pay_logo.svg_rwuopy.png" class="h-5 mr-3" alt="Apple Pay" />
           <p class="text-gray-700 font-medium text-sm">Apple Pay</p>
-        </div>
-
-        <!-- Google Pay -->
-        <div class="flex items-center p-3 bg-white rounded-lg shadow-sm border hover:shadow-md transition">
-          <img src="https://res.cloudinary.com/dnemf1asq/image/upload/v1753053036/Google_Pay_Logo.svg_pntpzz.png" class="h-5 mr-3" alt="Google Pay" />
-          <p class="text-gray-700 font-medium text-sm">Google Pay</p>
         </div>
       </div>
 
@@ -524,6 +513,16 @@
           <span>
             {{#if cart.length}}
               ${{sum cart "classPrice"}}
+            {{else}}
+              $0.00
+            {{/if}}
+          </span>
+        </div>
+        <div class="flex justify-between text-gray-600 mt-1">
+          <span>Savings</span>
+          <span>
+            {{#if promo}}
+              -${{discountAmount cart promo.discount}}
             {{else}}
               $0.00
             {{/if}}
@@ -542,10 +541,10 @@
         <div class="flex justify-between text-lg font-bold text-gray-800 mt-4">
           <span>Total</span>
           <span>
-            {{#if cart.length}}
-              ${{totalCost cart 0 0.13}}
+            {{#if promo}}
+              ${{totalCost cart promo.discount 0.13}}
             {{else}}
-              $0.00
+              ${{totalCost cart 0 0.13}}
             {{/if}}
           </span>
         </div>
@@ -557,6 +556,7 @@
 <script src="/js/checkout_steps.js"></script>
 <script src="https://www.google.com/recaptcha/api.js?render=6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI"></script>
 <script>
+  
 document.addEventListener("DOMContentLoaded", function() {
   const form = document.querySelector("form[action='/checkout-info']");
   const toggle = document.getElementById("toggle-agreement");
