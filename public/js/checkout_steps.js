@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", function() {
   const stepDeliveryBtn = document.getElementById('step-delivery-btn');
   const stepPaymentBtn = document.getElementById('step-payment-btn');
 
+  let currentStep = 1; // Track the current step (1 = Cart, 2 = Delivery, 3 = Payment)
+
   function setStep(step) {
     stepCart.className = "w-8 h-8 rounded-full flex items-center justify-center font-bold transition-colors " + (step === 1 ? "bg-indigo-500 text-white" : "bg-gray-200 text-gray-700");
     stepDelivery.className = "w-8 h-8 rounded-full flex items-center justify-center font-bold transition-colors " + (step === 2 ? "bg-indigo-500 text-white" : "bg-gray-200 text-gray-700");
@@ -33,11 +35,14 @@ document.addEventListener("DOMContentLoaded", function() {
   if (goToDelivery) {
     goToDelivery.addEventListener('click', function(e) {
       e.preventDefault();
-      if (cartSection) cartSection.classList.add('hidden');
-      if (deliverySection) deliverySection.classList.remove('hidden');
-      if (paymentSection) paymentSection.classList.add('hidden');
-      setStep(2);
-      if (deliverySection) window.scrollTo({ top: deliverySection.offsetTop - 40, behavior: 'smooth' });
+      if (currentStep === 1) {
+        if (cartSection) cartSection.classList.add('hidden');
+        if (deliverySection) deliverySection.classList.remove('hidden');
+        if (paymentSection) paymentSection.classList.add('hidden');
+        setStep(2);
+        currentStep = 2;
+        if (deliverySection) window.scrollTo({ top: deliverySection.offsetTop - 40, behavior: 'smooth' });
+      }
     });
   }
 
@@ -45,11 +50,14 @@ document.addEventListener("DOMContentLoaded", function() {
   if (goToPayment) {
     goToPayment.addEventListener('click', function(e) {
       e.preventDefault();
-      if (cartSection) cartSection.classList.add('hidden');
-      if (deliverySection) deliverySection.classList.add('hidden');
-      if (paymentSection) paymentSection.classList.remove('hidden');
-      setStep(3);
-      if (paymentSection) window.scrollTo({ top: paymentSection.offsetTop - 40, behavior: 'smooth' });
+      if (currentStep === 2) {
+        if (cartSection) cartSection.classList.add('hidden');
+        if (deliverySection) deliverySection.classList.add('hidden');
+        if (paymentSection) paymentSection.classList.remove('hidden');
+        setStep(3);
+        currentStep = 3;
+        if (paymentSection) window.scrollTo({ top: paymentSection.offsetTop - 40, behavior: 'smooth' });
+      }
     });
   }
 
@@ -57,11 +65,14 @@ document.addEventListener("DOMContentLoaded", function() {
   if (backToCart) {
     backToCart.addEventListener('click', function(e) {
       e.preventDefault();
-      if (cartSection) cartSection.classList.remove('hidden');
-      if (deliverySection) deliverySection.classList.add('hidden');
-      if (paymentSection) paymentSection.classList.add('hidden');
-      setStep(1);
-      if (cartSection) window.scrollTo({ top: cartSection.offsetTop - 40, behavior: 'smooth' });
+      if (currentStep >= 2) {
+        if (cartSection) cartSection.classList.remove('hidden');
+        if (deliverySection) deliverySection.classList.add('hidden');
+        if (paymentSection) paymentSection.classList.add('hidden');
+        setStep(1);
+        currentStep = 1;
+        if (cartSection) window.scrollTo({ top: cartSection.offsetTop - 40, behavior: 'smooth' });
+      }
     });
   }
 
@@ -69,40 +80,52 @@ document.addEventListener("DOMContentLoaded", function() {
   if (backToDelivery) {
     backToDelivery.addEventListener('click', function(e) {
       e.preventDefault();
-      if (cartSection) cartSection.classList.add('hidden');
-      if (deliverySection) deliverySection.classList.remove('hidden');
-      if (paymentSection) paymentSection.classList.add('hidden');
-      setStep(2);
-      if (deliverySection) window.scrollTo({ top: deliverySection.offsetTop - 40, behavior: 'smooth' });
+      if (currentStep === 3) {
+        if (cartSection) cartSection.classList.add('hidden');
+        if (deliverySection) deliverySection.classList.remove('hidden');
+        if (paymentSection) paymentSection.classList.add('hidden');
+        setStep(2);
+        currentStep = 2;
+        if (deliverySection) window.scrollTo({ top: deliverySection.offsetTop - 40, behavior: 'smooth' });
+      }
     });
   }
 
   // Stepper tıklanabilirlik
   if (stepCartBtn) {
-    stepCartBtn.addEventListener('click', function() {
-      if (cartSection) cartSection.classList.remove('hidden');
-      if (deliverySection) deliverySection.classList.add('hidden');
-      if (paymentSection) paymentSection.classList.add('hidden');
-      setStep(1);
-      if (cartSection) window.scrollTo({ top: cartSection.offsetTop - 40, behavior: 'smooth' });
+    stepCartBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (currentStep >= 1) {
+        if (cartSection) cartSection.classList.remove('hidden');
+        if (deliverySection) deliverySection.classList.add('hidden');
+        if (paymentSection) paymentSection.classList.add('hidden');
+        setStep(1);
+        if (cartSection) window.scrollTo({ top: cartSection.offsetTop - 40, behavior: 'smooth' });
+      }
     });
   }
   if (stepDeliveryBtn) {
-    stepDeliveryBtn.addEventListener('click', function() {
-      if (cartSection) cartSection.classList.add('hidden');
-      if (deliverySection) deliverySection.classList.remove('hidden');
-      if (paymentSection) paymentSection.classList.add('hidden');
-      setStep(2);
-      if (deliverySection) window.scrollTo({ top: deliverySection.offsetTop - 40, behavior: 'smooth' });
+    stepDeliveryBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (currentStep >= 2) {
+        if (cartSection) cartSection.classList.add('hidden');
+        if (deliverySection) deliverySection.classList.remove('hidden');
+        if (paymentSection) paymentSection.classList.add('hidden');
+        setStep(2);
+        if (deliverySection) window.scrollTo({ top: deliverySection.offsetTop - 40, behavior: 'smooth' });
+      }
     });
   }
   if (stepPaymentBtn) {
-    stepPaymentBtn.addEventListener('click', function() {
-      if (cartSection) cartSection.classList.add('hidden');
-      if (deliverySection) deliverySection.classList.add('hidden');
-      if (paymentSection) paymentSection.classList.remove('hidden');
-      setStep(3);
-      if (paymentSection) window.scrollTo({ top: paymentSection.offsetTop - 40, behavior: 'smooth' });
+    stepPaymentBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (currentStep === 3) {
+        if (cartSection) cartSection.classList.add('hidden');
+        if (deliverySection) deliverySection.classList.add('hidden');
+        if (paymentSection) paymentSection.classList.remove('hidden');
+        setStep(3);
+        if (paymentSection) window.scrollTo({ top: paymentSection.offsetTop - 40, behavior: 'smooth' });
+      }
     });
   }
 });
