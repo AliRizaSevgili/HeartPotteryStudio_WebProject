@@ -6,6 +6,10 @@
         <div id="step-cart" class="step-circle w-8 h-8 rounded-full bg-indigo-500 text-white font-bold">1</div>
       </button>
       <span class="mt-2 text-sm font-semibold text-indigo-700">Cart</span>
+      <!-- Hata Kutucuğu -->
+      <div id="cart-error" class="hidden bg-red-100 text-red-700 p-2 rounded mt-2 text-sm max-w-xs text-center">
+        Please complete the Cart section before proceeding.
+      </div>
     </div>
     <div class="flex-1 border-t-2 border-indigo-300 mx-2"></div>
     <div class="flex-1 flex flex-col items-center">
@@ -13,6 +17,10 @@
         <div id="step-delivery" class="step-circle w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-bold">2</div>
       </button>
       <span class="mt-2 text-sm font-semibold text-gray-700">Info</span>
+      <!-- Hata Kutucuğu -->
+      <div id="delivery-error" class="hidden bg-red-100 text-red-700 p-2 rounded mt-2 text-sm max-w-xs text-center">
+        Please complete the Info section before proceeding.
+      </div>
     </div>
     <div class="flex-1 border-t-2 border-indigo-300 mx-2"></div>
     <div class="flex-1 flex flex-col items-center">
@@ -20,12 +28,16 @@
         <div id="step-payment" class="step-circle w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-bold">3</div>
       </button>
       <span class="mt-2 text-sm font-semibold text-gray-700">Payment</span>
+      <!-- Hata Kutucuğu -->
+      <div id="payment-error" class="hidden bg-red-100 text-red-700 p-2 rounded mt-2 text-sm max-w-xs text-center">
+        Please complete the Payment section before proceeding.
+      </div>
     </div>
   </div>
 </section>
 
-
-
+<!-- Error Message Container -->
+<div id="progress-error" class="hidden bg-red-100 text-red-700 p-3 rounded mb-4 max-w-2xl mx-auto text-center opacity-0 pointer-events-none"></div>
 
 <!-- Cart Section -->
 <section>
@@ -453,6 +465,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const stepCartBtn = document.getElementById("step-cart-btn");
   const stepDeliveryBtn = document.getElementById("step-delivery-btn");
   const stepPaymentBtn = document.getElementById("step-payment-btn");
+  const progressError = document.getElementById('progress-error');
 
   let currentStep = 1; // Track the current step (1 = Cart, 2 = Info, 3 = Payment)
 
@@ -474,6 +487,8 @@ document.addEventListener("DOMContentLoaded", function() {
       deliverySection.classList.remove("hidden");
       paymentSection.classList.add("hidden");
       updateProgressBar(2);
+    } else {
+      showError("Please complete the Cart section before proceeding to Info.");
     }
   });
 
@@ -484,6 +499,10 @@ document.addEventListener("DOMContentLoaded", function() {
       deliverySection.classList.add("hidden");
       paymentSection.classList.remove("hidden");
       updateProgressBar(3);
+    } else if (currentStep === 2) {
+      showError("Please complete the Info section before proceeding to Payment.");
+    } else {
+      showError("Please complete the Cart section before proceeding to Payment.");
     }
   });
 
@@ -545,5 +564,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // Initialize the progress bar to step 1
   updateProgressBar(1);
+
+  function showError(message) {
+    // Hata mesajını tamamen devre dışı bırakmak için bu fonksiyon boş bırakıldı.
+  }
 });
 </script>
