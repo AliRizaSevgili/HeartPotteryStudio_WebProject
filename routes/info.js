@@ -26,7 +26,7 @@ router.post("/checkout-info", async (req, res) => {
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: process.env.ADMIN_EMAIL,
+      to: process.env.EMAIL_USER, // Alıcı adresi olarak EMAIL_USER kullanılıyor
       subject: "New Info Form Submission",
       text: `New info form submitted:\n\nName: ${firstName} ${lastName}\nCompany: ${company || "N/A"}\nEmail: ${email}\nPhone: ${contactNumber}\nAddress: ${address}`,
     };
@@ -43,4 +43,5 @@ router.post("/checkout-info", async (req, res) => {
   }
 });
 
+module.exports = router;
 module.exports = router;
