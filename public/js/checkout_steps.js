@@ -95,14 +95,12 @@ document.addEventListener("DOMContentLoaded", function() {
   if (backToDelivery) {
     backToDelivery.addEventListener('click', function(e) {
       e.preventDefault();
-      if (currentStep === 3) {
-        if (cartSection) cartSection.classList.add('hidden');
-        if (deliverySection) deliverySection.classList.remove('hidden');
-        if (paymentSection) paymentSection.classList.add('hidden');
-        setStep(2);
-        currentStep = 2; // Move back to step 2
-        if (deliverySection) window.scrollTo({ top: deliverySection.offsetTop - 40, behavior: 'smooth' });
-      }
+      // Kullanıcıyı Payment'tan Delivery'ye geri götür
+      if (paymentSection) paymentSection.classList.add('hidden');
+      if (deliverySection) deliverySection.classList.remove('hidden');
+      setStep(2); // Adımı 2'ye ayarla
+      currentStep = 2; // Current step'i güncelle
+      if (deliverySection) window.scrollTo({ top: deliverySection.offsetTop - 40, behavior: 'smooth' });
     });
   }
 
@@ -147,3 +145,4 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 });
+  
