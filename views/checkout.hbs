@@ -218,6 +218,7 @@
 <section id="delivery-section" class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16 hidden" style="margin-top:-80px;">
   <!-- Form -->
   <form id="checkout-info-form" action="/checkout-info" method="POST" class="mx-auto mt-4 max-w-xl sm:mt-6">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <div class="grid grid-cols-1 gap-x-12 gap-y-6 sm:grid-cols-2">
       <!-- First Name -->
       <div>

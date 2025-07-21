@@ -6,6 +6,8 @@ const cors = require("cors");
 const helmet = require("helmet");
 const connectDB = require("./config/db");
 const session = require('express-session');
+const csrf = require('csurf');
+const cookieParser = require('cookie-parser');
 
 const galleryRoutes = require("./routes/galleryRoutes");
 const contactRoutes = require('./routes/contactRoutes');
@@ -159,6 +161,19 @@ app.use(session({
   saveUninitialized: true,
   cookie: { secure: false } // production'da true yapabilirsin
 }));
+
+// Cookie Parser Middleware
+app.use(cookieParser());
+
+// CSRF Middleware
+const csrfProtection = csrf({ cookie: true });
+app.use(csrfProtection);
+
+// Pass CSRF token to views
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
 
 // --- ROUTES ---
 app.use('/api/payment', paymentLimiter);
