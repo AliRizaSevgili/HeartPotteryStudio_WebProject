@@ -92,7 +92,8 @@
   </div>
 
   <!-- Form -->
-  <form action="/join" method="POST" class="mx-auto mt-16 max-w-xl sm:mt-20">
+  <form action="/studio" method="POST" class="mx-auto mt-16 max-w-xl sm:mt-20">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <div class="grid grid-cols-1 gap-x-12 gap-y-6 sm:grid-cols-2">
 
   <!-- First Name -->
@@ -313,35 +314,5 @@
     });
   </script>
 {{/if}}
+<script src="/js/studio.js"></script>
 <script src="https://www.google.com/recaptcha/api.js?render=6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const form = document.querySelector("form[action='/join']");
-  const toggle = document.getElementById("toggle-agreement");
-  const toggleError = document.getElementById("toggle-error");
-  let submitting = false;
-
-  if (form) {
-    form.onsubmit = null;
-    form.addEventListener("submit", function(e) {
-      if (submitting) return;
-      if (toggle && !toggle.checked) {
-        if (toggleError) toggleError.classList.remove("hidden");
-        e.preventDefault();
-        return;
-      } else {
-        if (toggleError) toggleError.classList.add("hidden");
-      }
-      e.preventDefault();
-      grecaptcha.ready(function() {
-        grecaptcha.execute('6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI', {action: 'submit'}).then(function(token) {
-          document.getElementById('recaptchaToken').value = token;
-          submitting = true;
-          // Klasik submit (AJAX yok!)
-          form.submit();
-        });
-      });
-    });
-  }
-});
-</script>

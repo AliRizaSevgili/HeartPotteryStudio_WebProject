@@ -423,47 +423,7 @@
       Thank you! Your message has been successfully sent.
     </p>
   </div>
-  <script>
-    // Başarı mesajı geldiğinde otomatik olarak mesajı görünür alana kaydır
-    document.addEventListener("DOMContentLoaded", function() {
-      var msg = document.getElementById("success-message");
-      if (msg) {
-        msg.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-    });
-  </script>
 {{/if}}
 
+<script src="/js/homepage.js"></script>
 <script src="https://www.google.com/recaptcha/api.js?render=6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  // Artık action="/" olduğu için formu bu şekilde seç:
-  const form = document.querySelector("form[action='/']");
-  const toggle = document.getElementById("toggle-agreement");
-  const toggleError = document.getElementById("toggle-error");
-  let submitting = false;
-
-  if (form) {
-    form.onsubmit = null;
-    form.addEventListener("submit", function(e) {
-      if (submitting) return;
-      if (toggle && !toggle.checked) {
-        if (toggleError) toggleError.classList.remove("hidden");
-        e.preventDefault();
-        return;
-      } else {
-        if (toggleError) toggleError.classList.add("hidden");
-      }
-      e.preventDefault();
-      grecaptcha.ready(function() {
-        grecaptcha.execute('6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI', {action: 'submit'}).then(function(token) {
-          document.getElementById('recaptchaToken').value = token;
-          submitting = true;
-          // Klasik submit (AJAX yok!)
-          form.submit();
-        });
-      });
-    });
-  }
-});
-</script>

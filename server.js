@@ -19,6 +19,9 @@ const hbs = require("hbs");
 const contactController = require('./controllers/contactController'); // <-- EKLE
 const logger = require('./logger'); // Winston logger'ı ekle
 
+// Stripe modülü
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Stripe modülü
+
 // Rate limiting aktif:
 const rateLimit = require('express-rate-limit');
 const paymentLimiter = rateLimit({
@@ -53,45 +56,53 @@ app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Sıkılaştırılmış CORS ayarı (sadece Render domainine izin ver)
+// Sıkılaştırılmış CORS ayarı
 app.use(cors({
-  origin: 'https://heartpotterystudio-webproject.onrender.com',
-  credentials: true
+  origin: process.env.NODE_ENV === 'production'
+    ? 'https://heartpotterystudio-webproject.onrender.com' // Canlı ortam
+    : 'http://localhost:5000', // Yerel geliştirme ortamı
+  credentials: true // Çerezlerin gönderilmesine izin ver
 }));
 
+// Nonce oluşturma middleware'i
+app.use((req, res, next) => {
+  res.locals.nonce = Buffer.from(Date.now().toString()).toString('base64'); // Benzersiz nonce oluştur
+  next();
+});
+
+// Helmet Middleware
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        defaultSrc: ["'self'"],
+        defaultSrc: ["'self'", "https://res.cloudinary.com"],
         imgSrc: [
           "'self'",
           "https://res.cloudinary.com",
-          "data:" // <-- Bunu ekle!
+          "data:"
         ],
         mediaSrc: [
           "'self'",
-          "https://res.cloudinary.com",
-          "https://www.youtube.com",
-          "https://player.vimeo.com"
+          "https://res.cloudinary.com"
         ],
         frameSrc: [
           "'self'",
           "https://www.google.com",
-          "https://www.gstatic.com",
-          "https://www.google.com/recaptcha/",
-          "https://www.recaptcha.net"
+          "https://www.gstatic.com"
         ],
         scriptSrc: [
           "'self'",
-          "'unsafe-inline'",
+          `'nonce-${Buffer.from(Date.now().toString()).toString('base64')}'`, // Statik nonce kullanımı
           "https://cdn.jsdelivr.net",
           "https://www.google.com",
           "https://www.gstatic.com",
           "https://www.google.com/recaptcha/",
           "https://www.recaptcha.net"
         ],
-        scriptSrcAttr: ["'unsafe-inline'"],
+        scriptSrcAttr: [
+          "'self'",
+          "'unsafe-inline'" // Inline event handler'lar için unsafe-inline
+        ],
         styleSrc: [
           "'self'",
           "'unsafe-inline'",
@@ -159,20 +170,51 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'heartpotterysecret',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false } // production'da true yapabilirsin
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // Production'da true olmalı
+    httpOnly: true, // XSS saldırılarına karşı koruma
+    sameSite: 'strict' // CSRF saldırılarına karşı koruma
+  }
 }));
 
 // Cookie Parser Middleware
-app.use(cookieParser());
+app.use(cookieParser()); // CSRF'den önce
 
 // CSRF Middleware
 const csrfProtection = csrf({ cookie: true });
 app.use(csrfProtection);
 
-// Pass CSRF token to views
-app.use((req, res, next) => {
-  res.locals.csrfToken = req.csrfToken();
-  next();
+// Yeni CSRF tokeni sağlayan rota
+app.get('/get-csrf-token', (req, res) => {
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('CSRF token requested');
+  }
+  res.json({ csrfToken: req.csrfToken() });
+});
+
+// Form gönderim loglarını kontrol et
+app.post('/checkout-info', (req, res) => {
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('Request body:', {
+      ...req.body,
+      _csrf: '[REDACTED]', // CSRF tokeni maskele
+      recaptchaToken: req.body.recaptchaToken ? '[REDACTED]' : '', // reCAPTCHA tokeni maskele
+    });
+  }
+
+  // `email` alanını işleme
+  const { email, firstName, lastName, company, contactNumber, address } = req.body;
+  const validEmail = Array.isArray(email) ? email.find(e => e.trim() !== '') : email;
+
+  if (!validEmail) {
+    return res.status(400).send('Invalid email address.');
+  }
+
+  // İşlenmiş verilerle devam edin
+  console.log('Processed email:', validEmail);
+
+  // ...form işleme kodları...
+  res.status(200).send('Form submitted successfully.');
 });
 
 // --- ROUTES ---
@@ -274,7 +316,8 @@ app.get("/checkout", (req, res) => {
     title: "Checkout",
     cart,
     promo,
-    promoMessage
+    promoMessage,
+    csrfToken: req.csrfToken() // CSRF tokeni view'a gönderiliyor
   });
 });
 
@@ -413,6 +456,71 @@ app.post(
   contactController.submitContactForm
 );
 
+// Stripe Checkout oturumu oluşturma route'u
+app.post('/create-checkout-session', csrfProtection, async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Sepet kontrolü
+    if (!req.session.cart || req.session.cart.length === 0) {
+      return res.status(400).send('Cart is empty.');
+    }
+
+    // Stripe Checkout oturumu oluştur
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      customer_email: email, // Kullanıcıdan gelen email
+      line_items: req.session.cart.map(item => ({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: item.classTitle,
+            images: [item.classImage],
+          },
+          unit_amount: Math.round(parseFloat(item.classPrice) * 100), // Cent'e çevir
+        },
+        quantity: 1,
+      })),
+      mode: 'payment',
+      success_url: `${req.protocol}://${req.get('host')}/payment-success`,
+      cancel_url: `${req.protocol}://${req.get('host')}/checkout`,
+    });
+
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('Stripe session created:', session.id);
+    }
+
+    res.redirect(303, session.url);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Error creating Stripe Checkout session:', error.message);
+    }
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// Stripe Webhook Route
+app.post('/api/payment/webhook', (req, res) => {
+  const sig = req.headers['stripe-signature'];
+
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+  } catch (err) {
+    console.error('Webhook signature verification failed:', err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  // Event türüne göre işlem yap
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    console.log('Payment successful for session:', session.id);
+    // Ödeme sonrası işlemler burada yapılabilir
+  }
+
+  res.status(200).send('Received webhook');
+});
+
 // Test error route
 app.get('/test-error', (req, res) => {
   throw new Error('Winston test error!');
@@ -425,20 +533,20 @@ app.use((req, res) => {
 
 // Genel hata yakalayıcı middleware (en sona ekle)
 app.use((err, req, res, next) => {
-  // Hassas veri maskesi
-  if (req && req.body) {
-    if (req.body.email) req.body.email = '[MASKED]';
-    if (req.body.contactNumber) req.body.contactNumber = '[MASKED]';
-    if (req.body.password) req.body.password = '[MASKED]';
-    if (req.body.cardNumber) req.body.cardNumber = '[MASKED]';
+  if (err.code === 'EBADCSRFTOKEN') {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('CSRF Token Validation Failed');
+      console.error('Request Headers:', req.headers);
+      console.error('Request Body:', {
+        ...req.body,
+        _csrf: '[REDACTED]', // CSRF tokeni maskele
+        recaptchaToken: req.body.recaptchaToken ? '[REDACTED]' : '', // reCAPTCHA tokeni maskele
+      });
+      console.error('CSRF Cookie:', '[REDACTED]'); // CSRF cookie maskele
+    }
+    return res.status(403).json({ error: 'Invalid CSRF token' });
   }
-  logger.error(err);
-
-  if (process.env.NODE_ENV === 'production') {
-    res.status(500).json({ error: "Something went wrong." });
-  } else {
-    res.status(500).json({ error: err.message, stack: err.stack });
-  }
+  next(err);
 });
 
 // Handlebars helper
@@ -513,5 +621,7 @@ hbs.registerHelper('totalCost', function(array, discount, taxRate) {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server is running on port ${PORT}`));
+
+
 
 

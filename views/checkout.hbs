@@ -22,17 +22,6 @@
         Please complete the Info section before proceeding.
       </div>
     </div>
-    <div class="flex-1 border-t-2 border-indigo-300 mx-2"></div>
-    <div class="flex-1 flex flex-col items-center">
-      <button id="step-payment-btn" type="button" class="focus:outline-none">
-        <div id="step-payment" class="step-circle w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-bold">3</div>
-      </button>
-      <span class="mt-2 text-sm font-semibold text-gray-700">Payment</span>
-      <!-- Hata Kutucuğu -->
-      <div id="payment-error" class="hidden bg-red-100 text-red-700 p-2 rounded mt-2 text-sm max-w-xs text-center">
-        Please complete the Payment section before proceeding.
-      </div>
-    </div>
   </div>
 </section>
 
@@ -217,8 +206,9 @@
 <!-- Delivery Details Section (başlangıçta gizli) -->
 <section id="delivery-section" class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16 hidden" style="margin-top:-80px;">
   <!-- Form -->
+  <!-- Formlarda CSRF tokeni -->
   <form id="checkout-info-form" action="/checkout-info" method="POST" class="mx-auto mt-4 max-w-xl sm:mt-6">
-    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <input type="hidden" name="_csrf" id="csrfToken" value="{{csrfToken}}">
     <div class="grid grid-cols-1 gap-x-12 gap-y-6 sm:grid-cols-2">
       <!-- First Name -->
       <div>
@@ -359,14 +349,17 @@
           >
             Back to Cart
           </button>
-          <button
-            type="submit"
-            id="pay-now-btn"
-            class="rounded-md bg-[#f8dce2] px-3.5 py-2.5 text-center text-base font-semibold text-[#5a3a3c] shadow-none hover:bg-[#f4cdd7] focus:outline-none focus:ring-0 border-none transition-all duration-200"
-            style="min-width:160px;"
-          >
-            Pay now 
-          </button>
+          <form action="/create-checkout-session" method="POST" style="min-width:160px;">
+            <input type="hidden" name="email" value="{{email}}">
+            <button
+              type="submit"
+              id="pay-now-btn"
+              class="rounded-md bg-[#f8dce2] px-3.5 py-2.5 text-center text-base font-semibold text-[#5a3a3c] shadow-none hover:bg-[#f4cdd7] focus:outline-none focus:ring-0 border-none transition-all duration-200"
+              style="min-width:160px;"
+            >
+              Pay now
+            </button>
+          </form>
         </div>
       </div>
       <!-- Add this hidden input inside your form -->
@@ -375,324 +368,5 @@
   </form>
 </section>
 
-<!-- Payment Section (başlangıçta gizli) -->
-<section id="payment-section" class="bg-gray-100 py-20 px-6 hidden">
-  <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
-    <!-- Checkout Form -->
-    <div class="p-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">Payment Details</h2>
-      <form class="space-y-5">
-        <!-- Name on Card -->
-        <div>
-          <label for="cardName" class="block text-sm/6 font-semibold text-gray-500">Name on Card</label>
-          <div class="mt-2.5">
-            <input
-              type="text"
-              id="cardName"
-              name="cardName"
-              placeholder="Enter the name on your card"
-              required
-              class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-700 
-                     border border-gray-300 
-                     focus:border-transparent 
-                     focus:outline-none focus:ring-2 focus:ring-pink-100 
-                     shadow-none appearance-none 
-                     placeholder:text-gray-400 placeholder:text-sm
-                     transition-all duration-200"
-            />
-          </div>
-        </div>
-
-        <!-- Card Number -->
-        <div>
-          <label for="cardNumber" class="block text-sm/6 font-semibold text-gray-500">Card Number</label>
-          <div class="mt-2.5">
-            <input
-              type="text"
-              id="cardNumber"
-              name="cardNumber"
-              placeholder="1234 5678 9012 3456"
-              required
-              class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-700 
-                     border border-gray-300 
-                     focus:border-transparent 
-                     focus:outline-none focus:ring-2 focus:ring-pink-100 
-                     shadow-none appearance-none 
-                     placeholder:text-gray-400 placeholder:text-sm
-                     transition-all duration-200"
-            />
-          </div>
-        </div>
-
-        <!-- Expiry and CVC -->
-        <div class="flex gap-4">
-          <div class="w-1/2">
-            <label for="expiry" class="block text-sm/6 font-semibold text-gray-500">Expiry</label>
-            <div class="mt-2.5">
-              <input
-                type="text"
-                id="expiry"
-                name="expiry"
-                placeholder="MM/YY"
-                required
-                class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-700 
-                       border border-gray-300 
-                       focus:border-transparent 
-                       focus:outline-none focus:ring-2 focus:ring-pink-100 
-                       shadow-none appearance-none 
-                       placeholder:text-gray-400 placeholder:text-sm
-                       transition-all duration-200"
-              />
-            </div>
-          </div>
-          <div class="w-1/2">
-            <label for="cvc" class="block text-sm/6 font-semibold text-gray-500">CVC</label>
-            <div class="mt-2.5">
-              <input
-                type="text"
-                id="cvc"
-                name="cvc"
-                placeholder="123"
-                required
-                class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-700 
-                       border border-gray-300 
-                       focus:border-transparent 
-                       focus:outline-none focus:ring-2 focus:ring-pink-100 
-                       shadow-none appearance-none 
-                       placeholder:text-gray-400 placeholder:text-sm
-                       transition-all duration-200"
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- Buttons -->
-        <div class="flex gap-4 mt-8">
-          <button
-            type="button"
-            id="back-to-delivery"
-            class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded"
-          >
-            Back to Info
-          </button>
-          <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-lg py-3 rounded-lg transition">
-            Pay 
-          </button>
-        </div>
-        <p class="text-center text-gray-500 text-sm mt-4">🔒 Secure Payment. Your information is encrypted.</p>
-      </form>
-    </div>
-
-    <!-- Payment Methods & Summary -->
-    <div class="bg-gray-50 p-8 border-l border-gray-200">
-      <h3 class="text-xl font-semibold text-gray-700 mb-6">Choose Payment Method</h3>
-
-      <div class="space-y-4">
-        <!-- Visa & Mastercard -->
-        <div class="flex items-center p-3 bg-white rounded-lg shadow-sm border hover:shadow-md transition">
-          <img src="https://res.cloudinary.com/dnemf1asq/image/upload/v1753052690/Visa.svg_xtirgr.png" class="h-5 mr-3" alt="Visa" />
-          <img src="https://res.cloudinary.com/dnemf1asq/image/upload/v1753052688/Mastercard-logo.svg_shnyvd.png" class="h-5 mr-3" alt="Mastercard" />
-          <p class="text-gray-700 font-medium text-sm">Credit / Debit Card</p>
-        </div>
-
-        <!-- Google Pay -->
-        <div id="google-pay-button" class="flex items-center p-3 bg-white rounded-lg shadow-sm border hover:shadow-md transition">
-          <img src="https://res.cloudinary.com/dnemf1asq/image/upload/v1753053036/Google_Pay_Logo.svg_pntpzz.png" class="h-5 mr-3" alt="Google Pay" />
-          <p class="text-gray-700 font-medium text-sm">Google Pay</p>
-        </div>
-
-        <!-- Apple Pay -->
-        <div id="apple-pay-button" class="flex items-center p-3 bg-white rounded-lg shadow-sm border hover:shadow-md transition">
-          <img src="https://res.cloudinary.com/dnemf1asq/image/upload/v1753053035/Apple_Pay_logo.svg_rwuopy.png" class="h-5 mr-3" alt="Apple Pay" />
-          <p class="text-gray-700 font-medium text-sm">Apple Pay</p>
-        </div>
-      </div>
-
-      <!-- Order Summary -->
-      <div class="mt-10 border-t pt-6">
-        <h4 class="text-gray-700 font-semibold mb-2">Order Summary</h4>
-        <div class="flex justify-between text-gray-600">
-          <span>Subtotal</span>
-          <span>
-            {{#if cart.length}}
-              ${{sum cart "classPrice"}}
-            {{else}}
-              $0.00
-            {{/if}}
-          </span>
-        </div>
-        <div class="flex justify-between text-gray-600 mt-1">
-          <span>Savings</span>
-          <span>
-            {{#if promo}}
-              -${{discountAmount cart promo.discount}}
-            {{else}}
-              $0.00
-            {{/if}}
-          </span>
-        </div>
-        <div class="flex justify-between text-gray-600 mt-1">
-          <span>Tax (HST 13%)</span>
-          <span>
-            {{#if cart.length}}
-              ${{taxAmount cart 0.13}}
-            {{else}}
-              $0.00
-            {{/if}}
-          </span>
-        </div>
-        <div class="flex justify-between text-lg font-bold text-gray-800 mt-4">
-          <span>Total</span>
-          <span>
-            {{#if promo}}
-              ${{totalCost cart promo.discount 0.13}}
-            {{else}}
-              ${{totalCost cart 0 0.13}}
-            {{/if}}
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <script src="/js/checkout_steps.js"></script>
 <script src="https://www.google.com/recaptcha/api.js?render=6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI"></script>
-<script>
-  
-document.addEventListener("DOMContentLoaded", function() {
-  const form = document.querySelector("form[action='/checkout-info']");
-  const toggle = document.getElementById("toggle-agreement");
-  const toggleError = document.getElementById("toggle-error");
-  const deliverySection = document.getElementById("delivery-section");
-  const paymentSection = document.getElementById("payment-section");
-  const cartSection = document.getElementById("cart-section");
-  const stepCart = document.getElementById("step-cart");
-  const stepDelivery = document.getElementById("step-delivery");
-  const stepPayment = document.getElementById("step-payment");
-  const stepCartBtn = document.getElementById("step-cart-btn");
-  const stepDeliveryBtn = document.getElementById("step-delivery-btn");
-  const stepPaymentBtn = document.getElementById("step-payment-btn");
-  const progressError = document.getElementById('progress-error');
-
-  let currentStep = 1; // Track the current step (1 = Cart, 2 = Info, 3 = Payment)
-
-  // Disable direct navigation to steps 2 or 3
-  stepCartBtn.addEventListener("click", function(e) {
-    e.preventDefault(); // Prevent default behavior
-    if (currentStep === 1) {
-      cartSection.classList.remove("hidden");
-      deliverySection.classList.add("hidden");
-      paymentSection.classList.add("hidden");
-      updateProgressBar(1);
-    }
-  });
-
-  stepDeliveryBtn.addEventListener("click", function(e) {
-    e.preventDefault(); // Prevent default behavior
-    if (currentStep === 2) {
-      cartSection.classList.add("hidden");
-      deliverySection.classList.remove("hidden");
-      paymentSection.classList.add("hidden");
-      updateProgressBar(2);
-    } else {
-      showError("Please complete the Cart section before proceeding to Info.");
-    }
-  });
-
-  stepPaymentBtn.addEventListener("click", function(e) {
-    e.preventDefault(); // Prevent default behavior
-    if (currentStep === 3) {
-      cartSection.classList.add("hidden");
-      deliverySection.classList.add("hidden");
-      paymentSection.classList.remove("hidden");
-      updateProgressBar(3);
-    } else if (currentStep === 2) {
-      showError("Please complete the Info section before proceeding to Payment.");
-    } else {
-      showError("Please complete the Cart section before proceeding to Payment.");
-    }
-  });
-
-  // Handle form submission for step 2 (Info)
-  if (form) {
-    form.onsubmit = null;
-    form.addEventListener("submit", function(e) {
-      // Toggle validation
-      if (toggle && !toggle.checked) {
-        if (toggleError) toggleError.classList.remove("hidden");
-        e.preventDefault();
-        return;
-      } else {
-        if (toggleError) toggleError.classList.add("hidden");
-      }
-
-      e.preventDefault();
-      grecaptcha.ready(function() {
-        grecaptcha.execute('6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI', { action: 'submit' }).then(function(token) {
-          document.getElementById('recaptchaToken').value = token;
-
-          // Simulate successful form submission
-          deliverySection.classList.add("hidden");
-          paymentSection.classList.remove("hidden");
-          currentStep = 3; // Move to step 3
-          updateProgressBar(3);
-
-          form.submit(); // Submit the form
-        });
-      });
-    });
-  }
-
-  // Update the progress bar based on the current step
-  function updateProgressBar(step) {
-    if (step === 1) {
-      stepCart.classList.add("bg-indigo-500", "text-white");
-      stepCart.classList.remove("bg-gray-200", "text-gray-700");
-      stepDelivery.classList.add("bg-gray-200", "text-gray-700");
-      stepDelivery.classList.remove("bg-indigo-500", "text-white");
-      stepPayment.classList.add("bg-gray-200", "text-gray-700");
-      stepPayment.classList.remove("bg-indigo-500", "text-white");
-    } else if (step === 2) {
-      stepCart.classList.add("bg-gray-200", "text-gray-700");
-      stepCart.classList.remove("bg-indigo-500", "text-white");
-      stepDelivery.classList.add("bg-indigo-500", "text-white");
-      stepDelivery.classList.remove("bg-gray-200", "text-gray-700");
-      stepPayment.classList.add("bg-gray-200", "text-gray-700");
-      stepPayment.classList.remove("bg-indigo-500", "text-white");
-    } else if (step === 3) {
-      stepCart.classList.add("bg-gray-200", "text-gray-700");
-      stepCart.classList.remove("bg-indigo-500", "text-white");
-      stepDelivery.classList.add("bg-gray-200", "text-gray-700");
-      stepDelivery.classList.remove("bg-indigo-500", "text-white");
-      stepPayment.classList.add("bg-indigo-500", "text-white");
-      stepPayment.classList.remove("bg-gray-200", "text-gray-700");
-    }
-  }
-
-  // Initialize the progress bar to step 1
-  updateProgressBar(1);
-
-  function showError(message) {
-    // Hata mesajını tamamen devre dışı bırakmak için bu fonksiyon boş bırakıldı.
-  }
-});
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const deliverySection = document.getElementById("delivery-section");
-  const paymentSection = document.getElementById("payment-section");
-  const backToDeliveryButton = document.getElementById("back-to-delivery");
-
-  // Back to Info button functionality
-  if (backToDeliveryButton) {
-    backToDeliveryButton.addEventListener("click", function() {
-      if (deliverySection && paymentSection) {
-        paymentSection.classList.add("hidden");
-        deliverySection.classList.remove("hidden");
-        window.scrollTo({ top: deliverySection.offsetTop - 40, behavior: "smooth" });
-      }
-    });
-  }
-});
-</script>

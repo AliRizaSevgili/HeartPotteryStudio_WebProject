@@ -6,11 +6,27 @@ const nodemailer = require("nodemailer");
 router.post("/checkout-info", async (req, res) => {
   try {
     console.log("Request body:", req.body); // Gelen verileri logla
-    const { firstName, lastName, company, email, contactNumber, address } = req.body;
+    const { email, firstName, lastName, company, contactNumber, address } = req.body;
+
+    // `email` alanını düzelt
+    const validEmail = Array.isArray(email) ? email.find((e) => e.trim() !== "") : email;
+
+    if (!validEmail) {
+      throw new Error("Invalid email address.");
+    }
+
+    // Yeni bilgi oluştur
+    const info = new Info({
+      email: validEmail,
+      firstName,
+      lastName,
+      company,
+      contactNumber,
+      address,
+    });
 
     // Veritabanına kaydet
-    const newInfo = new Info({ firstName, lastName, company, email, contactNumber, address });
-    await newInfo.save().catch((err) => {
+    await info.save().catch((err) => {
       console.error("Database save error:", err);
       throw new Error("Failed to save info to the database.");
     });
@@ -28,7 +44,7 @@ router.post("/checkout-info", async (req, res) => {
       from: process.env.EMAIL_USER,
       to: process.env.EMAIL_USER, // Alıcı adresi olarak EMAIL_USER kullanılıyor
       subject: "New Info Form Submission",
-      text: `New info form submitted:\n\nName: ${firstName} ${lastName}\nCompany: ${company || "N/A"}\nEmail: ${email}\nPhone: ${contactNumber}\nAddress: ${address}`,
+      text: `New info form submitted:\n\nName: ${firstName} ${lastName}\nCompany: ${company || "N/A"}\nEmail: ${validEmail}\nPhone: ${contactNumber}\nAddress: ${address}`,
     };
 
     await transporter.sendMail(mailOptions).catch((err) => {
@@ -43,5 +59,4 @@ router.post("/checkout-info", async (req, res) => {
   }
 });
 
-module.exports = router;
 module.exports = router;
