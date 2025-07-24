@@ -11,7 +11,7 @@ async function verifyRecaptcha(req, res, next) {
     if (req.body.fromEvents) {
       return res.render("events", { layout: "layouts/main", title: "Events", activeGallery: true, error: "reCAPTCHA token missing" });
     } else if (req.body.fromJoin) {
-      return res.render("studio", { layout: "layouts/main", title: "Join the Studio", activeJoin: true, error: "reCAPTCHA token missing" });
+      return res.render("studio", { layout: "layouts/main", title: "Join the Studio", activeJoin: true, isStudioPage: true, error: "reCAPTCHA token missing" });
     } else if (req.body.fromHomepage) {
       return res.render("homepage", { layout: "layouts/main", title: "Home", activeHome: true, error: "reCAPTCHA token missing" });
     } else {
@@ -26,7 +26,7 @@ async function verifyRecaptcha(req, res, next) {
       if (req.body.fromEvents) {
         return res.render("events", { layout: "layouts/main", title: "Events", activeGallery: true, error: "reCAPTCHA verification failed" });
       } else if (req.body.fromJoin) {
-        return res.render("studio", { layout: "layouts/main", title: "Join the Studio", activeJoin: true, error: "reCAPTCHA verification failed" });
+        return res.render("studio", { layout: "layouts/main", title: "Join the Studio", activeJoin: true, isStudioPage: true, error: "reCAPTCHA verification failed" });
       } else if (req.body.fromHomepage) {
         return res.render("homepage", { layout: "layouts/main", title: "Home", activeHome: true, error: "reCAPTCHA verification failed" });
       } else {
@@ -38,7 +38,7 @@ async function verifyRecaptcha(req, res, next) {
     if (req.body.fromEvents) {
       return res.render("events", { layout: "layouts/main", title: "Events", activeGallery: true, error: "reCAPTCHA verification error" });
     } else if (req.body.fromJoin) {
-      return res.render("studio", { layout: "layouts/main", title: "Join the Studio", activeJoin: true, error: "reCAPTCHA verification error" });
+      return res.render("studio", { layout: "layouts/main", title: "Join the Studio", activeJoin: true, isStudioPage: true, error: "reCAPTCHA verification error" });
     } else if (req.body.fromHomepage) {
       return res.render("homepage", { layout: "layouts/main", title: "Home", activeHome: true, error: "reCAPTCHA verification error" });
     } else {

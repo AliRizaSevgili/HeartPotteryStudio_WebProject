@@ -133,13 +133,8 @@ exports.submitContactForm = async (req, res) => {
       });
     } else if (req.body.fromJoin) {
       console.log("### STUDIO SAYFASI RENDER EDİLİYOR");
-      return res.render("studio", {
-        layout: "layouts/main",
-        title: "Join the Studio",
-        activeJoin: true,
-        success: true,
-        fromJoin: true // <-- ekle
-      });
+      return res.redirect('/contact-success');
+      
     } else if (req.body.fromHomepage) {
       console.log("### HOMEPAGE RENDER EDİLİYOR");
       return res.render("homepage", {
@@ -194,4 +189,3 @@ exports.submitContactForm = async (req, res) => {
     }
   }
 };
-

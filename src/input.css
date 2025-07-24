@@ -545,3 +545,24 @@ select.has-value + label {
     animation: slide-in 0.8s ease-out forwards;
   }
 }
+
+ @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    .animate-fade-in-scale {
+        animation: fadeInScale 0.5s ease-out forwards;
+    }
+    .success-outer {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding-top: 120px; /* Header ile boşluk */
+    }

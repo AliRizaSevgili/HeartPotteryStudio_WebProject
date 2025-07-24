@@ -184,6 +184,11 @@ app.use(cookieParser()); // CSRF'den önce
 const csrfProtection = csrf({ cookie: true });
 app.use(csrfProtection);
 
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
+
 // Yeni CSRF tokeni sağlayan rota
 app.get('/get-csrf-token', (req, res) => {
   if (process.env.NODE_ENV !== 'production') {
@@ -269,7 +274,8 @@ app.get("/join", (req, res) => {
   res.render("studio", { 
     layout: "layouts/main", 
     title: "Join the Studio", 
-    activeJoin: true
+    activeJoin: true,
+    isStudioPage: true  
   });
 });
 
@@ -326,6 +332,14 @@ app.get("/payment-success", (req, res) => {
   res.render("payment-success", {
     layout: "layouts/main",
     title: "Payment Successful"
+  });
+});
+
+// Başarılı form gönderimi sonrası açılacak teşekkür sayfası için route
+app.get("/contact-success", (req, res) => {
+  res.render("contact-success", {
+    layout: "layouts/main",
+    title: "Submission Successful"
   });
 });
 

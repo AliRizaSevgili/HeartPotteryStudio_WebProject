@@ -34,15 +34,22 @@
     <!-- Footer -->
     {{> footer}}
 
-    <!-- JavaScript Files -->
-    <script src="/js/footer.js"></script>
+   <!-- JavaScript Files -->
+<script src="/js/footer.js"></script>
 
-    <!-- Flowbite Modal JS -->
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+<!-- Flowbite Modal JS -->
+<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 
-    <!-- scroll.js animasyonları -->
-    <script src="/js/scroll.js"></script> 
+<!-- scroll.js animasyonları -->
+<script src="/js/scroll.js"></script> 
 
-    <script src="/js/slideup.js"></script>
+<script src="/js/slideup.js"></script>
+
+<!-- reCAPTCHA ve studio.js sadece studio sayfasında yüklensin -->
+{{#if isStudioPage}}
+<script src="https://www.google.com/recaptcha/api.js?render=6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI"></script>
+<script src="/js/studio.js"></script>
+{{/if}}
 </body>
 </html>
+
