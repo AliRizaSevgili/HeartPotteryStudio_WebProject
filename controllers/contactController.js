@@ -1,7 +1,8 @@
 const { body, validationResult } = require('express-validator');
 const Contact = require("../models/Contact");
 const nodemailer = require("nodemailer");
-require("dotenv").config(); // 🆕 .env dosyasını yükler
+const axios = require('axios'); // Eklenen: axios modülü
+require("dotenv").config(); // .env dosyasını yükler
 
 
 exports.validateContactForm = [
@@ -60,17 +61,16 @@ exports.submitContactForm = async (req, res) => {
         errors: errors.array(),
         fromJoin: true
       });
-    } // Validation errors durumunda
-      else if (req.body.fromHomepage) {
-        return res.render("homepage", {
-          layout: "layouts/main",
-          title: "Home",
-          activeHome: true,
-          isHomepagePage: true, // Bu satırı ekleyin!
-          errors: errors.array(),
-          fromHomepage: true
-        });
-      } else {
+    } else if (req.body.fromHomepage) {
+      return res.render("homepage", {
+        layout: "layouts/main",
+        title: "Home",
+        activeHome: true,
+        isHomepagePage: true,
+        errors: errors.array(),
+        fromHomepage: true
+      });
+    } else {
       return res.render("contact", {
         layout: "layouts/main",
         title: "Contact | FQA",
@@ -82,85 +82,103 @@ exports.submitContactForm = async (req, res) => {
   }
   
   try {
-    // Hassas veri maskesi
-    const safeLog = { ...req.body };
-    if (safeLog.email) safeLog.email = '[MASKED]';
-    if (safeLog.contactNumber) safeLog.contactNumber = '[MASKED]';
-    console.log("📥 Form Data (masked):", safeLog);
-
-    const {
-      firstName,
-      lastName,
-      company,
-      email,
-      contactNumber,
-      message,
-    } = req.body;
-
-    // Veritabanına kayıt
-    const contactData = new Contact({
-      firstName,
-      lastName,
-      company,
-      email,
-      contactNumber,
-      message,
-    });
-    await contactData.save();
-
-    // Mail gönderimi
-    const mailOptions = {
-      from: `"HeartPottery Contact Form" <alirizasevgili1@gmail.com>`,
-      to: "alirizasevgili1@gmail.com",
-      subject: "New Contact Form Submission",
-      html: `
-        <h3>New Contact Form Submission</h3>
-        <ul>
-          <li><strong>First Name:</strong> ${firstName}</li>
-          <li><strong>Last Name:</strong> ${lastName}</li>
-          <li><strong>Company:</strong> ${company || "N/A"}</li>
-          <li><strong>Email:</strong> ${email}</li>
-          <li><strong>Phone Number:</strong> ${contactNumber}</li>
-          <li><strong>Message:</strong> ${message}</li>
-        </ul>
-      `,
-    };
-
-    await transporter.sendMail(mailOptions);
-
-    // Doğru sayfayı render et
-    if (req.body.fromEvents) {
-      return res.render("events", {
-        layout: "layouts/main",
-        title: "Events",
-        activeGallery: true,
-        isEventsPage: true,
-        success: true,
-        fromEvents: true
-      });
-    } else if (req.body.fromJoin) {
-      console.log("### STUDIO SAYFASI RENDER EDİLİYOR");
-      return res.redirect('/contact-success');
-    } else if (req.body.fromHomepage) {
-      console.log("### HOMEPAGE RENDER EDİLİYOR");
-      return res.render("homepage", {
-        layout: "layouts/main",
-        title: "Home",
-        activeHome: true,
-        success: true,
-        fromHomepage: true
-      });
+  // reCAPTCHA token doğrulaması - geliştirme aşaması için daha toleranslı
+  try {
+    const recaptchaToken = req.body.recaptchaToken;
+    if (!recaptchaToken) {
+      console.warn("reCAPTCHA token missing, but continuing anyway");
+      // Hata fırlatmadan devam et
     } else {
-      console.log("### CONTACT SAYFASI RENDER EDİLİYOR");
-      return res.render("contact", {
-        layout: "layouts/main",
-        title: "Contact | FQA",
-        activeContact: true,
-        isContactPage: true,
-        success: true
-      });
+      // Google reCAPTCHA API ile token doğrulama
+      const recaptchaVerify = await axios.post(
+        'https://www.google.com/recaptcha/api/siteverify',
+        null,
+        {
+          params: {
+            secret: process.env.RECAPTCHA_SECRET_KEY,
+            response: recaptchaToken
+          }
+        }
+      );
+      
+      if (!recaptchaVerify.data.success) {
+        console.warn("reCAPTCHA doğrulama hatası:", recaptchaVerify.data);
+        // Hataya rağmen işleme devam et
+      }
     }
-  } catch (error) {
+  } catch (recaptchaError) {
+    console.warn("reCAPTCHA API hatası:", recaptchaError.message);
+    // reCAPTCHA hatasına rağmen devam et
+  }
+  
+  // Hassas veri maskesi
+  const safeLog = { ...req.body };
+  if (safeLog.email) safeLog.email = '[MASKED]';
+  if (safeLog.contactNumber) safeLog.contactNumber = '[MASKED]';
+  console.log("📥 Form Data (masked):", safeLog);
+
+  const {
+    firstName,
+    lastName,
+    company,
+    email,
+    contactNumber,
+    message,
+  } = req.body;
+
+  // Veritabanına kayıt
+  const contactData = new Contact({
+    firstName,
+    lastName,
+    company,
+    email,
+    contactNumber,
+    message,
+  });
+  await contactData.save();
+
+  // Mail gönderimi
+  const mailOptions = {
+    from: `"HeartPottery Contact Form" <alirizasevgili1@gmail.com>`,
+    to: "alirizasevgili1@gmail.com",
+    subject: "New Contact Form Submission",
+    html: `
+      <h3>New Contact Form Submission</h3>
+      <ul>
+        <li><strong>First Name:</strong> ${firstName}</li>
+        <li><strong>Last Name:</strong> ${lastName}</li>
+        <li><strong>Company:</strong> ${company || "N/A"}</li>
+        <li><strong>Email:</strong> ${email}</li>
+        <li><strong>Phone Number:</strong> ${contactNumber}</li>
+        <li><strong>Message:</strong> ${message}</li>
+      </ul>
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
+  
+  // Doğru sayfayı render et
+  if (req.body.fromEvents) {
+    return res.render("events", {
+      layout: "layouts/main",
+      title: "Events",
+      activeGallery: true,
+      isEventsPage: true,
+      success: true,
+      fromEvents: true
+    });
+  } else if (req.body.fromJoin) {
+    console.log("### STUDIO SAYFASI RENDER EDİLİYOR");
+    return res.redirect('/contact-success');
+  } else if (req.body.fromHomepage) {
+    console.log("### HOMEPAGE RENDER EDİLİYOR");
+    // Homepage için değişiklik - contact-success sayfasına yönlendir
+    return res.redirect('/contact-success');
+  } else {
+    console.log("### CONTACT SAYFASI RENDER EDİLİYOR");
+    return res.redirect('/contact-success');
+  }
+} catch (error) {
     console.error("Form submission error:", error);
     
     if (req.body.fromJoin) {
@@ -172,17 +190,16 @@ exports.submitContactForm = async (req, res) => {
         error: "Failed to submit form",
         fromJoin: true
       });
-    } // Form submission error durumunda
-      else if (req.body.fromHomepage) {
-        return res.render("homepage", {
-          layout: "layouts/main",
-          title: "Home",
-          activeHome: true,
-          isHomepagePage: true, // Bu satırı ekleyin!
-          error: "Failed to submit form",
-          fromHomepage: true
-        });
-    }else if (req.body.fromEvents) {
+    } else if (req.body.fromHomepage) {
+      return res.render("homepage", {
+        layout: "layouts/main",
+        title: "Home",
+        activeHome: true,
+        isHomepagePage: true,
+        error: "Failed to submit form",
+        fromHomepage: true
+      });
+    } else if (req.body.fromEvents) {
       return res.render("events", {
         layout: "layouts/main",
         title: "Events",
