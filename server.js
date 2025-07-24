@@ -239,11 +239,12 @@ app.get("/favicon.ico", (req, res) => {
 
 // Main Pages Routes
 app.get("/", (req, res) => {
-  res.render("homepage", {
+  res.render("homepage", { 
     layout: "layouts/main", 
     title: "Home",
-    activeHome: true
-   });
+    activeHome: true,
+    isHomepagePage: true  // Bu satırı ekleyin!
+  });
 });
 
 app.get("/about", (req, res) => {
@@ -258,7 +259,8 @@ app.get("/events", (req, res) => {
   res.render("events", { 
     layout: "layouts/main", 
     title: "Events",
-    activeGallery: true
+    activeGallery: true,
+    isEventsPage: true  // Bu satırı ekleyin!
   });
 });
 
@@ -283,8 +285,9 @@ app.get("/contact", (req, res) => {
   res.render("contact", { 
     layout: "layouts/main", 
     title: "Contact | FQA",
-    activeContact: true
-   });
+    activeContact: true,
+    isContactPage: true  // Bu satırı ekleyin!
+  });
 });
 
 app.get("/login", (req, res) => {

@@ -289,6 +289,9 @@
 
                 <!-- Form -->
                 <form action="/events" method="POST" class="mx-auto mt-16 max-w-xl sm:mt-20">
+                <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                <input type="hidden" name="recaptchaToken" id="recaptchaToken" value="">
+                <input type="hidden" name="fromEvents" value="1">     
                   <div class="grid grid-cols-1 gap-x-12 gap-y-6 sm:grid-cols-2">
 
                 <!-- First Name -->
@@ -484,9 +487,7 @@
                 </button>
               </div>
 
-              <input type="hidden" name="fromEvents" value="1">
-              
-              <input type="hidden" name="recaptchaToken" id="recaptchaToken">
+            
               
                 </form>
                 <!-- ✅ Success Message (Animated & Styled) -->
@@ -995,10 +996,7 @@
 
 <!-- Flowbite JS -->
 <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
-<script src="/js/events.js"></script>
-<script src="https://www.google.com/recaptcha/api.js?render=6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI"></script>
 
-<script src="https://www.google.com/recaptcha/api.js?render=6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI"></script>
 
 
 

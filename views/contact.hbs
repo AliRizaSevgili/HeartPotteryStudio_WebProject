@@ -217,6 +217,8 @@
   <!-- Form -->
   <form action="/contact" method="POST">
   <input type="hidden" name="_csrf" value="{{csrfToken}}">
+  <input type="hidden" name="recaptchaToken" id="recaptchaToken" value="">
+  <input type="hidden" name="fromContact" value="1">
 
     <div class="grid grid-cols-1 gap-x-12 gap-y-6 sm:grid-cols-2">
 
@@ -449,6 +451,5 @@
 </section>
 
 
-<script src="/js/contact.js"></script>
-<script src="https://www.google.com/recaptcha/api.js?render=6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI"></script>
+
 

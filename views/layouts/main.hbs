@@ -50,6 +50,25 @@
 <script src="https://www.google.com/recaptcha/api.js?render=6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI"></script>
 <script src="/js/studio.js"></script>
 {{/if}}
+
+<!-- reCAPTCHA ve contact.js sadece contact sayfasında yüklensin -->
+{{#if isContactPage}}
+<script src="https://www.google.com/recaptcha/api.js?render=6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI"></script>
+<script src="/js/contact.js"></script>
+{{/if}}
+
+<!-- reCAPTCHA ve events.js sadece events sayfasında yüklensin -->
+{{#if isEventsPage}}
+<script src="https://www.google.com/recaptcha/api.js?render=6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI"></script>
+<script src="/js/events.js"></script>
+{{/if}}
+<!-- reCAPTCHA ve homepage.js sadece anasayfada yüklensin -->
+{{#if isHomepagePage}}
+<script src="https://www.google.com/recaptcha/api.js?render=6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI"></script>
+<script src="/js/homepage.js"></script>
+{{/if}}
+
+
 </body>
 </html>
 

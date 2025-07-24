@@ -16,7 +16,7 @@ exports.validateContactForm = [
   body('email')
     .isEmail().withMessage('Valid email is required'),
   body('contactNumber')
-    .optional()
+    .notEmpty().withMessage('Phone number is required')
     .isMobilePhone().withMessage('Valid phone number required'),
   body('message')
     .trim()
@@ -39,42 +39,49 @@ exports.submitContactForm = async (req, res) => {
   console.log("Formdan gelen fromJoin:", req.body.fromJoin);
   console.log("Formdan gelen fromHomepage:", req.body.fromHomepage);
   const errors = validationResult(req); 
+  
   if (!errors.isEmpty()) {
+    // Validation errors durumunda
     if (req.body.fromEvents) {
       return res.render("events", {
         layout: "layouts/main",
         title: "Events",
         activeGallery: true,
+        isEventsPage: true,
         errors: errors.array(),
-        fromEvents: true // <-- ekle
+        fromEvents: true
       });
     } else if (req.body.fromJoin) {
       return res.render("studio", {
         layout: "layouts/main",
         title: "Join the Studio",
         activeJoin: true,
+        isStudioPage: true,
         errors: errors.array(),
-        fromJoin: true // <-- ekle
+        fromJoin: true
       });
-    } else if (req.body.fromHomepage) {
-      return res.render("homepage", {
-        layout: "layouts/main",
-        title: "Home",
-        activeHome: true,
-        errors: errors.array(),
-        fromHomepage: true // <-- ekle
-      });
-    } else {
+    } // Validation errors durumunda
+      else if (req.body.fromHomepage) {
+        return res.render("homepage", {
+          layout: "layouts/main",
+          title: "Home",
+          activeHome: true,
+          isHomepagePage: true, // Bu satırı ekleyin!
+          errors: errors.array(),
+          fromHomepage: true
+        });
+      } else {
       return res.render("contact", {
         layout: "layouts/main",
         title: "Contact | FQA",
         activeContact: true,
+        isContactPage: true,
         errors: errors.array()
       });
     }
   }
+  
   try {
-    
     // Hassas veri maskesi
     const safeLog = { ...req.body };
     if (safeLog.email) safeLog.email = '[MASKED]';
@@ -123,18 +130,17 @@ exports.submitContactForm = async (req, res) => {
 
     // Doğru sayfayı render et
     if (req.body.fromEvents) {
-      
       return res.render("events", {
         layout: "layouts/main",
         title: "Events",
         activeGallery: true,
+        isEventsPage: true,
         success: true,
-        fromEvents: true // <-- ekle
+        fromEvents: true
       });
     } else if (req.body.fromJoin) {
       console.log("### STUDIO SAYFASI RENDER EDİLİYOR");
       return res.redirect('/contact-success');
-      
     } else if (req.body.fromHomepage) {
       console.log("### HOMEPAGE RENDER EDİLİYOR");
       return res.render("homepage", {
@@ -142,7 +148,7 @@ exports.submitContactForm = async (req, res) => {
         title: "Home",
         activeHome: true,
         success: true,
-        fromHomepage: true // <-- ekle
+        fromHomepage: true
       });
     } else {
       console.log("### CONTACT SAYFASI RENDER EDİLİYOR");
@@ -150,40 +156,47 @@ exports.submitContactForm = async (req, res) => {
         layout: "layouts/main",
         title: "Contact | FQA",
         activeContact: true,
+        isContactPage: true,
         success: true
       });
     }
   } catch (error) {
     console.error("Form submission error:", error);
+    
     if (req.body.fromJoin) {
       return res.render("studio", {
         layout: "layouts/main",
         title: "Join the Studio",
         activeJoin: true,
+        isStudioPage: true,
         error: "Failed to submit form",
-        fromJoin: true // <-- ekle
+        fromJoin: true
       });
-    } else if (req.body.fromHomepage) {
-      return res.render("homepage", {
-        layout: "layouts/main",
-        title: "Home",
-        activeHome: true,
-        error: "Failed to submit form",
-        fromHomepage: true // <-- ekle
-      });
-    } else if (req.body.fromEvents) {
+    } // Form submission error durumunda
+      else if (req.body.fromHomepage) {
+        return res.render("homepage", {
+          layout: "layouts/main",
+          title: "Home",
+          activeHome: true,
+          isHomepagePage: true, // Bu satırı ekleyin!
+          error: "Failed to submit form",
+          fromHomepage: true
+        });
+    }else if (req.body.fromEvents) {
       return res.render("events", {
         layout: "layouts/main",
         title: "Events",
         activeGallery: true,
+        isEventsPage: true,
         error: "Failed to submit form",
-        fromEvents: true // <-- ekle
+        fromEvents: true
       });
     } else {
       return res.render("contact", {
         layout: "layouts/main",
         title: "Contact | FQA",
         activeContact: true,
+        isContactPage: true,
         error: "Failed to submit form"
       });
     }
