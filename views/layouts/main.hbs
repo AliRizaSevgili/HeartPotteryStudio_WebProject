@@ -23,7 +23,13 @@
     
 </head>
 
-<body class="scroll-smooth">
+<body class="scroll-smooth"
+      data-is-homepage="{{#if isHomepagePage}}true{{else}}false{{/if}}"
+      data-is-contact="{{#if isContactPage}}true{{else}}false{{/if}}"
+      data-is-events="{{#if isEventsPage}}true{{else}}false{{/if}}"
+      data-is-studio="{{#if isStudioPage}}true{{else}}false{{/if}}"
+    >
+    
     <!-- Header  -->
     {{> header}}
 
