@@ -1,20 +1,21 @@
-// Üretim/geliştirme modunu kontrol et
-const isProduction = window.location.hostname !== 'localhost';
-
-// Loglama fonksiyonlarını tanımla
-const logDebug = isProduction ? function(){} : console.log;
-const logInfo = isProduction ? function(){} : console.info;
-const logWarn = isProduction ? function(){} : console.warn;
-const logError = console.error; // Hata logları her zaman gösterilmeli
-
-logDebug("Page flags:", {
-  isHomepagePage: document.body.getAttribute('data-is-homepage') === 'true',
-  isContactPage: document.body.getAttribute('data-is-contact') === 'true',
-  isEventsPage: document.body.getAttribute('data-is-events') === 'true',
-  isStudioPage: document.body.getAttribute('data-is-studio') === 'true'
-});
-
+// Tüm kodu IIFE içine alıyoruz - global değişken tanımlamayacağız
 (function() {
+  // Üretim/geliştirme modunu kontrol et (kapsam içinde)
+  const isProduction = window.location.hostname !== 'localhost';
+
+  // Loglama fonksiyonlarını tanımla (kapsam içinde)
+  const logDebug = isProduction ? function(){} : console.log;
+  const logInfo = isProduction ? function(){} : console.info;
+  const logWarn = isProduction ? function(){} : console.warn;
+  const logError = console.error; // Hata logları her zaman gösterilmeli
+
+  logDebug("Page flags:", {
+    isHomepagePage: document.body.getAttribute('data-is-homepage') === 'true',
+    isContactPage: document.body.getAttribute('data-is-contact') === 'true',
+    isEventsPage: document.body.getAttribute('data-is-events') === 'true',
+    isStudioPage: document.body.getAttribute('data-is-studio') === 'true'
+  });
+
   logDebug("🔐 ReCAPTCHA handler loading...");
   
   // Form türlerini tanımla
@@ -119,7 +120,8 @@ logDebug("Page flags:", {
                     formDataObj[key] = value;
                   }
                 });
-                console.log('Form data:', formDataObj);
+                // console.log → logDebug değişimi
+                logDebug('Form data:', formDataObj);
               }
               
               // Formu gerçekten gönder (event listener'ı kaldırarak)
@@ -175,4 +177,4 @@ logDebug("Page flags:", {
     // İlk kontrol
     checkRecaptcha();
   }
-})();
+})(); // IIFE sonu
