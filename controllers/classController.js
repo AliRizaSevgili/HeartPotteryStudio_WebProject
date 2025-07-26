@@ -357,3 +357,140 @@ res.render("class-details", {
 });
 
 };
+
+
+// Tüm sınıfları göster
+exports.showAllClasses = (req, res) => {
+  // Aynı sınıf listesini kullanıyoruz - showClassBySlug'daki verileri yeniden kullanıyoruz
+  const classes = [
+    {
+      slug: "4-week-wheel",
+      title: "4-Week Beginner Wheel Throwing Class",
+      date: "Feb 11, 2024 • 6–8 PM EST",
+      image: "https://res.cloudinary.com/dnemf1asq/image/upload/v1745189121/blake-cheek-IMU94a5QVLk-unsplash_fwa502.jpg",
+      description: "Build a solid foundation in ceramics with this 4-week hands-on wheel throwing class.",
+      price: "$295 + tax"
+    },
+    {
+      slug: "8-week-wheel",
+      title: "8-Week Beginner Wheel Throwing Class",
+      date: "March 10, 2024 • 6–8 PM EST",
+      image: "https://res.cloudinary.com/dnemf1asq/image/upload/v1745188067/courtney-cook-nXYmYO_-JUk-unsplash_epevjp.jpg",
+      description: "Explore both traditional and contemporary pottery techniques over 8 weeks.",
+      price: "$535 + tax"
+    },
+    {
+      slug: "tryout-wheel",
+      title: "Pottery Tryout Class",
+      date: "Various dates available",
+      image: "https://res.cloudinary.com/dnemf1asq/image/upload/v1745189420/jonathan-cosens-photography-eXSB6MsBB-w-unsplash_h8acag.jpg",
+      description: "Try your hand at pottery in this fun, no-pressure 2-hour session—no experience needed!",
+      price: "$70 + tax"
+    }
+  ];
+
+  res.render("class-list", {
+    layout: "layouts/main",
+    title: "Pottery Classes",
+    classes: classes,
+    activeClasses: true
+  });
+};
+
+// Kategori bazlı sınıfları göster
+exports.showClassesByCategory = (req, res) => {
+  const { category } = req.params;
+  
+  // Basit kategori filtresi için örnek sınıflar
+  const classes = [
+    {
+      slug: "4-week-wheel",
+      title: "4-Week Beginner Wheel Throwing Class",
+      date: "Feb 11, 2024 • 6–8 PM EST",
+      image: "https://res.cloudinary.com/dnemf1asq/image/upload/v1745189121/blake-cheek-IMU94a5QVLk-unsplash_fwa502.jpg",
+      description: "Build a solid foundation in ceramics with this 4-week hands-on wheel throwing class.",
+      price: "$295 + tax",
+      category: "beginner"
+    },
+    {
+      slug: "8-week-wheel",
+      title: "8-Week Beginner Wheel Throwing Class",
+      date: "March 10, 2024 • 6–8 PM EST",
+      image: "https://res.cloudinary.com/dnemf1asq/image/upload/v1745188067/courtney-cook-nXYmYO_-JUk-unsplash_epevjp.jpg",
+      description: "Explore both traditional and contemporary pottery techniques over 8 weeks.",
+      price: "$535 + tax",
+      category: "intermediate"
+    },
+    {
+      slug: "tryout-wheel",
+      title: "Pottery Tryout Class",
+      date: "Various dates available",
+      image: "https://res.cloudinary.com/dnemf1asq/image/upload/v1745189420/jonathan-cosens-photography-eXSB6MsBB-w-unsplash_h8acag.jpg",
+      description: "Try your hand at pottery in this fun, no-pressure 2-hour session—no experience needed!",
+      price: "$70 + tax",
+      category: "beginner"
+    }
+  ];
+
+  // Kategori filtreleme
+  const filteredClasses = classes.filter(cls => 
+    cls.category && cls.category.toLowerCase() === category.toLowerCase()
+  );
+
+  res.render("class-list", {
+    layout: "layouts/main",
+    title: `${category.charAt(0).toUpperCase() + category.slice(1)} Classes`,
+    categoryName: category,
+    classes: filteredClasses,
+    activeClasses: true
+  });
+};
+
+// Arama işlemi
+exports.searchClasses = (req, res) => {
+  const { query } = req.query;
+  
+  // Örnek sınıflar
+  const classes = [
+    {
+      slug: "4-week-wheel",
+      title: "4-Week Beginner Wheel Throwing Class",
+      date: "Feb 11, 2024 • 6–8 PM EST",
+      image: "https://res.cloudinary.com/dnemf1asq/image/upload/v1745189121/blake-cheek-IMU94a5QVLk-unsplash_fwa502.jpg",
+      description: "Build a solid foundation in ceramics with this 4-week hands-on wheel throwing class.",
+      price: "$295 + tax"
+    },
+    {
+      slug: "8-week-wheel",
+      title: "8-Week Beginner Wheel Throwing Class",
+      date: "March 10, 2024 • 6–8 PM EST",
+      image: "https://res.cloudinary.com/dnemf1asq/image/upload/v1745188067/courtney-cook-nXYmYO_-JUk-unsplash_epevjp.jpg",
+      description: "Explore both traditional and contemporary pottery techniques over 8 weeks.",
+      price: "$535 + tax"
+    },
+    {
+      slug: "tryout-wheel",
+      title: "Pottery Tryout Class",
+      date: "Various dates available",
+      image: "https://res.cloudinary.com/dnemf1asq/image/upload/v1745189420/jonathan-cosens-photography-eXSB6MsBB-w-unsplash_h8acag.jpg",
+      description: "Try your hand at pottery in this fun, no-pressure 2-hour session—no experience needed!",
+      price: "$70 + tax"
+    }
+  ];
+
+  // Basit arama işlevi
+  const searchResults = query 
+    ? classes.filter(cls => 
+        cls.title.toLowerCase().includes(query.toLowerCase()) || 
+        cls.description.toLowerCase().includes(query.toLowerCase())
+      )
+    : [];
+
+  res.render("class-list", {
+    layout: "layouts/main",
+    title: "Search Results",
+    searchQuery: query,
+    classes: searchResults,
+    activeClasses: true
+  });
+};

@@ -34,10 +34,14 @@ const transporter = nodemailer.createTransport({
 });
 
 exports.submitContactForm = async (req, res) => {
-  console.log("Form source:", req.body.formSource);
+  // İşlem takibi için benzersiz ID oluştur
+  const requestId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+  console.log(`[${requestId}] Form işleniyor - Kaynak: ${req.body.formSource || 'bilinmiyor'}`);
+  
   const errors = validationResult(req); 
   
   if (!errors.isEmpty()) {
+    console.log(`[${requestId}] Form doğrulama hataları:`, errors.array());
     // Form kaynağına göre doğru sayfayı render et
     const formSource = req.body.formSource || 'contact';
     
@@ -82,40 +86,11 @@ exports.submitContactForm = async (req, res) => {
   }
   
   try {
-    // reCAPTCHA token doğrulaması - geliştirme aşaması için daha toleranslı
-    try {
-      const recaptchaToken = req.body.recaptchaToken;
-      if (!recaptchaToken) {
-        console.warn("reCAPTCHA token missing, but continuing anyway");
-        // Hata fırlatmadan devam et
-      } else {
-        // Google reCAPTCHA API ile token doğrulama
-        const recaptchaVerify = await axios.post(
-          'https://www.google.com/recaptcha/api/siteverify',
-          null,
-          {
-            params: {
-              secret: process.env.RECAPTCHA_SECRET_KEY,
-              response: recaptchaToken
-            }
-          }
-        );
-        
-        if (!recaptchaVerify.data.success) {
-          console.warn("reCAPTCHA doğrulama hatası:", recaptchaVerify.data);
-          // Hataya rağmen işleme devam et
-        }
-      }
-    } catch (recaptchaError) {
-      console.warn("reCAPTCHA API hatası:", recaptchaError.message);
-      // reCAPTCHA hatasına rağmen devam et
-    }
-    
     // Hassas veri maskesi
     const safeLog = { ...req.body };
     if (safeLog.email) safeLog.email = '[MASKED]';
     if (safeLog.contactNumber) safeLog.contactNumber = '[MASKED]';
-    console.log("📥 Form Data (masked):", safeLog);
+    console.log(`[${requestId}] 📥 Form Data (masked):`, safeLog);
 
     const {
       firstName,
@@ -136,11 +111,12 @@ exports.submitContactForm = async (req, res) => {
       message,
     });
     await contactData.save();
+    console.log(`[${requestId}] ✅ Veritabanına kaydedildi`);
 
     // Mail gönderimi
     const mailOptions = {
-      from: `"HeartPottery Contact Form" <alirizasevgili1@gmail.com>`,
-      to: "alirizasevgili1@gmail.com",
+      from: `"HeartPottery Contact Form" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_USER,
       subject: "New Contact Form Submission",
       html: `
         <h3>New Contact Form Submission</h3>
@@ -156,13 +132,17 @@ exports.submitContactForm = async (req, res) => {
     };
 
     await transporter.sendMail(mailOptions);
+    console.log(`[${requestId}] ✅ E-posta gönderildi`);
     
     // Doğru sayfayı render et
     const formSource = req.body.formSource || 'contact';
+    console.log(`[${requestId}] 🔄 İşlem tamamlandı, yönlendiriliyor: ${formSource}`);
       
+    // TÜM form başarılarını /contact-success sayfasına yönlendir
+    // Sadece 'events' için aynı sayfada başarı mesajı göster
     switch(formSource) {
       case 'events':
-        console.log("### EVENTS SAYFASINDAN GELEN FORM");
+        console.log(`[${requestId}] ### EVENTS SAYFASINDAN GELEN FORM`);
         return res.render("events", {
           layout: "layouts/main",
           title: "Events",
@@ -171,19 +151,13 @@ exports.submitContactForm = async (req, res) => {
           success: true,
           formSource: formSource
         });
-      case 'studio':
-        console.log("### STUDIO SAYFASINDAN GELEN FORM");
-        return res.redirect('/contact-success');
-      case 'homepage':
-        console.log("### HOMEPAGE SAYFASINDAN GELEN FORM");
-        return res.redirect('/contact-success');
-      case 'contact':
       default:
-        console.log("### CONTACT SAYFASINDAN GELEN FORM");
+        // Tüm diğer formları contact-success sayfasına yönlendir
+        console.log(`[${requestId}] ### ${formSource.toUpperCase()} SAYFASINDAN GELEN FORM`);
         return res.redirect('/contact-success');
     }
   } catch (error) {
-    console.error("Form submission error:", error);
+    console.error(`[${requestId}] ❌ Form submission error:`, error);
     
     const formSource = req.body.formSource || 'contact';
     

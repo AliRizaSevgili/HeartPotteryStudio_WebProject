@@ -36,25 +36,6 @@ logDebug("Page flags:", {
     }
   }
   
-  // Sayfa yüklendiğinde başlangıç tokenını oluştur
-  function generateInitialToken(tokenInput) {
-    logDebug("🔄 Generating initial token...");
-    if (typeof grecaptcha !== 'undefined' && typeof grecaptcha.ready === 'function') {
-      grecaptcha.ready(function() {
-        grecaptcha.execute(SITE_KEY, {action: 'submit'})
-          .then(function(token) {
-            updateTokenValue(tokenInput, token);
-            logDebug("🔑 Initial token generated successfully");
-          })
-          .catch(function(error) {
-            logError("❌ Initial token generation failed:", error);
-          });
-      });
-    } else {
-      logError("❌ grecaptcha not available for initial token");
-    }
-  }
-  
   // Doğrudan formları tarayarak işlem yap - daha basit ve güvenilir yaklaşım
   function setupForms() {
     // Sayfa formları bul
@@ -69,6 +50,12 @@ logDebug("Page flags:", {
     
     // Her form için işlem yap
     forms.forEach(form => {
+      // Zaten işlendiyse atla
+      if (form.getAttribute('data-recaptcha-initialized') === 'true') {
+        logDebug(`⏭️ Form ${form.getAttribute('name') || 'unnamed'} already initialized`);
+        return;
+      }
+      
       // Form ismini kontrol et
       const formName = form.getAttribute('name');
       if (!formName || !FORM_TYPES[formName]) {
@@ -84,13 +71,33 @@ logDebug("Page flags:", {
         return;
       }
       
-      // *** YENİ: Başlangıç tokenını oluştur ***
-      generateInitialToken(tokenInput);
-      
       // Form submit olayını yakala
-      form.addEventListener('submit', function(e) {
+      form.addEventListener('submit', function formSubmitHandler(e) {
+        // Eğer form zaten gönderildiyse çık
+        if (form.dataset.submitting === 'true') {
+          logWarn("⚠️ Form already being submitted, preventing duplicate submission");
+          e.preventDefault();
+          return false;
+        }
+        
+        // Formu "gönderiliyor" olarak işaretle
+        form.dataset.submitting = 'true';
+        
         // Önce submit'i durdur
         e.preventDefault();
+        
+        // Form submit butonunu devre dışı bırak
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.innerHTML = 'Sending...';
+        }
+        
+        // Önce eski token'ı temizle
+        if (tokenInput) {
+          tokenInput.value = '';
+        }
+        
         logDebug("🔄 Form submit intercepted, generating fresh token...");
         
         // Taze token oluştur
@@ -101,27 +108,50 @@ logDebug("Page flags:", {
               updateTokenValue(tokenInput, token);
               logDebug("📤 Submitting form with fresh token");
               
-              // Formu gerçekten gönder
-              form.removeEventListener('submit', arguments.callee);
-              setTimeout(() => form.submit(), 100);
+              // Form verilerini yazdır - sadece debug için
+              if (!isProduction) {
+                const formData = new FormData(form);
+                const formDataObj = {};
+                formData.forEach((value, key) => {
+                  if (key === 'recaptchaToken') {
+                    formDataObj[key] = value.substring(0, 10) + '...';
+                  } else {
+                    formDataObj[key] = value;
+                  }
+                });
+                console.log('Form data:', formDataObj);
+              }
+              
+              // Formu gerçekten gönder (event listener'ı kaldırarak)
+              // Daha uzun bir gecikme ekleyelim (1000ms)
+              setTimeout(() => {
+                form.removeEventListener('submit', formSubmitHandler);
+                form.submit();
+              }, 1000); // 500ms'den 1000ms'ye çıkarıldı - timeout hatasını çözmek için
             })
             .catch(function(error) {
               logError("❌ Token generation failed:", error);
-              // Hata olsa da formu gönder
-              form.submit();
+              
+              // Submit butonunu geri etkinleştir
+              if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Send';
+              }
+              
+              // Form işaretini temizle ki tekrar denenebilsin
+              form.dataset.submitting = 'false';
+              
+              // Kullanıcıya bilgi ver
+              alert("Form submission failed. Please try again.");
             });
         });
       });
       
+      // İşlendiğini işaretle
+      form.setAttribute('data-recaptcha-initialized', 'true');
+      
       logDebug(`✅ Submit handler attached to ${formName || 'unnamed'} form`);
     });
-  }
-  
-  // DOM hazır olduğunda çalıştır
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setupForms);
-  } else {
-    setupForms();
   }
   
   // reCAPTCHA yüklenmesini kontrol et ve tekrar dene
@@ -135,6 +165,14 @@ logDebug("Page flags:", {
     }
   }
   
-  // İlk kontrol
-  checkRecaptcha();
+  // DOM hazır olduğunda sadece bir kez çalıştır
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      // İlk kontrol
+      checkRecaptcha();
+    });
+  } else {
+    // İlk kontrol
+    checkRecaptcha();
+  }
 })();

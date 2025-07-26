@@ -5,132 +5,86 @@ const axios = require('axios');
 
 // reCAPTCHA middleware
 async function verifyRecaptcha(req, res, next) {
-  const recaptchaToken = req.body.recaptchaToken;
-  if (!recaptchaToken) {
-    // Hangi sayfadan geldiğini kontrol et
-    const formSource = req.body.formSource || 'contact';
-    
-    switch(formSource) {
-      case 'events':
-        return res.render("events", { 
-          layout: "layouts/main", 
-          title: "Events", 
-          activeGallery: true, 
-          isEventsPage: true, 
-          error: "reCAPTCHA token missing" 
-        });
-      case 'studio':
-        return res.render("studio", { 
-          layout: "layouts/main", 
-          title: "Join the Studio", 
-          activeJoin: true, 
-          isStudioPage: true, 
-          error: "reCAPTCHA token missing" 
-        });
-      case 'homepage':
-        return res.render("homepage", { 
-          layout: "layouts/main", 
-          title: "Home", 
-          activeHome: true, 
-          isHomepagePage: true, 
-          error: "reCAPTCHA token missing" 
-        });
-      case 'contact':
-      default:
-        return res.render("contact", { 
-          layout: "layouts/main", 
-          title: "Contact | FQA", 
-          activeContact: true, 
-          isContactPage: true, 
-          error: "reCAPTCHA token missing" 
-        });
-    }
-  }
+  const token = req.body.recaptchaToken;
+  const formSource = req.body.formSource || 'unknown';
   
+  console.log(`Form source: ${formSource}`);
+  
+  // Token yoksa hemen hata ver
+  if (!token) {
+    console.log(`reCAPTCHA token eksik: ${formSource} kaynağından gelen formda`);
+    return handleRecaptchaError(res, formSource, "reCAPTCHA token eksik");
+  }
+
   try {
-    const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`;
-    const response = await axios.post(verifyUrl);
+    // Zaman aşımını önlemek için timeout ekleyelim
+    const verifyURL = `https://www.google.com/recaptcha/api/siteverify`;
+    const response = await axios.post(
+      verifyURL, 
+      null, 
+      {
+        params: {
+          secret: process.env.RECAPTCHA_SECRET_KEY,
+          response: token
+        },
+        timeout: 5000 // 5 saniye timeout
+      }
+    );
+    
     const data = response.data;
     
-    if (!data.success || data.score < 0.1) {
-      const formSource = req.body.formSource || 'contact';
-      
-      switch(formSource) {
-        case 'events':
-          return res.render("events", { 
-            layout: "layouts/main", 
-            title: "Events", 
-            activeGallery: true, 
-            isEventsPage: true, 
-            error: "reCAPTCHA verification failed" 
-          });
-        case 'studio':
-          return res.render("studio", { 
-            layout: "layouts/main", 
-            title: "Join the Studio", 
-            activeJoin: true, 
-            isStudioPage: true, 
-            error: "reCAPTCHA verification failed" 
-          });
-        case 'homepage':
-          return res.render("homepage", { 
-            layout: "layouts/main", 
-            title: "Home", 
-            activeHome: true, 
-            isHomepagePage: true, 
-            error: "reCAPTCHA verification failed" 
-          });
-        case 'contact':
-        default:
-          return res.render("contact", { 
-            layout: "layouts/main", 
-            title: "Contact | FQA", 
-            activeContact: true, 
-            isContactPage: true, 
-            error: "reCAPTCHA verification failed" 
-          });
-      }
-    }
+    console.log(`reCAPTCHA yanıtı: ${JSON.stringify(data)}`);
     
-    next();
+    // Başarı skoru 0.3'ten büyükse geçerli kabul et (eskiden 0.1'di)
+    if (data.success && data.score >= 0.3) {
+      console.log(`reCAPTCHA doğrulaması başarılı: ${formSource}, skor: ${data.score}`);
+      return next();
+    } else {
+      console.log(`reCAPTCHA doğrulama hatası: ${JSON.stringify(data)}`);
+      return handleRecaptchaError(res, formSource, "reCAPTCHA doğrulaması başarısız");
+    }
   } catch (err) {
-    const formSource = req.body.formSource || 'contact';
-    
-    switch(formSource) {
-      case 'events':
-        return res.render("events", { 
-          layout: "layouts/main", 
-          title: "Events", 
-          activeGallery: true, 
-          isEventsPage: true, 
-          error: "reCAPTCHA verification error" 
-        });
-      case 'studio':
-        return res.render("studio", { 
-          layout: "layouts/main", 
-          title: "Join the Studio", 
-          activeJoin: true, 
-          isStudioPage: true, 
-          error: "reCAPTCHA verification error" 
-        });
-      case 'homepage':
-        return res.render("homepage", { 
-          layout: "layouts/main", 
-          title: "Home", 
-          activeHome: true, 
-          isHomepagePage: true, 
-          error: "reCAPTCHA verification error" 
-        });
-      case 'contact':
-      default:
-        return res.render("contact", { 
-          layout: "layouts/main", 
-          title: "Contact | FQA", 
-          activeContact: true, 
-          isContactPage: true, 
-          error: "reCAPTCHA verification error" 
-        });
-    }
+    console.error(`reCAPTCHA doğrulama hatası: ${err.message}`);
+    return handleRecaptchaError(res, formSource, "reCAPTCHA doğrulama hatası");
+  }
+}
+
+// Hata işleme fonksiyonu - kod tekrarını azaltmak için
+function handleRecaptchaError(res, formSource, errorMessage) {
+  switch(formSource) {
+    case 'events':
+      return res.render("events", { 
+        layout: "layouts/main", 
+        title: "Events", 
+        activeGallery: true, 
+        isEventsPage: true, 
+        error: errorMessage
+      });
+    case 'studio':
+      return res.render("studio", { 
+        layout: "layouts/main", 
+        title: "Join the Studio", 
+        activeJoin: true, 
+        isStudioPage: true, 
+        error: errorMessage
+      });
+    case 'homepage':
+      return res.render("homepage", { 
+        layout: "layouts/main", 
+        title: "Home", 
+        activeHome: true, 
+        isHomepagePage: true, 
+        error: errorMessage
+      });
+    case 'contact':
+    default:
+      return res.render("contact", { 
+        layout: "layouts/main", 
+        title: "Contact | FQA", 
+        activeContact: true, 
+        isContactPage: true, 
+        error: errorMessage
+      });
   }
 }
 
