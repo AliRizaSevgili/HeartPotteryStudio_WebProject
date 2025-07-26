@@ -2,6 +2,7 @@ const { body, validationResult } = require('express-validator');
 const Contact = require("../models/Contact");
 const nodemailer = require("nodemailer");
 const axios = require('axios');
+const logger = require('../utils/logger');
 require("dotenv").config();
 
 exports.validateContactForm = [
@@ -36,12 +37,12 @@ const transporter = nodemailer.createTransport({
 exports.submitContactForm = async (req, res) => {
   // İşlem takibi için benzersiz ID oluştur
   const requestId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-  console.log(`[${requestId}] Form işleniyor - Kaynak: ${req.body.formSource || 'bilinmiyor'}`);
+  logger.info(`[${requestId}] Form işleniyor - Kaynak: ${req.body.formSource || 'bilinmiyor'}`);
   
   const errors = validationResult(req); 
   
   if (!errors.isEmpty()) {
-    console.log(`[${requestId}] Form doğrulama hataları:`, errors.array());
+    logger.warn(`[${requestId}] Form doğrulama hataları:`, errors.array());
     // Form kaynağına göre doğru sayfayı render et
     const formSource = req.body.formSource || 'contact';
     
@@ -90,7 +91,7 @@ exports.submitContactForm = async (req, res) => {
     const safeLog = { ...req.body };
     if (safeLog.email) safeLog.email = '[MASKED]';
     if (safeLog.contactNumber) safeLog.contactNumber = '[MASKED]';
-    console.log(`[${requestId}] 📥 Form Data (masked):`, safeLog);
+    logger.debug(`[${requestId}] 📥 Form Data (masked):`, safeLog);
 
     const {
       firstName,
@@ -111,7 +112,7 @@ exports.submitContactForm = async (req, res) => {
       message,
     });
     await contactData.save();
-    console.log(`[${requestId}] ✅ Veritabanına kaydedildi`);
+    logger.info(`[${requestId}] ✅ Veritabanına kaydedildi`);
 
     // Mail gönderimi
     const mailOptions = {
@@ -132,17 +133,17 @@ exports.submitContactForm = async (req, res) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`[${requestId}] ✅ E-posta gönderildi`);
+    logger.info(`[${requestId}] ✅ E-posta gönderildi`);
     
     // Doğru sayfayı render et
     const formSource = req.body.formSource || 'contact';
-    console.log(`[${requestId}] 🔄 İşlem tamamlandı, yönlendiriliyor: ${formSource}`);
+    logger.info(`[${requestId}] 🔄 İşlem tamamlandı, yönlendiriliyor: ${formSource}`);
       
     // TÜM form başarılarını /contact-success sayfasına yönlendir
     // Sadece 'events' için aynı sayfada başarı mesajı göster
     switch(formSource) {
       case 'events':
-        console.log(`[${requestId}] ### EVENTS SAYFASINDAN GELEN FORM`);
+        logger.info(`[${requestId}] ### EVENTS SAYFASINDAN GELEN FORM`);
         return res.render("events", {
           layout: "layouts/main",
           title: "Events",
@@ -153,11 +154,11 @@ exports.submitContactForm = async (req, res) => {
         });
       default:
         // Tüm diğer formları contact-success sayfasına yönlendir
-        console.log(`[${requestId}] ### ${formSource.toUpperCase()} SAYFASINDAN GELEN FORM`);
+        logger.info(`[${requestId}] ### ${formSource.toUpperCase()} SAYFASINDAN GELEN FORM`);
         return res.redirect('/contact-success');
     }
   } catch (error) {
-    console.error(`[${requestId}] ❌ Form submission error:`, error);
+    logger.error(`[${requestId}] ❌ Form submission error:`, error);
     
     const formSource = req.body.formSource || 'contact';
     

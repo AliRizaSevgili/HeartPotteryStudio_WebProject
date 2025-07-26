@@ -1,3 +1,13 @@
+// Üretim/geliştirme modunu kontrol et
+const isProduction = window.location.hostname !== 'localhost';
+
+// Loglama fonksiyonlarını tanımla
+const logDebug = isProduction ? function(){} : console.log;
+const logInfo = isProduction ? function(){} : console.info;
+const logWarn = isProduction ? function(){} : console.warn;
+const logError = console.error; // Hata logları her zaman gösterilmeli
+
+
 document.addEventListener("DOMContentLoaded", () => {
   const modalWrapper = document.getElementById("eventModal1");
 
@@ -22,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
           // ⏳ Modal scroll pozisyonunu da sıfırla (içeriği en baştan göstersin)
           setTimeout(() => {
             modal.scrollTop = 0;
-            console.log("✅ Modal açıldı, sayfa yukarı kaydırıldı");
+            logDebug("✅ Modal açıldı, sayfa yukarı kaydırıldı");
           }, 100);
         }
       }

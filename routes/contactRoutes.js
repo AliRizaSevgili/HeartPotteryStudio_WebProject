@@ -2,17 +2,18 @@ const express = require('express');
 const router = express.Router();
 const contactController = require('../controllers/contactController');
 const axios = require('axios');
+const logger = require('../utils/logger');
 
 // reCAPTCHA middleware
 async function verifyRecaptcha(req, res, next) {
   const token = req.body.recaptchaToken;
   const formSource = req.body.formSource || 'unknown';
   
-  console.log(`Form source: ${formSource}`);
+  logger.info(`Form source: ${formSource}`);
   
   // Token yoksa hemen hata ver
   if (!token) {
-    console.log(`reCAPTCHA token eksik: ${formSource} kaynağından gelen formda`);
+    logger.warn(`reCAPTCHA token eksik: ${formSource} kaynağından gelen formda`);
     return handleRecaptchaError(res, formSource, "reCAPTCHA token eksik");
   }
 
@@ -33,18 +34,18 @@ async function verifyRecaptcha(req, res, next) {
     
     const data = response.data;
     
-    console.log(`reCAPTCHA yanıtı: ${JSON.stringify(data)}`);
+    logger.info(`reCAPTCHA yanıtı: ${JSON.stringify(data)}`);
     
     // Başarı skoru 0.3'ten büyükse geçerli kabul et (eskiden 0.1'di)
     if (data.success && data.score >= 0.3) {
-      console.log(`reCAPTCHA doğrulaması başarılı: ${formSource}, skor: ${data.score}`);
+      logger.info(`reCAPTCHA doğrulaması başarılı: ${formSource}, skor: ${data.score}`);
       return next();
     } else {
-      console.log(`reCAPTCHA doğrulama hatası: ${JSON.stringify(data)}`);
+      logger.warn(`reCAPTCHA doğrulama hatası: ${JSON.stringify(data)}`);
       return handleRecaptchaError(res, formSource, "reCAPTCHA doğrulaması başarısız");
     }
   } catch (err) {
-    console.error(`reCAPTCHA doğrulama hatası: ${err.message}`);
+    logger.error(`reCAPTCHA doğrulama hatası: ${err.message}`);
     return handleRecaptchaError(res, formSource, "reCAPTCHA doğrulama hatası");
   }
 }

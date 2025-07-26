@@ -4,6 +4,7 @@ const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const Order = require('../models/Order');
 const { body, validationResult } = require('express-validator');
+const logger = require('../utils/logger'); // Logger import ediyoruz
 
 // POST /api/payment/checkout
 router.post(
@@ -23,7 +24,7 @@ router.post(
 
     try {
       const { amount, currency, productName, success_url, cancel_url } = req.body;
-      console.log('Gelen productName:', productName);
+      logger.info('Gelen productName:', productName);
 
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
@@ -49,6 +50,7 @@ router.post(
 
       res.json({ id: session.id, url: session.url });
     } catch (error) {
+      logger.error('Stripe session creation error:', error.message);
       res.status(500).json({ error: error.message });
     }
   }
@@ -66,14 +68,14 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
-    console.error('Webhook signature verification failed:', err.message);
+    logger.error('Webhook signature verification failed:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
   // Ödeme başarılıysa burada işle
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    console.log('Session metadata:', session.metadata);
+    logger.debug('Session metadata:', session.metadata);
     try {
       await Order.create({
         sessionId: session.id,
@@ -83,11 +85,11 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
         productName: session.metadata?.productName,
         createdAt: new Date()
       });
-      console.log('✅ Order saved to DB:', session.id);
+      logger.info('✅ Order saved to DB:', session.id);
     } catch (dbErr) {
-      console.error('❌ Order save error:', dbErr);
+      logger.error('❌ Order save error:', dbErr);
     }
-    console.log('✅ Payment succeeded:', session.id);
+    logger.info('✅ Payment succeeded:', session.id);
   }
 
   res.json({ received: true });

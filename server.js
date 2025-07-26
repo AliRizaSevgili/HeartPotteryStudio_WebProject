@@ -17,7 +17,7 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const infoRoutes = require("./routes/info");
 const hbs = require("hbs");
 const contactController = require('./controllers/contactController'); // <-- EKLE
-const logger = require('./logger'); // Winston logger'ı ekle
+const logger = require('./utils/logger'); // Winston logger'ı ekle
 
 // Stripe modülü
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Stripe modülü
@@ -192,7 +192,7 @@ app.use((req, res, next) => {
 // Yeni CSRF tokeni sağlayan rota
 app.get('/get-csrf-token', (req, res) => {
   if (process.env.NODE_ENV !== 'production') {
-    console.log('CSRF token requested');
+    logger.debug('CSRF token requested');
   }
   res.json({ csrfToken: req.csrfToken() });
 });
@@ -200,7 +200,7 @@ app.get('/get-csrf-token', (req, res) => {
 // Form gönderim loglarını kontrol et
 app.post('/checkout-info', (req, res) => {
   if (process.env.NODE_ENV !== 'production') {
-    console.log('Request body:', {
+    logger.debug('Request body:', {
       ...req.body,
       _csrf: '[REDACTED]', // CSRF tokeni maskele
       recaptchaToken: req.body.recaptchaToken ? '[REDACTED]' : '', // reCAPTCHA tokeni maskele
@@ -216,7 +216,7 @@ app.post('/checkout-info', (req, res) => {
   }
 
   // İşlenmiş verilerle devam edin
-  console.log('Processed email:', validEmail);
+  logger.info('Processed email:', validEmail);
 
   // ...form işleme kodları...
   res.status(200).send('Form submitted successfully.');
@@ -230,7 +230,7 @@ app.use('/api/payment', paymentRoutes);
 app.use('/contact', contactRoutes);
 app.use('/class', classRoutes);
 app.use(infoRoutes);
-console.log("✅ Server loaded galleryRoutes!");
+logger.info("✅ Server loaded galleryRoutes!");
 app.use("/api/gallery", galleryRoutes);
 
 app.get("/favicon.ico", (req, res) => {
@@ -504,13 +504,13 @@ app.post('/create-checkout-session', csrfProtection, async (req, res) => {
     });
 
     if (process.env.NODE_ENV !== 'production') {
-      console.log('Stripe session created:', session.id);
+      logger.debug('Stripe session created:', session.id);
     }
 
     res.redirect(303, session.url);
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
-      console.error('Error creating Stripe Checkout session:', error.message);
+      logger.error('Error creating Stripe Checkout session:', error.message);
     }
     res.status(500).send('Internal Server Error');
   }
@@ -524,14 +524,14 @@ app.post('/api/payment/webhook', (req, res) => {
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
-    console.error('Webhook signature verification failed:', err.message);
+    logger.error('Webhook signature verification failed:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
   // Event türüne göre işlem yap
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    console.log('Payment successful for session:', session.id);
+    logger.info('Payment successful for session:', session.id);
     // Ödeme sonrası işlemler burada yapılabilir
   }
 
@@ -552,14 +552,14 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
   if (err.code === 'EBADCSRFTOKEN') {
     if (process.env.NODE_ENV !== 'production') {
-      console.error('CSRF Token Validation Failed');
-      console.error('Request Headers:', req.headers);
-      console.error('Request Body:', {
+      logger.error('CSRF Token Validation Failed');
+      logger.error('Request Headers:', req.headers);
+      logger.error('Request Body:', {
         ...req.body,
         _csrf: '[REDACTED]', // CSRF tokeni maskele
         recaptchaToken: req.body.recaptchaToken ? '[REDACTED]' : '', // reCAPTCHA tokeni maskele
       });
-      console.error('CSRF Cookie:', '[REDACTED]'); // CSRF cookie maskele
+      logger.error('CSRF Cookie:', '[REDACTED]'); // CSRF cookie maskele
     }
     return res.status(403).json({ error: 'Invalid CSRF token' });
   }
@@ -637,7 +637,7 @@ hbs.registerHelper('totalCost', function(array, discount, taxRate) {
 
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server is running on port ${PORT}`));
+app.listen(PORT, () => logger.info(`🚀 Server is running on port ${PORT}`));
 
 
 

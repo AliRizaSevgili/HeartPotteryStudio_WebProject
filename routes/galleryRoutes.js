@@ -2,16 +2,17 @@ const express = require("express");
 const router = express.Router();
 const galleryService = require("../services/galleryService");
 const { upload } = require("../config/cloudinary"); // Cloudinary yükleme ayarlarını ekle
+const logger = require('../utils/logger');
 
 // Route to get all gallery items (no filtering)
 router.get("/", async (req, res) => {
-  console.log("📥 GET request received at /api/gallery");
+  logger.info("📥 GET request received at /api/gallery");
   try {
     const items = await galleryService.getAllItems();
-    console.log("📌 Items sent to client:", items); 
+    logger.debug("📌 Items sent to client:", items); 
     res.json(items);
   } catch (err) {
-    console.error("❌ Error fetching gallery items:", err.message);
+    logger.error("❌ Error fetching gallery items:", err.message);
     res.status(500).json({ error: "Error loading items" });
   }
 });
@@ -37,7 +38,7 @@ router.post("/", upload.single("image"), async (req, res) => {
 
     res.status(201).json(newItem);
   } catch (err) {
-    console.error("❌ Error adding gallery item:", err.message);
+    logger.error("❌ Error adding gallery item:", err.message);
     res.status(500).json({ error: "Unable to create item." });
   }
 });

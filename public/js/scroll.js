@@ -1,5 +1,12 @@
 
+// Üretim/geliştirme modunu kontrol et
+const isProduction = window.location.hostname !== 'localhost';
 
+// Loglama fonksiyonlarını tanımla
+const logDebug = isProduction ? function(){} : console.log;
+const logInfo = isProduction ? function(){} : console.info;
+const logWarn = isProduction ? function(){} : console.warn;
+const logError = console.error; // Hata logları her zaman gösterilmeli
 
 document.addEventListener("DOMContentLoaded", () => {
   // Scroll to Group Booking
@@ -32,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
             void featuredLine.offsetWidth; // reflow için: animasyonu sıfırlar
             featuredLine.classList.add("animate-slide-in");
 
-            console.log("🎯 Animasyon sınıfı yeniden eklendi (scroll ile tetiklendi)");
+            logDebug("🎯 Animasyon sınıfı yeniden eklendi (scroll ile tetiklendi)");
           }
         });
       },
@@ -53,7 +60,7 @@ if (withusLine) {
           void withusLine.offsetWidth; // Reflow
           withusLine.classList.add("animate-slide-in");
 
-          console.log("🎯 with-us çizgisi animasyonu tetiklendi!");
+          logDebug("🎯 with-us çizgisi animasyonu tetiklendi!");
         }
       });
     },
