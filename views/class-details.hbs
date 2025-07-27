@@ -1,5 +1,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
+<!-- CSRF token için gizli alan (sayfanın en başına) -->
+<input type="hidden" id="csrfToken" value="{{csrfToken}}">
+
 <!-- Görsel ve Başlık Bölümü -->
 <section class="bg-white pt-8 pb-0 px-6 sm:px-12 lg:px-24 font-sans text-gray-700 text-center">
   <div class="max-w-3xl mx-auto mb-6">
@@ -47,7 +50,7 @@
 
     <!-- What's Included -->
     <div>
-      <h2 class="text-xl font-semibold text-[#b5651d] mb-2">What’s Included</h2>
+      <h2 class="text-xl font-semibold text-[#b5651d] mb-2">What's Included</h2>
       <ul class="list-disc list-inside space-y-1">
         {{#each classItem.included}}
           <li>{{this}}</li>
@@ -77,102 +80,94 @@
       <p class="whitespace-pre-line">{{classItem.classRefund}}</p>
       
       <!-- Go to Full Policy -->
-    <div class="mt-2">
-    <a href="/returns" target="_blank" class="text-base text-[#b5651d] hover:underline hover:text-[#8c4516] transition">
-      Transparency matters — read our full policy →
-    </a>
-  </div>
-
-
+      <div class="mt-2">
+        <a href="/returns" target="_blank" class="text-base text-[#b5651d] hover:underline hover:text-[#8c4516] transition">
+          Transparency matters — read our full policy →
+        </a>
+      </div>
+    </div>
   </div>
 </section>
 
- 
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
 
-   <!-- 🟥 APRIL -->
-<div class="bg-white rounded-lg p-5 shadow space-y-4">
-  <h2 class="text-xl font-bold text-[#b5651d] text-center">April 2025</h2>
+    <!-- 🟥 APRIL -->
+    <div class="bg-white rounded-lg p-5 shadow space-y-4">
+      <h2 class="text-xl font-bold text-[#b5651d] text-center">April 2025</h2>
 
-  {{#each aprilDates}}
-    <details class="group border border-gray-200 rounded">
-      <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-100">
-        <h4 class="text-md text-[#b5651d] font-medium">{{label}}</h4>
-        <span class="transition group-open:rotate-180">
-          <svg fill="none" height="20" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="20">
-            <path d="M6 9l6 6 6-6"></path>
-          </svg>
-        </span>
-      </summary>
+      {{#each aprilDates}}
+        <details class="group border border-gray-200 rounded">
+          <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-100">
+            <h4 class="text-md text-[#b5651d] font-medium">{{label}}</h4>
+            <span class="transition group-open:rotate-180">
+              <svg fill="none" height="20" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="20">
+                <path d="M6 9l6 6 6-6"></path>
+              </svg>
+            </span>
+          </summary>
 
-      {{#each slots}}
-        <div class="p-4 text-sm bg-white text-gray-700 space-y-2">
-          <p><strong>Day:</strong> {{day}}</p>
-          <p><strong>Date:</strong> {{date}}</p>
-          <p><strong>Time:</strong> {{time}}</p>
-          <form method="GET" action="/add-to-cart">
-  <input type="hidden" name="classId" value="{{../../classItem.slug}}">
-  <input type="hidden" name="classTitle" value="{{../../classItem.title}}">
-  <input type="hidden" name="classImage" value="{{../../classItem.image}}">
-  <input type="hidden" name="classPrice" value="{{../../classItem.price}}">
-  <input type="hidden" name="slotDay" value="{{day}}">
-  <input type="hidden" name="slotDate" value="{{date}}">
-  <input type="hidden" name="slotTime" value="{{time}}">
-  <button type="submit" class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
-    Select this slot
-  </button>
-</form>
-        </div>
+          {{#each slots}}
+            <div class="p-4 text-sm bg-white text-gray-700 space-y-2">
+              <p><strong>Day:</strong> {{day}}</p>
+              <p><strong>Date:</strong> {{date}}</p>
+              <p><strong>Time:</strong> {{time}}</p>
+              
+              <!-- YENİ FORM -->
+              <form method="POST" action="/reserve-slot">
+                <input type="hidden" name="_csrf" value="{{../../../csrfToken}}">
+                <input type="hidden" name="slotId" value="{{../id}}">
+                <button type="submit" 
+                  class="mt-2 {{#if ../isFull}}bg-gray-400{{else}}bg-[#b5651d]{{/if}} text-white px-3 py-1 rounded hover:{{#if ../isFull}}bg-gray-500{{else}}bg-[#8c4516]{{/if}} transition"
+                  {{#if ../isFull}}disabled{{/if}}>
+                  {{#if ../isFull}}Fully Booked{{else}}Select this slot{{/if}}
+                </button>
+              </form>
+            </div>
+          {{/each}}
+        </details>
       {{/each}}
+    </div>
 
-    </details>
-  {{/each}}
-</div>
+    {{#if mayDates}}
+    <!-- 🟧 MAY -->
+    <div class="bg-white rounded-lg p-5 shadow space-y-4">
+      <h2 class="text-xl font-bold text-[#b5651d] text-center">May 2025</h2>
 
-
-   {{#if mayDates}}
-<!-- 🟧 MAY -->
-<div class="bg-white rounded-lg p-5 shadow space-y-4">
-  <h2 class="text-xl font-bold text-[#b5651d] text-center">May 2025</h2>
-
-  {{#each mayDates}}
-    <details class="group border border-gray-200 rounded">
-      <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-100">
-        <h4 class="text-md text-[#b5651d] font-medium">{{label}}</h4>
-        <span class="transition group-open:rotate-180">
-          <svg fill="none" height="20" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="20">
-            <path d="M6 9l6 6 6-6"></path>
-          </svg>
-        </span>
-      </summary>
-      {{#each slots}}
-        <div class="p-4 text-sm bg-white text-gray-700 space-y-2">
-          <p><strong>Day:</strong> {{day}}</p>
-          <p><strong>Date:</strong> {{date}}</p>
-          <p><strong>Time:</strong> {{time}}</p>
-          <form method="GET" action="/add-to-cart">
-  <input type="hidden" name="classId" value="{{../../classItem.slug}}">
-  <input type="hidden" name="classTitle" value="{{../../classItem.title}}">
-  <input type="hidden" name="classImage" value="{{../../classItem.image}}">
-  <input type="hidden" name="classPrice" value="{{../../classItem.price}}">
-  <input type="hidden" name="slotDay" value="{{day}}">
-  <input type="hidden" name="slotDate" value="{{date}}">
-  <input type="hidden" name="slotTime" value="{{time}}">
-  <button type="submit" class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
-    Select this slot
-  </button>
-</form>
-        </div>
+      {{#each mayDates}}
+        <details class="group border border-gray-200 rounded">
+          <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-100">
+            <h4 class="text-md text-[#b5651d] font-medium">{{label}}</h4>
+            <span class="transition group-open:rotate-180">
+              <svg fill="none" height="20" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="20">
+                <path d="M6 9l6 6 6-6"></path>
+              </svg>
+            </span>
+          </summary>
+          {{#each slots}}
+            <div class="p-4 text-sm bg-white text-gray-700 space-y-2">
+              <p><strong>Day:</strong> {{day}}</p>
+              <p><strong>Date:</strong> {{date}}</p>
+              <p><strong>Time:</strong> {{time}}</p>
+              
+              <!-- YENİ FORM -->
+              <form method="POST" action="/reserve-slot">
+                <input type="hidden" name="_csrf" value="{{../../../csrfToken}}">
+                <input type="hidden" name="slotId" value="{{../id}}">
+                <button type="submit" 
+                  class="mt-2 {{#if ../isFull}}bg-gray-400{{else}}bg-[#b5651d]{{/if}} text-white px-3 py-1 rounded hover:{{#if ../isFull}}bg-gray-500{{else}}bg-[#8c4516]{{/if}} transition"
+                  {{#if ../isFull}}disabled{{/if}}>
+                  {{#if ../isFull}}Fully Booked{{else}}Select this slot{{/if}}
+                </button>
+              </form>
+            </div>
+          {{/each}}
+        </details>
       {{/each}}
-    </details>
-  {{/each}}
-</div>
-{{/if}}
+    </div>
+    {{/if}}
 
-
-
-      <!-- 🟩 JUNE -->
+    <!-- 🟩 JUNE -->
     <div class="bg-white rounded-lg p-5 shadow space-y-4">
       <h2 class="text-xl font-bold text-[#b5651d] text-center">June 2025</h2>
 
@@ -192,74 +187,62 @@
               <p><strong>Day:</strong> {{day}}</p>
               <p><strong>Date:</strong> {{date}}</p>
               <p><strong>Time:</strong> {{time}}</p>
-              <form method="GET" action="/add-to-cart">
-  <input type="hidden" name="classId" value="{{../../classItem.slug}}">
-  <input type="hidden" name="classTitle" value="{{../../classItem.title}}">
-  <input type="hidden" name="classImage" value="{{../../classItem.image}}">
-  <input type="hidden" name="classPrice" value="{{../../classItem.price}}">
-  <input type="hidden" name="slotDay" value="{{day}}">
-  <input type="hidden" name="slotDate" value="{{date}}">
-  <input type="hidden" name="slotTime" value="{{time}}">
-  <button type="submit" class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
-                Select this slot
-              </button>
-        </form>
+              
+              <!-- YENİ FORM -->
+              <form method="POST" action="/reserve-slot">
+                <input type="hidden" name="_csrf" value="{{../../../csrfToken}}">
+                <input type="hidden" name="slotId" value="{{../id}}">
+                <button type="submit" 
+                  class="mt-2 {{#if ../isFull}}bg-gray-400{{else}}bg-[#b5651d]{{/if}} text-white px-3 py-1 rounded hover:{{#if ../isFull}}bg-gray-500{{else}}bg-[#8c4516]{{/if}} transition"
+                  {{#if ../isFull}}disabled{{/if}}>
+                  {{#if ../isFull}}Fully Booked{{else}}Select this slot{{/if}}
+                </button>
+              </form>
             </div>
           {{/each}}
         </details>
       {{/each}}
     </div>
 
-
+    {{#if augustDates}}
     <!-- 🟦 AUGUST -->
-{{#if augustDates}}
-<!-- 🟩 AUGUST -->
-<div class="bg-white rounded-lg p-5 shadow space-y-4">
-  <h2 class="text-xl font-bold text-[#b5651d] text-center">August 2025</h2>
+    <div class="bg-white rounded-lg p-5 shadow space-y-4">
+      <h2 class="text-xl font-bold text-[#b5651d] text-center">August 2025</h2>
 
-  {{#each augustDates}}
-    <details class="group border border-gray-200 rounded">
-      <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-100">
-        <h4 class="text-md text-[#b5651d] font-medium">{{label}}</h4>
-        <span class="transition group-open:rotate-180">
-          <svg fill="none" height="20" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="20">
-            <path d="M6 9l6 6 6-6"></path>
-          </svg>
-        </span>
-      </summary>
-      {{#each slots}}
-        <div class="p-4 text-sm bg-white text-gray-700 space-y-2">
-          <p><strong>Day:</strong> {{day}}</p>
-          <p><strong>Date:</strong> {{date}}</p>
-          <p><strong>Time:</strong> {{time}}</p>
-          <form method="GET" action="/add-to-cart">
-  <input type="hidden" name="classId" value="{{../../classItem.slug}}">
-  <input type="hidden" name="classTitle" value="{{../../classItem.title}}">
-  <input type="hidden" name="classImage" value="{{../../classItem.image}}">
-  <input type="hidden" name="classPrice" value="{{../../classItem.price}}">
-  <input type="hidden" name="slotDay" value="{{day}}">
-  <input type="hidden" name="slotDate" value="{{date}}">
-  <input type="hidden" name="slotTime" value="{{time}}">
-  <button type="submit" class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition">
-            Select this slot
-          </button>
-        </form>
-        </div>
+      {{#each augustDates}}
+        <details class="group border border-gray-200 rounded">
+          <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-100">
+            <h4 class="text-md text-[#b5651d] font-medium">{{label}}</h4>
+            <span class="transition group-open:rotate-180">
+              <svg fill="none" height="20" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="20">
+                <path d="M6 9l6 6 6-6"></path>
+              </svg>
+            </span>
+          </summary>
+          {{#each slots}}
+            <div class="p-4 text-sm bg-white text-gray-700 space-y-2">
+              <p><strong>Day:</strong> {{day}}</p>
+              <p><strong>Date:</strong> {{date}}</p>
+              <p><strong>Time:</strong> {{time}}</p>
+              
+              <!-- YENİ FORM -->
+              <form method="POST" action="/reserve-slot">
+                <input type="hidden" name="_csrf" value="{{../../../csrfToken}}">
+                <input type="hidden" name="slotId" value="{{../id}}">
+                <button type="submit" 
+                  class="mt-2 {{#if ../isFull}}bg-gray-400{{else}}bg-[#b5651d]{{/if}} text-white px-3 py-1 rounded hover:{{#if ../isFull}}bg-gray-500{{else}}bg-[#8c4516]{{/if}} transition"
+                  {{#if ../isFull}}disabled{{/if}}>
+                  {{#if ../isFull}}Fully Booked{{else}}Select this slot{{/if}}
+                </button>
+              </form>
+            </div>
+          {{/each}}
+        </details>
       {{/each}}
-    </details>
-  {{/each}}
-</div>
-{{/if}}
-
-
-
-
-
+    </div>
+    {{/if}}
 
   </div>
 </div>
 
-
-
 <script src="/js/scroll.js"></script>
-

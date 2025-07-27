@@ -80,6 +80,7 @@
                 <div class="flex items-center justify-between pt-5">
                   <p class="text-base font-black leading-none text-gray-800">{{classPrice}}</p>
                   <form method="POST" action="/remove-from-cart" class="ml-4">
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}">
                     <input type="hidden" name="classId" value="{{classId}}">
                     <input type="hidden" name="slotDay" value="{{slotDay}}">
                     <input type="hidden" name="slotDate" value="{{slotDate}}">
@@ -134,6 +135,7 @@
           </span>
         </div>
         <form method="POST" action="/apply-promo" class="mb-2">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
           <label for="promo" class="font-semibold inline-block mb-3 text-sm uppercase">
             Promo Code
           </label>
@@ -350,6 +352,7 @@
             Back to Cart
           </button>
           <form action="/create-checkout-session" method="POST" style="min-width:160px;">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
             <input type="hidden" name="email" value="{{email}}">
             <button
               type="submit"

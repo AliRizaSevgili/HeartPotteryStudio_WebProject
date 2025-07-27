@@ -2,12 +2,14 @@ const Class = require('../models/Class');
 const slotService = require('../services/slotService');
 const logger = require('../utils/logger');
 
-
+/**
+ * Display class details by slug with available slots
+ */
 exports.showClassBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
     
-    // Veritabanından kurs bilgilerini çek
+    // Get class details from database
     const classItem = await Class.findOne({ slug, isActive: true });
     
     if (!classItem) {
@@ -18,10 +20,10 @@ exports.showClassBySlug = async (req, res) => {
       });
     }
     
-    // Bu kurs için slot bilgilerini getir
+    // Get all slots for this class
     const allSlots = await slotService.getSlotsByClassSlug(slug);
     
-    // Slotları aylara göre grupla
+    // Group slots by month
     const groupedSlots = {};
     
     allSlots.forEach(slot => {
@@ -32,11 +34,15 @@ exports.showClassBySlug = async (req, res) => {
         groupedSlots[month] = [];
       }
       
+      // Calculate availability
+      const availableSlots = slot.totalSlots - slot.bookedSlots;
+      const isFull = availableSlots <= 0;
+      
       groupedSlots[month].push({
-        id: slot._id,
+        id: slot._id, // Important for reservation system
         label: slot.label,
-        availableSlots: slot.totalSlots - slot.bookedSlots,
-        isFull: (slot.totalSlots - slot.bookedSlots) <= 0,
+        availableSlots: availableSlots,
+        isFull: isFull,
         slots: [{
           day: slot.dayOfWeek,
           date: startDate.toLocaleDateString('en-US', { 
@@ -49,13 +55,14 @@ exports.showClassBySlug = async (req, res) => {
       });
     });
     
-    // Her bir ayın tüm slotlarını gönder (aprilDates, mayDates, vb.)
+    // Create date data for each month (aprilDates, mayDates, etc.)
     const dateData = {};
     Object.keys(groupedSlots).forEach(month => {
       const monthName = month.split(' ')[0].toLowerCase() + 'Dates';
       dateData[monthName] = groupedSlots[month];
     });
     
+    // Render the class details page with all data
     res.render("class-details", {
       layout: "layouts/main",
       title: classItem.title,
@@ -73,6 +80,7 @@ exports.showClassBySlug = async (req, res) => {
         notes: classItem.notes,
         classRefund: classItem.classRefund
       },
+      csrfToken: req.csrfToken(), // Essential for secure form submission
       ...dateData
     });
   } catch (error) {
@@ -85,12 +93,14 @@ exports.showClassBySlug = async (req, res) => {
   }
 };
 
-// Arama işlemi
+/**
+ * Search for classes
+ */
 exports.searchClasses = async (req, res) => {
   try {
     const { query } = req.query;
     
-    // Arama sorgusu için filtreleme yap
+    // Create search filter
     const searchFilter = query ? {
       $or: [
         { title: { $regex: query, $options: 'i' } },
@@ -106,7 +116,8 @@ exports.searchClasses = async (req, res) => {
       title: "Search Results",
       searchQuery: query,
       classes,
-      activeClasses: true
+      activeClasses: true,
+      csrfToken: req.csrfToken() // Include CSRF token for any forms
     });
   } catch (error) {
     logger.error(`Error searching classes: ${req.query.query}`, error);
@@ -118,24 +129,26 @@ exports.searchClasses = async (req, res) => {
   }
 };
 
-// Tüm kursları göster (ana sayfa)
+/**
+ * Show all available classes (main class listing page)
+ */
 exports.showAllClasses = async (req, res) => {
   try {
-    // Veritabanından aktif kursları çek
+    // Get all active classes
     const classes = await Class.find({ isActive: true });
     
-    // Her kurs için mevcut slot bilgilerini ekle
+    // Add slot information to each class
     const classesWithSlotInfo = await Promise.all(classes.map(async (classItem) => {
       const classObj = classItem.toObject();
       
-      // Bu kurs için slotları getir
+      // Get slots for this class
       const slots = await slotService.getSlotsByClassSlug(classItem.slug);
       
-      // Slot istatistiklerini hesapla
+      // Calculate slot statistics
       const totalAvailableSlots = slots.reduce((total, slot) => 
-        total + (slot.totalSlots - slot.bookedSlots), 0);
+        total + Math.max(0, slot.totalSlots - slot.bookedSlots), 0);
       
-      // En yakın slot tarihini bul
+      // Find the earliest upcoming slot
       const upcomingSlots = slots.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
       const nextDate = upcomingSlots.length > 0 ? upcomingSlots[0].startDate : null;
       
@@ -144,7 +157,7 @@ exports.showAllClasses = async (req, res) => {
         hasAvailableSlots: totalAvailableSlots > 0,
         totalAvailableSlots,
         nextAvailableDate: nextDate,
-        // date alanını en yakın slot tarihine göre güncelle
+        // Update date field with next available slot
         date: nextDate ? new Date(nextDate).toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric',
@@ -157,7 +170,8 @@ exports.showAllClasses = async (req, res) => {
       layout: "layouts/main",
       title: "Classes & Workshops",
       classes: classesWithSlotInfo,
-      activeClasses: true
+      activeClasses: true,
+      csrfToken: req.csrfToken() // Include CSRF token for any forms
     });
   } catch (error) {
     logger.error('Error fetching classes:', error);
@@ -169,20 +183,22 @@ exports.showAllClasses = async (req, res) => {
   }
 };
 
-// Kategoriye göre kursları filtrele
+/**
+ * Filter classes by category
+ */
 exports.showClassesByCategory = async (req, res) => {
   try {
     const { category } = req.params;
-    // Burada kategoriye göre filtreleme yapılabilir
-    // Şimdilik tüm kursları gösterelim
     
+    // TODO: Add category filtering when categories are implemented
     const classes = await Class.find({ isActive: true });
     
     res.render("class-list", {
       layout: "layouts/main",
       title: `${category.charAt(0).toUpperCase() + category.slice(1)} Classes`,
       classes,
-      activeClasses: true
+      activeClasses: true,
+      csrfToken: req.csrfToken() // Include CSRF token for any forms
     });
   } catch (error) {
     logger.error(`Error fetching classes by category: ${req.params.category}`, error);
@@ -193,3 +209,5 @@ exports.showClassesByCategory = async (req, res) => {
     });
   }
 };
+
+module.exports = exports;

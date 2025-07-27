@@ -1,0 +1,30 @@
+<div class="date-option mb-3">
+  <h5 class="slot-label">{{label}}</h5>
+  <div class="slot-details">
+    {{#each slots}}
+    <div class="slot-time mb-2">
+      <div class="d-flex justify-content-between align-items-center">
+        <span>{{day}}, {{date}} • {{time}}</span>
+        
+        <!-- Yeni form temelli POST yöntemi -->
+            <form action="/reserve-slot" method="POST">
+              <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+              <input type="hidden" name="slotId" value="{{this.id}}">
+              <button type="submit" class="btn {{#if ../isFull}}btn-secondary{{else}}btn-primary{{/if}}" {{#if ../isFull}}disabled{{/if}}>
+                {{#if ../isFull}}Fully Booked{{else}}Select{{/if}}
+              </button>
+          </form>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+  {{#if availableSlots}}
+  <div class="availability text-success">
+    <small>{{availableSlots}} spots available</small>
+  </div>
+  {{else}}
+  <div class="availability text-danger">
+    <small>No spots available</small>
+  </div>
+  {{/if}}
+</div>

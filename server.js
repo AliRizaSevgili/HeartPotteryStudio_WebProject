@@ -8,19 +8,22 @@ const connectDB = require("./config/db");
 const session = require('express-session');
 const csrf = require('csurf');
 const cookieParser = require('cookie-parser');
+const crypto = require('crypto'); // Rezervasyon token'ı için eklendi
 
 const galleryRoutes = require("./routes/galleryRoutes");
 const contactRoutes = require('./routes/contactRoutes');
-const { verifyRecaptcha } = require('./routes/contactRoutes'); // <-- EKLE
+const { verifyRecaptcha } = require('./routes/contactRoutes');
 const classRoutes = require('./routes/classRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const infoRoutes = require("./routes/info");
+const cartRoutes = require('./routes/cartRoutes');
 const hbs = require("hbs");
-const contactController = require('./controllers/contactController'); // <-- EKLE
-const logger = require('./utils/logger'); // Winston logger'ı ekle
+const contactController = require('./controllers/contactController');
+const logger = require('./utils/logger');
+const slotService = require('./services/slotService'); // Slot servisini import et
 
 // Stripe modülü
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Stripe modülü
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // Rate limiting aktif:
 const rateLimit = require('express-rate-limit');
@@ -173,7 +176,7 @@ app.use(session({
   cookie: {
     secure: process.env.NODE_ENV === 'production', // Production'da true olmalı
     httpOnly: true, // XSS saldırılarına karşı koruma
-    sameSite: 'strict' // CSRF saldırılarına karşı koruma
+    sameSite: 'lax' // 'strict' yerine 'lax' kullanın - CSRF sorununu çözmek için
   }
 }));
 
@@ -188,6 +191,39 @@ app.use((req, res, next) => {
   res.locals.csrfToken = req.csrfToken();
   next();
 });
+
+// Rezervasyon sayfası için özel token oluşturma middleware
+app.use('/reservation', (req, res, next) => {
+  // Benzersiz rezervasyon token'ı oluştur
+  const reservationToken = crypto.randomBytes(16).toString('hex');
+  
+  // Token'ı session'a kaydet (karşılaştırma için)
+  req.session.reservationToken = reservationToken;
+  
+  // Token'ı şablona aktar
+  res.locals.reservationToken = reservationToken;
+  
+  next();
+});
+
+// Rezervasyon formları için token doğrulama middleware
+const validateReservationToken = (req, res, next) => {
+  // Sadece rezervasyon token'ı session'da varsa kontrol et
+  if (req.session.reservationToken) {
+    const { reservationToken } = req.body;
+    
+    if (!reservationToken || reservationToken !== req.session.reservationToken) {
+      logger.warn('Invalid reservation token');
+      return res.status(403).render("error", {
+        errorCode: 403,
+        errorMessage: "Invalid Request",
+        errorDetail: "Please try again from the reservation page."
+      });
+    }
+  }
+  
+  next();
+};
 
 // Yeni CSRF tokeni sağlayan rota
 app.get('/get-csrf-token', (req, res) => {
@@ -229,6 +265,7 @@ app.use('/contact', contactLimiter);
 app.use('/api/payment', paymentRoutes);
 app.use('/contact', contactRoutes);
 app.use('/class', classRoutes);
+app.use('/', cartRoutes); // Yeni cart rotaları
 app.use(infoRoutes);
 logger.info("✅ Server loaded galleryRoutes!");
 app.use("/api/gallery", galleryRoutes);
@@ -243,7 +280,7 @@ app.get("/", (req, res) => {
     layout: "layouts/main", 
     title: "Home",
     activeHome: true,
-    isHomepagePage: true  // Bu satırı ekleyin!
+    isHomepagePage: true
   });
 });
 
@@ -260,7 +297,7 @@ app.get("/events", (req, res) => {
     layout: "layouts/main", 
     title: "Events",
     activeGallery: true,
-    isEventsPage: true  // Bu satırı ekleyin!
+    isEventsPage: true
   });
 });
 
@@ -286,7 +323,7 @@ app.get("/contact", (req, res) => {
     layout: "layouts/main", 
     title: "Contact | FQA",
     activeContact: true,
-    isContactPage: true  // Bu satırı ekleyin!
+    isContactPage: true
   });
 });
 
@@ -315,26 +352,59 @@ app.get("/returns", (req, res) => {
   });
 });
 
-// Checkout route'da promo ve mesajı view'a gönder
-app.get("/checkout", (req, res) => {
-  const cart = req.session.cart || [];
-  const promo = req.session.promo || null;
-  const promoMessage = req.session.promoMessage || null;
-  res.render("checkout", {
-    layout: "layouts/main",
-    title: "Checkout",
-    cart,
-    promo,
-    promoMessage,
-    csrfToken: req.csrfToken() // CSRF tokeni view'a gönderiliyor
-  });
+// Payment success page - GÜNCELLENDİ: Rezervasyon onayı eklendi
+app.get("/payment-success", async (req, res) => {
+  try {
+    // Rezervasyon ID'sini kontrol et ve rezervasyonu onayla
+    if (req.session.cart) {
+      // Eski sepet formatı (dizi)
+      if (Array.isArray(req.session.cart) && req.session.cart.length > 0) {
+        // Bu formatta rezervasyon ID'si olmadığı için doğrudan onay olmaz
+        logger.info('Payment successful, but no reservation ID in old cart format');
+      } 
+      // Yeni sepet formatı (nesne)
+      else if (req.session.cart.reservationId) {
+        try {
+          await slotService.confirmReservation(req.session.cart.reservationId, {
+            email: req.body.email || 'customer@example.com'
+          });
+          logger.info(`Reservation confirmed: ${req.session.cart.reservationId}`);
+        } catch (error) {
+          logger.error('Error confirming reservation:', error);
+        }
+      }
+      
+      // Sepeti temizle
+      delete req.session.cart;
+      req.session.promo = null;
+      req.session.promoMessage = null;
+    }
+    
+    // Başarılı ödeme sayfasını göster
+    res.render("payment-success", {
+      layout: "layouts/main",
+      title: "Payment Successful"
+    });
+  } catch (error) {
+    logger.error('Error in payment success handler:', error);
+    res.status(500).render("error", {
+      errorCode: 500,
+      errorMessage: "Server Error",
+      errorDetail: "Something went wrong on our end. Please try again later."
+    });
+  }
 });
 
-// Payment success page
-app.get("/payment-success", (req, res) => {
-  res.render("payment-success", {
+// Reservation expired page
+app.get("/cart-expired", (req, res) => {
+  // Sepeti temizle
+  delete req.session.cart;
+  req.session.promo = null;
+  req.session.promoMessage = null;
+  
+  res.render("cart-expired", {
     layout: "layouts/main",
-    title: "Payment Successful"
+    title: "Reservation Expired"
   });
 });
 
@@ -391,6 +461,21 @@ app.get("/add-to-cart", (req, res) => {
   res.redirect("/checkout");
 });
 
+// Checkout route'u
+app.get("/checkout", (req, res) => {
+  const cart = req.session.cart || [];
+  const promo = req.session.promo || null;
+  const promoMessage = req.session.promoMessage || null;
+  res.render("checkout", {
+    layout: "layouts/main",
+    title: "Checkout",
+    cart,
+    promo,
+    promoMessage,
+    csrfToken: req.csrfToken()
+  });
+});
+
 app.post("/remove-from-cart", (req, res) => {
   const { classId, slotDay, slotDate, slotTime } = req.body;
   if (!req.session.cart) return res.redirect("/checkout");
@@ -412,7 +497,7 @@ app.post("/remove-from-cart", (req, res) => {
   res.redirect("/checkout");
 });
 
-// Promo code application route (aktif ve sade)
+// Eski promo code rotası - mevcut formlar için korunuyor
 app.post("/apply-promo", (req, res) => {
   const { promo } = req.body;
   const validCode = "HEART10";
@@ -430,6 +515,109 @@ app.post("/apply-promo", (req, res) => {
     req.session.promoMessage = "Invalid promo code.";
   }
   res.redirect("/checkout");
+});
+
+// Rezervasyon için yeni promo code rotası - rezervasyon token kontrolü ile
+app.post("/apply-promo", validateReservationToken, (req, res) => {
+  // Eğer buraya ulaşırsa, rezervasyon token'ı geçerli demektir
+  const { promo } = req.body;
+  const validCode = "HEART10";
+  const discount = 0.10; // %10 indirim
+
+  // Sepette ürün var mı kontrol et
+  if (!req.session.cart) {
+    req.session.promoMessage = "Add items to cart before applying promo code.";
+    return res.redirect('/reservation');
+  }
+  
+  // Kod doğruysa session'a indirim bilgisini ekle
+  if (promo && promo.trim().toUpperCase() === validCode) {
+    req.session.promo = { code: promo, discount };
+    req.session.promoMessage = "Promo code applied! 10% discount.";
+  } else {
+    req.session.promo = null;
+    req.session.promoMessage = "Invalid promo code.";
+  }
+  
+  res.redirect('/reservation');
+});
+
+// Slot rezervasyon rotası
+app.post('/reserve-slot', csrfProtection, async (req, res) => {
+  try {
+    const { slotId } = req.body;
+    
+    // Slot ID kontrol
+    if (!slotId) {
+      return res.status(400).render("error", {
+        errorCode: 400,
+        errorMessage: "Invalid Request",
+        errorDetail: "Please select a time slot."
+      });
+    }
+    
+    // Slot bilgilerini al
+    const slot = await slotService.getSlotById(slotId);
+    if (!slot) {
+      return res.status(404).render("error", {
+        errorCode: 404,
+        errorMessage: "Time Slot Not Found",
+        errorDetail: "The selected time slot is no longer available."
+      });
+    }
+    
+    // Slot'u rezerve et
+    const reservationId = await slotService.reserveSlot(slotId);
+    
+    // Sepeti oluştur (Array formatında)
+    if (!req.session.cart) req.session.cart = [];
+    
+    req.session.cart.push({
+      classId: slot.classId,
+      classTitle: slot.className,
+      classImage: slot.classImage,
+      classPrice: slot.price,
+      slotDay: slot.day,
+      slotDate: slot.date,
+      slotTime: slot.time
+    });
+    
+    // Checkout sayfasına yönlendir
+    res.redirect('/checkout');
+  } catch (error) {
+    logger.error('Error in slot reservation:', error);
+    res.status(500).render("error", {
+      errorCode: 500,
+      errorMessage: "Server Error",
+      errorDetail: "An error occurred during time slot reservation. Please try again later."
+    });
+  }
+});
+
+// Rezervasyon iptal rotası - rezervasyon token kontrolü ile
+app.post('/cancel-reservation', validateReservationToken, (req, res) => {
+  // Sepeti kontrol et
+  if (!req.session.cart) {
+    return res.redirect('/learn');
+  }
+  
+  // Rezervasyon ID'si varsa iptal et
+  if (!Array.isArray(req.session.cart) && req.session.cart.reservationId) {
+    try {
+      slotService.cancelReservation(req.session.cart.reservationId).catch(err => {
+        logger.error('Error canceling reservation:', err);
+      });
+    } catch (error) {
+      logger.error('Error in cancel reservation handler:', error);
+    }
+  }
+  
+  // Sepeti temizle
+  delete req.session.cart;
+  req.session.promo = null;
+  req.session.promoMessage = null;
+  
+  res.redirect('/learn');
 });
 
 // Homepage POST (form action="/")
@@ -473,40 +661,70 @@ app.post(
   contactController.submitContactForm
 );
 
-// Stripe Checkout oturumu oluşturma route'u
-app.post('/create-checkout-session', csrfProtection, async (req, res) => {
+// Stripe Checkout oturumu oluşturma route'u - validateReservationToken ile
+app.post('/create-checkout-session', csrfProtection, validateReservationToken, async (req, res) => {
   try {
     const { email } = req.body;
-
-    // Sepet kontrolü
-    if (!req.session.cart || req.session.cart.length === 0) {
+    
+    // Sepet boş mu kontrol et
+    if (!req.session.cart) {
       return res.status(400).send('Cart is empty.');
     }
-
+    
+    let cartItem, price, reservationId, cancelUrl;
+    
+    // Eski format (dizi) kontrolü
+    if (Array.isArray(req.session.cart)) {
+      if (req.session.cart.length === 0) {
+        return res.status(400).send('Cart is empty.');
+      }
+      
+      cartItem = req.session.cart[0];
+      price = parseFloat(cartItem.classPrice.replace(/[^0-9.]/g, ""));
+      reservationId = null; // Eski formatta rezervasyon ID'si yok
+      cancelUrl = "/checkout";
+    } 
+    // Yeni format (nesne) kontrolü
+    else {
+      cartItem = req.session.cart;
+      price = parseFloat(cartItem.classPrice);
+      reservationId = cartItem.reservationId;
+      cancelUrl = "/reservation";
+      
+      // Müşteri email'ini session'a kaydet (payment-success endpoint'i için)
+      req.session.customerEmail = email;
+    }
+    
+    // Promo kodu indirimini uygula
+    if (req.session.promo && req.session.promo.discount) {
+      price = price * (1 - req.session.promo.discount);
+    }
+    
     // Stripe Checkout oturumu oluştur
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      customer_email: email, // Kullanıcıdan gelen email
-      line_items: req.session.cart.map(item => ({
+      customer_email: email,
+      line_items: [{
         price_data: {
           currency: 'usd',
           product_data: {
-            name: item.classTitle,
-            images: [item.classImage],
+            name: cartItem.classTitle,
+            images: [cartItem.classImage],
           },
-          unit_amount: Math.round(parseFloat(item.classPrice) * 100), // Cent'e çevir
+          unit_amount: Math.round(price * 100), // Cent'e çevir
         },
         quantity: 1,
-      })),
+      }],
       mode: 'payment',
+      client_reference_id: reservationId, // Rezervasyon ID'si, webhook için
       success_url: `${req.protocol}://${req.get('host')}/payment-success`,
-      cancel_url: `${req.protocol}://${req.get('host')}/checkout`,
+      cancel_url: `${req.protocol}://${req.get('host')}${cancelUrl}`,
     });
-
+    
     if (process.env.NODE_ENV !== 'production') {
       logger.debug('Stripe session created:', session.id);
     }
-
+    
     res.redirect(303, session.url);
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
@@ -516,7 +734,7 @@ app.post('/create-checkout-session', csrfProtection, async (req, res) => {
   }
 });
 
-// Stripe Webhook Route
+// Stripe Webhook Route - GÜNCELLENDİ: Rezervasyon onayı eklendi
 app.post('/api/payment/webhook', (req, res) => {
   const sig = req.headers['stripe-signature'];
 
@@ -528,11 +746,24 @@ app.post('/api/payment/webhook', (req, res) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  // Event türüne göre işlem yap
+  // Ödeme başarılı event'i
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
     logger.info('Payment successful for session:', session.id);
-    // Ödeme sonrası işlemler burada yapılabilir
+    
+    // Rezervasyon ID'si varsa rezervasyonu onayla
+    const reservationId = session.client_reference_id;
+    if (reservationId) {
+      slotService.confirmReservation(reservationId, {
+        email: session.customer_email
+      }).then(() => {
+        logger.info(`Webhook: Reservation confirmed: ${reservationId}`);
+      }).catch(err => {
+        logger.error(`Webhook: Error confirming reservation ${reservationId}:`, err);
+      });
+    } else {
+      logger.info('Webhook: No reservation ID in session');
+    }
   }
 
   res.status(200).send('Received webhook');
@@ -561,12 +792,60 @@ app.use((err, req, res, next) => {
       });
       logger.error('CSRF Cookie:', '[REDACTED]'); // CSRF cookie maskele
     }
-    return res.status(403).json({ error: 'Invalid CSRF token' });
+    
+    // JSON yanıtı yerine kullanıcı dostu hata sayfası göster
+    return res.status(403).render("error", {
+      errorCode: 403,
+      errorMessage: "Security Verification Failed",
+      errorDetail: "Please refresh the page and try again."
+    });
   }
   next(err);
 });
 
-// Handlebars helper
+// YENİ SEPET FORMATI İÇİN HANDLEBARS HELPER'LAR
+// Yeni sepet formatı bir nesne olduğu için yardımcıları güncelliyoruz
+hbs.registerHelper('cartSubtotal', function(cart) {
+  if (!cart) return "0.00";
+  let price = parseFloat(cart.classPrice) || 0;
+  return price.toFixed(2);
+});
+
+hbs.registerHelper('cartDiscount', function(cart, promo) {
+  if (!cart || !promo || !promo.discount) return "0.00";
+  let price = parseFloat(cart.classPrice) || 0;
+  return (price * promo.discount).toFixed(2);
+});
+
+hbs.registerHelper('cartDiscountedSubtotal', function(cart, promo) {
+  if (!cart) return "0.00";
+  let price = parseFloat(cart.classPrice) || 0;
+  if (promo && promo.discount) {
+    price = price * (1 - promo.discount);
+  }
+  return price.toFixed(2);
+});
+
+hbs.registerHelper('cartTax', function(cart, promo, taxRate = 0.13) {
+  if (!cart) return "0.00";
+  let price = parseFloat(cart.classPrice) || 0;
+  if (promo && promo.discount) {
+    price = price * (1 - promo.discount);
+  }
+  return (price * taxRate).toFixed(2);
+});
+
+hbs.registerHelper('cartTotal', function(cart, promo, taxRate = 0.13) {
+  if (!cart) return "0.00";
+  let price = parseFloat(cart.classPrice) || 0;
+  if (promo && promo.discount) {
+    price = price * (1 - promo.discount);
+  }
+  let tax = price * taxRate;
+  return (price + tax).toFixed(2);
+});
+
+// ESKİ SEPET FORMATI İÇİN HANDLEBARS HELPER'LAR - GEÇİŞ SÜRECİNDE KULLANILACAK
 hbs.registerHelper('sum', function(array, field) {
   let total = 0;
   if (Array.isArray(array)) {
@@ -634,11 +913,5 @@ hbs.registerHelper('totalCost', function(array, discount, taxRate) {
   return (subtotal + tax).toFixed(2);
 });
 
-
-
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => logger.info(`🚀 Server is running on port ${PORT}`));
-
-
-
-
