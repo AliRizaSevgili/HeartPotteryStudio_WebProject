@@ -243,26 +243,28 @@
               </span>
             </div>
             <div class="flex justify-between text-sm text-gray-700">
-              <span>Tax (HST 13%)</span>
-              <span>
-                {{#if cart}}
-                  {{#if (isObject cart)}}
-                    ${{cartTax cart promo}}
+                <span>Tax (HST 13%)</span>
+                <span>
+                  {{#if cart}}
+                    {{#if (isObject cart)}}
+                      ${{cartTax cart promo 0.13}}
+                    {{else}}
+                      ${{taxAmount cart 0.13}}
+                    {{/if}}
                   {{else}}
-                    ${{taxAmount cart 0.13}}
+                    $0.00
                   {{/if}}
-                {{else}}
-                  $0.00
-                {{/if}}
-              </span>
-            </div>
+                </span>
+              </div>
           </div>
+
+          <!-- Total Cost kısmı -->
           <div class="flex font-semibold justify-between py-6 text-sm uppercase">
             <span>Total cost</span>
             <span>
               {{#if cart}}
                 {{#if (isObject cart)}}
-                  ${{cartTotal cart promo}}
+                  ${{cartTotal cart promo 0.13}}
                 {{else}}
                   {{#if promo}}
                     ${{totalCost cart promo.discount 0.13}}

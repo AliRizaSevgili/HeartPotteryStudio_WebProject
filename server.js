@@ -600,6 +600,128 @@ hbs.registerHelper('isObject', function(item) {
   return !Array.isArray(item) && typeof item === 'object' && item !== null;
 });
 
+// Yeni sepet formatı için helperlar
+hbs.registerHelper('cartSubtotal', function(cart) {
+  if (!cart) return "0.00";
+  let price = parseFloat(cart.classPrice) || 0;
+  return price.toFixed(2);
+});
+
+hbs.registerHelper('cartDiscount', function(cart, promo) {
+  if (!cart || !promo || !promo.discount) return "0.00";
+  let price = parseFloat(cart.classPrice) || 0;
+  return (price * promo.discount).toFixed(2);
+});
+
+hbs.registerHelper('cartDiscountedSubtotal', function(cart, promo) {
+  if (!cart) return "0.00";
+  let price = parseFloat(cart.classPrice) || 0;
+  if (promo && promo.discount) {
+    price = price * (1 - promo.discount);
+  }
+  return price.toFixed(2);
+});
+
+hbs.registerHelper('cartTax', function(cart, promo, taxRate = 0.13) {
+  if (!cart) return "0.00";
+  let price = parseFloat(cart.classPrice) || 0;
+  if (promo && promo.discount) {
+    price = price * (1 - promo.discount);
+  }
+  return (price * taxRate).toFixed(2);
+});
+
+hbs.registerHelper('cartTotal', function(cart, promo, taxRate = 0.13) {
+  if (!cart) return "0.00";
+  let price = parseFloat(cart.classPrice) || 0;
+  if (promo && promo.discount) {
+    price = price * (1 - promo.discount);
+  }
+  let tax = price * taxRate;
+  return (price + tax).toFixed(2);
+});
+
+// Eski sepet formatı için helperlar
+hbs.registerHelper('sum', function(array, field) {
+  let total = 0;
+  if (Array.isArray(array)) {
+    array.forEach(item => {
+      let val = item[field];
+      if (typeof val === "string") val = val.replace(/[^0-9.]/g, "");
+      total += parseFloat(val) || 0;
+    });
+  }
+  return total.toFixed(2);
+});
+
+hbs.registerHelper('discountedTotal', function(array, discount) {
+  let total = 0;
+  if (Array.isArray(array)) {
+    array.forEach(item => {
+      let val = item["classPrice"];
+      if (typeof val === "string") val = val.replace(/[^0-9.]/g, "");
+      total += parseFloat(val) || 0;
+    });
+  }
+  return (total * (1 - (discount || 0))).toFixed(2);
+});
+
+hbs.registerHelper('discountAmount', function(array, discount) {
+  let total = 0;
+  if (Array.isArray(array)) {
+    array.forEach(item => {
+      let val = item["classPrice"];
+      if (typeof val === "string") val = val.replace(/[^0-9.]/g, "");
+      total += parseFloat(val) || 0;
+    });
+  }
+  return (total * (discount || 0)).toFixed(2);
+});
+
+// taxAmount helper fonksiyonu
+hbs.registerHelper('taxAmount', function(array, rate) {
+  if (!array || !Array.isArray(array) || array.length === 0) return "0.00";
+  
+  let total = 0;
+  array.forEach(item => {
+    let val = item["classPrice"];
+    if (typeof val === "string") val = val.replace(/[^0-9.]/g, "");
+    total += parseFloat(val) || 0;
+  });
+  
+  // 0 değerinde tax rate olmamalı
+  const taxRate = (rate === undefined || rate === null || isNaN(rate)) ? 0.13 : rate;
+  return (total * taxRate).toFixed(2);
+});
+
+// totalCost helper fonksiyonu
+hbs.registerHelper('totalCost', function(array, discount, taxRate) {
+  if (!array || !Array.isArray(array) || array.length === 0) return "0.00";
+  
+  let subtotal = 0;
+  array.forEach(item => {
+    let val = item["classPrice"];
+    if (typeof val === "string") val = val.replace(/[^0-9.]/g, "");
+    subtotal += parseFloat(val) || 0;
+  });
+  
+  // İndirim varsa uygula
+  discount = (discount === undefined || discount === null) ? 0 : discount;
+  if (discount) {
+    subtotal = subtotal * (1 - discount);
+  }
+  
+  // 0 değerinde tax rate olmamalı
+  const effectiveTaxRate = (taxRate === undefined || taxRate === null || isNaN(taxRate)) ? 0.13 : taxRate;
+  
+  // Vergiyi ekle
+  let tax = subtotal * effectiveTaxRate;
+  
+  // Toplamı döndür
+  return (subtotal + tax).toFixed(2);
+});
+
+
 // GET alternative slot reservation route - ENGLISH ERROR MESSAGES
 app.get('/select-slot/:slotId', async (req, res) => {
   try {
@@ -872,115 +994,7 @@ app.use((err, req, res, next) => {
   next(err);
 });
 
-// YENİ SEPET FORMATI İÇİN HANDLEBARS HELPER'LAR
-// Yeni sepet formatı bir nesne olduğu için yardımcıları güncelliyoruz
-hbs.registerHelper('cartSubtotal', function(cart) {
-  if (!cart) return "0.00";
-  let price = parseFloat(cart.classPrice) || 0;
-  return price.toFixed(2);
-});
 
-hbs.registerHelper('cartDiscount', function(cart, promo) {
-  if (!cart || !promo || !promo.discount) return "0.00";
-  let price = parseFloat(cart.classPrice) || 0;
-  return (price * promo.discount).toFixed(2);
-});
-
-hbs.registerHelper('cartDiscountedSubtotal', function(cart, promo) {
-  if (!cart) return "0.00";
-  let price = parseFloat(cart.classPrice) || 0;
-  if (promo && promo.discount) {
-    price = price * (1 - promo.discount);
-  }
-  return price.toFixed(2);
-});
-
-hbs.registerHelper('cartTax', function(cart, promo, taxRate = 0.13) {
-  if (!cart) return "0.00";
-  let price = parseFloat(cart.classPrice) || 0;
-  if (promo && promo.discount) {
-    price = price * (1 - promo.discount);
-  }
-  return (price * taxRate).toFixed(2);
-});
-
-hbs.registerHelper('cartTotal', function(cart, promo, taxRate = 0.13) {
-  if (!cart) return "0.00";
-  let price = parseFloat(cart.classPrice) || 0;
-  if (promo && promo.discount) {
-    price = price * (1 - promo.discount);
-  }
-  let tax = price * taxRate;
-  return (price + tax).toFixed(2);
-});
-
-// ESKİ SEPET FORMATI İÇİN HANDLEBARS HELPER'LAR - GEÇİŞ SÜRECİNDE KULLANILACAK
-hbs.registerHelper('sum', function(array, field) {
-  let total = 0;
-  if (Array.isArray(array)) {
-    array.forEach(item => {
-      let val = item[field];
-      if (typeof val === "string") val = val.replace(/[^0-9.]/g, "");
-      total += parseFloat(val) || 0;
-    });
-  }
-  return total.toFixed(2);
-});
-
-hbs.registerHelper('discountedTotal', function(array, discount) {
-  let total = 0;
-  if (Array.isArray(array)) {
-    array.forEach(item => {
-      let val = item["classPrice"];
-      if (typeof val === "string") val = val.replace(/[^0-9.]/g, "");
-      total += parseFloat(val) || 0;
-    });
-  }
-  return (total * (1 - (discount || 0))).toFixed(2);
-});
-
-hbs.registerHelper('discountAmount', function(array, discount) {
-  let total = 0;
-  if (Array.isArray(array)) {
-    array.forEach(item => {
-      let val = item["classPrice"];
-      if (typeof val === "string") val = val.replace(/[^0-9.]/g, "");
-      total += parseFloat(val) || 0;
-    });
-  }
-  return (total * (discount || 0)).toFixed(2);
-});
-
-hbs.registerHelper('taxAmount', function(array, rate) {
-  let total = 0;
-  if (Array.isArray(array)) {
-    array.forEach(item => {
-      let val = item["classPrice"];
-      if (typeof val === "string") val = val.replace(/[^0-9.]/g, "");
-      total += parseFloat(val) || 0;
-    });
-  }
-  return (total * (rate || 0)).toFixed(2);
-});
-
-hbs.registerHelper('totalCost', function(array, discount, taxRate) {
-  let subtotal = 0;
-  if (Array.isArray(array)) {
-    array.forEach(item => {
-      let val = item["classPrice"];
-      if (typeof val === "string") val = val.replace(/[^0-9.]/g, "");
-      subtotal += parseFloat(val) || 0;
-    });
-  }
-  // İndirim varsa uygula
-  if (discount) {
-    subtotal = subtotal * (1 - discount);
-  }
-  // Vergiyi ekle
-  let tax = subtotal * (taxRate || 0);
-  // Toplamı döndür
-  return (subtotal + tax).toFixed(2);
-});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => logger.info(`🚀 Server is running on port ${PORT}`));
