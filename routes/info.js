@@ -4,7 +4,7 @@ const Info = require("../models/Info");
 const nodemailer = require("nodemailer");
 const logger = require('../utils/logger'); // Logger import ediyoruz
 
-router.post("/checkout-info", async (req, res) => {
+router.post("/save-checkout-info", async (req, res) => {
   try {
     // Hassas verileri maskele
     const safeLog = { ...req.body };

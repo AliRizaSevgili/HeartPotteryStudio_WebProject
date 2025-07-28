@@ -233,34 +233,25 @@ app.get('/get-csrf-token', (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
 });
 
-// Form gönderim loglarını kontrol et
-app.post('/checkout-info', (req, res) => {
-  if (process.env.NODE_ENV !== 'production') {
-    logger.debug('Request body:', {
-      ...req.body,
-      _csrf: '[REDACTED]', // CSRF tokeni maskele
-      recaptchaToken: req.body.recaptchaToken ? '[REDACTED]' : '', // reCAPTCHA tokeni maskele
-    });
-  }
 
-  // `email` alanını işleme
-  const { email, firstName, lastName, company, contactNumber, address } = req.body;
-  const validEmail = Array.isArray(email) ? email.find(e => e.trim() !== '') : email;
-
-  if (!validEmail) {
-    return res.status(400).send('Invalid email address.');
-  }
-
-  // İşlenmiş verilerle devam edin
-  logger.info('Processed email:', validEmail);
-
-  // ...form işleme kodları...
-  res.status(200).send('Form submitted successfully.');
-});
 
 // --- ROUTES ---
 app.use('/api/payment', paymentLimiter);
 app.use('/contact', contactLimiter);
+
+// Client-side loglama endpoint'i
+app.post('/api/client-logs', (req, res) => {
+  const { level, message, url, userAgent, timestamp } = req.body;
+  
+  // Backend logger'a yönlendir
+  if (level === 'error') {
+    logger.error(`CLIENT ERROR [${url}]: ${message}`);
+  } else {
+    logger.info(`CLIENT LOG [${url}]: ${message}`);
+  }
+  
+  res.status(200).send('Log received');
+});
 
 app.use('/api/payment', paymentRoutes);
 app.use('/contact', contactRoutes);
@@ -350,6 +341,14 @@ app.get("/returns", (req, res) => {
     layout: "layouts/main", 
     title: "Return & Refund" 
   });
+});
+
+
+// Checkout success sayfası - payment-success'e yönlendir
+app.get("/checkout-success", async (req, res) => {
+  // Session ID'yi alıp payment-success'e yönlendir
+  const sessionId = req.query.session_id;
+  res.redirect(`/payment-success${sessionId ? '?session_id=' + sessionId : ''}`);
 });
 
 // Payment success page - GÜNCELLENDİ: Rezervasyon onayı eklendi
@@ -811,6 +810,128 @@ app.post('/cancel-reservation', validateReservationToken, (req, res) => {
   res.redirect('/learn');
 });
 
+// Checkout bilgilerini işleme rotası
+app.post('/checkout-info', csrfProtection, async (req, res) => {
+  console.log('CHECKOUT-INFO ROUTE HANDLER TRIGGERED');
+  try {
+    // Debug için
+    logger.debug('Checkout form data:', {
+      ...req.body,
+      _csrf: '[REDACTED]',
+      recaptchaToken: req.body.recaptchaToken ? '[REDACTED]' : ''
+    });
+    logger.debug('Current session cart:', req.session.cart);
+    logger.debug('STRIPE_SECRET_KEY:', process.env.STRIPE_SECRET_KEY ? 'Set' : 'Not set');
+    
+    // Form verilerini al
+    const { firstName, lastName, email, contactNumber, address, company } = req.body;
+    
+    // Email doğrulama
+    const validEmail = Array.isArray(email) ? email.find(e => e.trim() !== '') : email;
+    if (!validEmail) {
+      return res.status(400).render("error", {
+        errorCode: 400,
+        errorMessage: "Invalid Email",
+        errorDetail: "Please provide a valid email address."
+      });
+    }
+    
+    // Kullanıcı bilgilerini session'a kaydet
+    req.session.checkoutInfo = {
+      firstName, 
+      lastName,
+      email: validEmail,
+      contactNumber,
+      address,
+      company
+    };
+    
+    // Sepette ürün var mı kontrol et
+    if (!req.session.cart) {
+      logger.error('Checkout attempted with empty cart');
+      return res.status(400).render("error", {
+        errorCode: 400, 
+        errorMessage: "Empty Cart",
+        errorDetail: "Your cart is empty. Please add items before checkout."
+      });
+    }
+    
+    // Stripe checkout session oluştur ve yönlendir
+    const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+    
+    let lineItems = [];
+    
+    // Sepet nesne ise
+    if (req.session.cart && !Array.isArray(req.session.cart)) {
+      lineItems.push({
+        price_data: {
+          currency: 'cad',
+          product_data: {
+            name: req.session.cart.classTitle,
+            description: `${req.session.cart.slotDate} ${req.session.cart.slotTime}`,
+          },
+          unit_amount: Math.round(parseFloat(req.session.cart.classPrice) * 100),
+        },
+        quantity: 1,
+      });
+      
+      logger.info(`Created line item for: ${req.session.cart.classTitle}`);
+    } 
+    // Sepet dizi ise
+    else if (req.session.cart && Array.isArray(req.session.cart)) {
+      req.session.cart.forEach(item => {
+        lineItems.push({
+          price_data: {
+            currency: 'cad',
+            product_data: {
+              name: item.classTitle,
+              description: `${item.slotDate} ${item.slotTime}`,
+            },
+            unit_amount: Math.round(parseFloat(item.classPrice) * 100),
+          },
+          quantity: 1,
+        });
+      });
+      
+      logger.info(`Created ${lineItems.length} line items for cart`);
+    }
+    
+    // Domain bilgisini kontrol et ve varsayılan değer ata
+    const domain = process.env.DOMAIN || 'http://localhost:5000';
+    
+    // Checkout session oluştur
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: lineItems,
+      mode: 'payment',
+      success_url: `${domain}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${domain}/checkout`,
+      customer_email: validEmail,
+      client_reference_id: req.session.reservationToken || '',
+      metadata: {
+        firstName,
+        lastName,
+        contactNumber
+      }
+    });
+    
+    logger.info(`Stripe session created: ${session.id}`);
+    logger.info(`Redirecting to Stripe URL: ${session.url}`);
+    
+    // Stripe checkout sayfasına yönlendir (düzeltilmiş indentasyon)
+    res.writeHead(303, { Location: session.url });
+    return res.end();
+    
+  } catch (error) {
+    logger.error('Error in checkout process:', error);
+    res.status(500).render("error", {
+      errorCode: 500,
+      errorMessage: "Payment Error",
+      errorDetail: "An error occurred during checkout process. Please try again."
+    });
+  }
+});
+
 // Homepage POST (form action="/")
 app.post(
   "/",
@@ -897,7 +1018,7 @@ app.post('/create-checkout-session', csrfProtection, validateReservationToken, a
       customer_email: email,
       line_items: [{
         price_data: {
-          currency: 'usd',
+          currency: 'cad',
           product_data: {
             name: cartItem.classTitle,
             images: [cartItem.classImage],
@@ -908,12 +1029,12 @@ app.post('/create-checkout-session', csrfProtection, validateReservationToken, a
       }],
       mode: 'payment',
       client_reference_id: reservationId, // Rezervasyon ID'si, webhook için
-      success_url: `${req.protocol}://${req.get('host')}/payment-success`,
+      success_url: `${domain}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.protocol}://${req.get('host')}${cancelUrl}`,
     });
     
     if (process.env.NODE_ENV !== 'production') {
-      logger.debug('Stripe session created:', session.id);
+      logger.info(`Created Stripe checkout session: ${session.id} with amount: ${price}`);
     }
     
     res.redirect(303, session.url);

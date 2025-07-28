@@ -429,6 +429,7 @@
           Please agree to the privacy policy.
         </p>
       </div>
+      
       <div class="mt-10 flex w-full">
         <div class="mx-auto flex gap-4" style="width:340px;">
           <button
@@ -439,20 +440,17 @@
           >
             Back to Cart
           </button>
-          <form action="/create-checkout-session" method="POST" style="min-width:160px;">
-            <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-            <input type="hidden" name="email" value="{{email}}">
-            <button
-              type="submit"
-              id="pay-now-btn"
-              class="rounded-md bg-[#f8dce2] px-3.5 py-2.5 text-center text-base font-semibold text-[#5a3a3c] shadow-none hover:bg-[#f4cdd7] focus:outline-none focus:ring-0 border-none transition-all duration-200"
-              style="min-width:160px;"
-            >
-              Pay now
-            </button>
-          </form>
+          <button
+            type="submit"
+            id="pay-now-btn"
+            class="rounded-md bg-[#f8dce2] px-3.5 py-2.5 text-center text-base font-semibold text-[#5a3a3c] shadow-none hover:bg-[#f4cdd7] focus:outline-none focus:ring-0 border-none transition-all duration-200"
+            style="min-width:160px;"
+          >
+            Pay now
+          </button>
         </div>
       </div>
+
       <!-- Add this hidden input inside your form -->
       <input type="hidden" name="recaptchaToken" id="recaptchaToken">
     </div>

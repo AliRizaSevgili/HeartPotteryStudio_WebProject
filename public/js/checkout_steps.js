@@ -1,3 +1,42 @@
+// Frontend Logger - Tarayıcı konsoluna yazma ve opsiyonel olarak sunucuya gönderme
+const frontendLogger = {
+    info: function(message) {
+        console.log(`[INFO] ${new Date().toISOString()}: ${message}`);
+        
+        // İsteğe bağlı: Önemli logları sunucuya gönder
+        // this._sendToServer('info', message);
+    },
+    
+    error: function(message) {
+        console.error(`[ERROR] ${new Date().toISOString()}: ${message}`);
+        
+        // Hata loglarını sunucuya gönder
+        this._sendToServer('error', message);
+    },
+    
+    _sendToServer: function(level, message) {
+        // Sunucuya log gönderme (ciddi hatalar için)
+        if (level === 'error') {
+            fetch('/api/client-logs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    level,
+                    message,
+                    url: window.location.href,
+                    userAgent: navigator.userAgent,
+                    timestamp: new Date().toISOString()
+                })
+            }).catch(err => {
+                // Log gönderimi başarısız olursa sessizce devam et
+                console.error('Log gönderimi başarısız:', err);
+            });
+        }
+    }
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     // Butonları seçme
     const goToDeliveryBtn = document.getElementById('go-to-delivery');
@@ -35,6 +74,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 top: 0,
                 behavior: 'smooth'
             });
+            
+            frontendLogger.info('Kullanıcı checkout adımından delivery adımına geçti');
         });
     }
     
@@ -57,6 +98,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 top: 0,
                 behavior: 'smooth'
             });
+            
+            frontendLogger.info('Kullanıcı delivery adımından sepet adımına geri döndü');
         });
     }
     
@@ -71,6 +114,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             stepCart.classList.remove('bg-gray-200', 'text-gray-700');
             stepCart.classList.add('bg-indigo-500', 'text-white');
+            
+            frontendLogger.info('Kullanıcı progress bar üzerinden sepet adımına geçti');
         });
     }
     
@@ -89,12 +134,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 stepDelivery.classList.remove('bg-gray-200', 'text-gray-700');
                 stepDelivery.classList.add('bg-indigo-500', 'text-white');
+                
+                frontendLogger.info('Kullanıcı progress bar üzerinden delivery adımına geçti');
             } else {
                 // Sepette ürün yoksa hata göster
                 cartError.classList.remove('hidden');
                 setTimeout(() => {
                     cartError.classList.add('hidden');
                 }, 3000);
+                
+                frontendLogger.error('Boş sepet ile delivery adımına geçiş denemesi');
             }
         });
     }
@@ -112,6 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (toggleAgreement && !toggleAgreement.checked) {
                 e.preventDefault();
                 toggleError.classList.remove('hidden');
+                frontendLogger.error('Kullanıcı koşulları kabul etmeden ödemeye geçmeye çalıştı');
                 return;
             } else if (toggleError) {
                 toggleError.classList.add('hidden');
@@ -122,6 +172,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 // HTML5 doğrulama mesajlarını göster
                 checkoutInfoForm.reportValidity();
+                frontendLogger.error('Form doğrulaması başarısız oldu');
+            } else {
+                frontendLogger.info('Pay Now butonuna tıklandı, form doğrulaması başarılı');
+            }
+        });
+    }
+
+    // Form submit işlemi - reCAPTCHA ve form gönderim yönetimi
+    if (checkoutInfoForm) {
+        checkoutInfoForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Formu normal gönderimini engelle
+            
+            // reCAPTCHA token'ı al
+            if (typeof grecaptcha !== 'undefined') {
+                frontendLogger.info('reCAPTCHA token alma işlemi başlatıldı');
+                grecaptcha.execute('6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI', {action: 'checkout'})
+                    .then(function(token) {
+                        // reCAPTCHA token'ı gizli alana yerleştir
+                        document.getElementById('recaptchaToken').value = token;
+                        
+                        frontendLogger.info('reCAPTCHA token başarıyla alındı, form gönderiliyor');
+                        // Formu programatik olarak gönder
+                        checkoutInfoForm.submit();
+                    })
+                    .catch(function(error) {
+                        frontendLogger.error(`reCAPTCHA error: ${error}`);
+                        // Hata durumunda yine de formu gönder
+                        checkoutInfoForm.submit();
+                    });
+            } else {
+                frontendLogger.info('reCAPTCHA tanımlı değil, form doğrudan gönderiliyor');
+                // reCAPTCHA yüklenmediyse formu normal şekilde gönder
+                checkoutInfoForm.submit();
             }
         });
     }
