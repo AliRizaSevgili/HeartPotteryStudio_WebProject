@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 <!-- CSRF token için gizli alan (sayfanın en başına) -->
-<input type="hidden" id="csrfToken" value="{{csrfToken}}">
+<input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
 
 <!-- Görsel ve Başlık Bölümü -->
 <section class="bg-white pt-8 pb-0 px-6 sm:px-12 lg:px-24 font-sans text-gray-700 text-center">
@@ -115,7 +115,7 @@
               
               <!-- YENİ FORM -->
               <form method="POST" action="/reserve-slot">
-                <input type="hidden" name="_csrf" value="{{../../../csrfToken}}">
+                <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
                 <input type="hidden" name="slotId" value="{{../id}}">
                 <button type="submit" 
                   class="mt-2 {{#if ../isFull}}bg-gray-400{{else}}bg-[#b5651d]{{/if}} text-white px-3 py-1 rounded hover:{{#if ../isFull}}bg-gray-500{{else}}bg-[#8c4516]{{/if}} transition"
@@ -152,7 +152,7 @@
               
               <!-- YENİ FORM -->
               <form method="POST" action="/reserve-slot">
-                <input type="hidden" name="_csrf" value="{{../../../csrfToken}}">
+                <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
                 <input type="hidden" name="slotId" value="{{../id}}">
                 <button type="submit" 
                   class="mt-2 {{#if ../isFull}}bg-gray-400{{else}}bg-[#b5651d]{{/if}} text-white px-3 py-1 rounded hover:{{#if ../isFull}}bg-gray-500{{else}}bg-[#8c4516]{{/if}} transition"
@@ -190,7 +190,7 @@
               
               <!-- YENİ FORM -->
               <form method="POST" action="/reserve-slot">
-                <input type="hidden" name="_csrf" value="{{../../../csrfToken}}">
+                <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
                 <input type="hidden" name="slotId" value="{{../id}}">
                 <button type="submit" 
                   class="mt-2 {{#if ../isFull}}bg-gray-400{{else}}bg-[#b5651d]{{/if}} text-white px-3 py-1 rounded hover:{{#if ../isFull}}bg-gray-500{{else}}bg-[#8c4516]{{/if}} transition"
@@ -227,7 +227,7 @@
               
               <!-- YENİ FORM -->
               <form method="POST" action="/reserve-slot">
-                <input type="hidden" name="_csrf" value="{{../../../csrfToken}}">
+                <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
                 <input type="hidden" name="slotId" value="{{../id}}">
                 <button type="submit" 
                   class="mt-2 {{#if ../isFull}}bg-gray-400{{else}}bg-[#b5651d]{{/if}} text-white px-3 py-1 rounded hover:{{#if ../isFull}}bg-gray-500{{else}}bg-[#8c4516]{{/if}} transition"

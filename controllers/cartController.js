@@ -133,7 +133,7 @@ exports.viewCart = async (req, res) => {
     const total = discountedSubtotal + tax;
     
     // Reservation.hbs şablonunu render et
-    res.render("reservation", {
+    res.render("checkout", {
       layout: "layouts/main",
       title: "Complete Your Reservation",
       cart,
@@ -147,7 +147,8 @@ exports.viewCart = async (req, res) => {
         tax: tax.toFixed(2),
         total: total.toFixed(2)
       },
-      csrfToken: req.csrfToken() // CSRF token eklenmeli
+      step: 'cart', // Eklenen adım bilgisi
+      csrfToken: req.csrfToken()
     });
   } catch (error) {
     logger.error('Error viewing cart:', error);

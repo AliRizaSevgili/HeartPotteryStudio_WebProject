@@ -36,8 +36,12 @@
         <div class="flex justify-between border-b pb-8">
           <h1 class="font-semibold text-2xl">Cart</h1>
           <h2 class="font-semibold text-2xl">
-            {{#if cart.length}}
-              {{cart.length}} Items
+            {{#if cart}}
+              {{#if (isObject cart)}}
+                1 Item
+              {{else}}
+                {{cart.length}} Items
+              {{/if}}
             {{else}}
               0 Items
             {{/if}}
@@ -64,27 +68,25 @@
           </div>
         </div>
         {{else}}
-        <!-- Demo ürünler -->
-        {{#if cart.length}}
-          {{#each cart}}
+        <!-- Sepet İçeriği -->
+        {{#if cart}}
+          {{#if (isObject cart)}}
+            <!-- Nesne formatı için sepet görünümü -->
             <div class="md:flex items-stretch py-8 md:py-10 lg:py-8 border-t border-gray-50">
               <div class="md:w-4/12 2xl:w-1/4 w-full">
-                <img src="{{classImage}}" alt="{{classTitle}}" 
-                     class="w-full h-auto object-center object-contain rounded-lg" />
+                <img src="{{cart.classImage}}" alt="{{cart.classTitle}}" 
+                    class="w-full h-auto object-center object-contain rounded-lg" />
               </div>
               <div class="md:pl-3 md:w-8/12 2xl:w-3/4 flex flex-col justify-center">
-                <p class="text-base font-bold text-gray-800 mb-2">{{classTitle}}</p>
-                <p class="text-sm text-gray-600 mb-1"><strong>Day:</strong> {{slotDay}}</p>
-                <p class="text-sm text-gray-600 mb-1"><strong>Date:</strong> {{slotDate}}</p>
-                <p class="text-sm text-gray-600 mb-1"><strong>Time:</strong> {{slotTime}}</p>
+                <p class="text-base font-bold text-gray-800 mb-2">{{cart.classTitle}}</p>
+                <p class="text-sm text-gray-600 mb-1"><strong>Day:</strong> {{cart.slotDay}}</p>
+                <p class="text-sm text-gray-600 mb-1"><strong>Date:</strong> {{cart.slotDate}}</p>
+                <p class="text-sm text-gray-600 mb-1"><strong>Time:</strong> {{cart.slotTime}}</p>
                 <div class="flex items-center justify-between pt-5">
-                  <p class="text-base font-black leading-none text-gray-800">{{classPrice}}</p>
-                  <form method="POST" action="/remove-from-cart" class="ml-4">
-                    <input type="hidden" name="_csrf" value="{{csrfToken}}">
-                    <input type="hidden" name="classId" value="{{classId}}">
-                    <input type="hidden" name="slotDay" value="{{slotDay}}">
-                    <input type="hidden" name="slotDate" value="{{slotDate}}">
-                    <input type="hidden" name="slotTime" value="{{slotTime}}">
+                  <p class="text-base font-black leading-none text-gray-800">${{cartSubtotal cart}}</p>
+                  <form method="POST" action="/cancel-reservation" class="ml-4">
+                    <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+                    <input type="hidden" name="reservationToken" value="{{reservationToken}}">
                     <button type="submit" class="text-xs leading-3 underline text-red-500 cursor-pointer hover:text-red-700 transition">
                       Remove
                     </button>
@@ -92,7 +94,36 @@
                 </div>
               </div>
             </div>
-          {{/each}}
+          {{else}}
+            <!-- Dizi formatı için sepet görünümü -->
+            {{#each cart}}
+              <div class="md:flex items-stretch py-8 md:py-10 lg:py-8 border-t border-gray-50">
+                <div class="md:w-4/12 2xl:w-1/4 w-full">
+                  <img src="{{classImage}}" alt="{{classTitle}}" 
+                      class="w-full h-auto object-center object-contain rounded-lg" />
+                </div>
+                <div class="md:pl-3 md:w-8/12 2xl:w-3/4 flex flex-col justify-center">
+                  <p class="text-base font-bold text-gray-800 mb-2">{{classTitle}}</p>
+                  <p class="text-sm text-gray-600 mb-1"><strong>Day:</strong> {{slotDay}}</p>
+                  <p class="text-sm text-gray-600 mb-1"><strong>Date:</strong> {{slotDate}}</p>
+                  <p class="text-sm text-gray-600 mb-1"><strong>Time:</strong> {{slotTime}}</p>
+                  <div class="flex items-center justify-between pt-5">
+                    <p class="text-base font-black leading-none text-gray-800">${{classPrice}}</p>
+                    <form method="POST" action="/remove-from-cart" class="ml-4">
+                      <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+                      <input type="hidden" name="classId" value="{{classId}}">
+                      <input type="hidden" name="slotDay" value="{{slotDay}}">
+                      <input type="hidden" name="slotDate" value="{{slotDate}}">
+                      <input type="hidden" name="slotTime" value="{{slotTime}}">
+                      <button type="submit" class="text-xs leading-3 underline text-red-500 cursor-pointer hover:text-red-700 transition">
+                        Remove
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            {{/each}}
+          {{/if}}
         {{else}}
           <p>Your cart is empty.</p>
         {{/if}}
@@ -110,32 +141,52 @@
         <div class="mt-8 mb-5">
           <!-- Order Summary -->
           <ul class="divide-y divide-gray-200">
-            {{#each cart}}
-              <li class="flex justify-between py-2">
-                <span class="text-sm text-gray-700">{{classTitle}} ({{slotDate}} {{slotTime}})</span>
-                <span class="text-sm font-semibold text-gray-900">{{classPrice}}</span>
-              </li>
-            {{/each}}
+            {{#if cart}}
+              {{#if (isObject cart)}}
+                <li class="flex justify-between py-2">
+                  <span class="text-sm text-gray-700">{{cart.classTitle}} ({{cart.slotDate}} {{cart.slotTime}})</span>
+                  <span class="text-sm font-semibold text-gray-900">${{cartSubtotal cart}}</span>
+                </li>
+              {{else}}
+                {{#each cart}}
+                  <li class="flex justify-between py-2">
+                    <span class="text-sm text-gray-700">{{classTitle}} ({{slotDate}} {{slotTime}})</span>
+                    <span class="text-sm font-semibold text-gray-900">${{classPrice}}</span>
+                  </li>
+                {{/each}}
+              {{/if}}
+            {{/if}}
           </ul>
         </div>
         <div class="flex justify-between mt-10 mb-5">
           <span class="font-semibold text-sm uppercase">
-            {{#if cart.length}}
-              Items {{cart.length}}
+            {{#if cart}}
+              {{#if (isObject cart)}}
+                Items 1
+              {{else}}
+                Items {{cart.length}}
+              {{/if}}
             {{else}}
               Items 0
             {{/if}}
           </span>
           <span class="font-semibold text-sm">
-            {{#if cart.length}}
-              ${{sum cart "classPrice"}}
+            {{#if cart}}
+              {{#if (isObject cart)}}
+                ${{cartSubtotal cart}}
+              {{else}}
+                ${{sum cart "classPrice"}}
+              {{/if}}
             {{else}}
               $0
             {{/if}}
           </span>
         </div>
         <form method="POST" action="/apply-promo" class="mb-2">
-          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+          <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+          {{#if reservationToken}}
+            <input type="hidden" name="reservationToken" value="{{reservationToken}}">
+          {{/if}}
           <label for="promo" class="font-semibold inline-block mb-3 text-sm uppercase">
             Promo Code
           </label>
@@ -158,8 +209,12 @@
             <div class="flex justify-between text-sm text-gray-700">
               <span>Subtotal</span>
               <span>
-                {{#if cart.length}}
-                  ${{sum cart "classPrice"}}
+                {{#if cart}}
+                  {{#if (isObject cart)}}
+                    ${{cartSubtotal cart}}
+                  {{else}}
+                    ${{sum cart "classPrice"}}
+                  {{/if}}
                 {{else}}
                   $0
                 {{/if}}
@@ -168,49 +223,79 @@
             <div class="flex justify-between text-sm text-gray-700">
               <span>Savings</span>
               <span>
-                {{#if promo}}
-                  -${{discountAmount cart promo.discount}}
+                {{#if cart}}
+                  {{#if (isObject cart)}}
+                    {{#if promo}}
+                      -${{cartDiscount cart promo}}
+                    {{else}}
+                      $0
+                    {{/if}}
+                  {{else}}
+                    {{#if promo}}
+                      -${{discountAmount cart promo.discount}}
+                    {{else}}
+                      $0
+                    {{/if}}
+                  {{/if}}
                 {{else}}
                   $0
                 {{/if}}
               </span>
             </div>
-            <!-- Canada GST satırı kaldırıldı -->
             <div class="flex justify-between text-sm text-gray-700">
               <span>Tax (HST 13%)</span>
               <span>
-                ${{taxAmount cart 0.13}}
+                {{#if cart}}
+                  {{#if (isObject cart)}}
+                    ${{cartTax cart promo}}
+                  {{else}}
+                    ${{taxAmount cart 0.13}}
+                  {{/if}}
+                {{else}}
+                  $0.00
+                {{/if}}
               </span>
             </div>
           </div>
           <div class="flex font-semibold justify-between py-6 text-sm uppercase">
             <span>Total cost</span>
             <span>
-              {{#if promo}}
-                ${{totalCost cart promo.discount 0.13}}
+              {{#if cart}}
+                {{#if (isObject cart)}}
+                  ${{cartTotal cart promo}}
+                {{else}}
+                  {{#if promo}}
+                    ${{totalCost cart promo.discount 0.13}}
+                  {{else}}
+                    ${{totalCost cart 0 0.13}}
+                  {{/if}}
+                {{/if}}
               {{else}}
-                ${{totalCost cart 0 0.13}}
+                $0.00
               {{/if}}
             </span>
           </div>
-          <button id="go-to-delivery" class="bg-indigo-500 font-semibold hover:bg-indigo-600 py-3 text-sm text-white uppercase w-full">
-            Checkout
-          </button>
+          {{#if cart}}
+            <button id="go-to-delivery" class="bg-indigo-500 font-semibold hover:bg-indigo-600 py-3 text-sm text-white uppercase w-full">
+              Checkout
+            </button>
+          {{else}}
+            <button disabled class="bg-gray-400 font-semibold py-3 text-sm text-white uppercase w-full opacity-50 cursor-not-allowed">
+              Checkout
+            </button>
+          {{/if}}
         </div>
       </div>
     </div>
   </div>
 </section>
 
-
-
-
 <!-- Delivery Details Section (başlangıçta gizli) -->
 <section id="delivery-section" class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16 hidden" style="margin-top:-80px;">
   <!-- Form -->
   <!-- Formlarda CSRF tokeni -->
   <form id="checkout-info-form" action="/checkout-info" method="POST" class="mx-auto mt-4 max-w-xl sm:mt-6">
-    <input type="hidden" name="_csrf" id="csrfToken" value="{{csrfToken}}">
+    <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
     <div class="grid grid-cols-1 gap-x-12 gap-y-6 sm:grid-cols-2">
       <!-- First Name -->
       <div>
@@ -265,6 +350,7 @@
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-slate-600">
               <path fill-rule="evenodd" d="M1.5 4.5a3 3 0 0 1 3-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 0 1-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 0 0 6.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 0 1 1.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 0 1-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5Z" clip-rule="evenodd" />
+            </svg>
           </div>
           <input
             id="contactNumber"
@@ -352,7 +438,7 @@
             Back to Cart
           </button>
           <form action="/create-checkout-session" method="POST" style="min-width:160px;">
-            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+            <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
             <input type="hidden" name="email" value="{{email}}">
             <button
               type="submit"

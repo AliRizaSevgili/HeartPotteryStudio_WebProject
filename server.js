@@ -594,6 +594,75 @@ app.post('/reserve-slot', csrfProtection, async (req, res) => {
   }
 });
 
+
+// Sepet nesne tipini kontrol etmek için helper
+hbs.registerHelper('isObject', function(item) {
+  return !Array.isArray(item) && typeof item === 'object' && item !== null;
+});
+
+// GET alternative slot reservation route - ENGLISH ERROR MESSAGES
+app.get('/select-slot/:slotId', async (req, res) => {
+  try {
+    const { slotId } = req.params;
+    
+    if (!slotId) {
+      return res.status(400).render("error", {
+        errorCode: 400,
+        errorMessage: "Invalid Request",
+        errorDetail: "Please select a time slot."
+      });
+    }
+    
+    // Get session ID
+    const sessionId = req.session.id;
+    
+    // Get slot details
+    const slot = await slotService.getSlotById(slotId);
+    if (!slot) {
+      return res.status(404).render("error", {
+        errorCode: 404,
+        errorMessage: "Time Slot Not Found",
+        errorDetail: "The selected time slot is no longer available."
+      });
+    }
+    
+    // Get related class details
+    const classItem = await Class.findById(slot.classId);
+    
+    // Create temporary reservation
+    const reservation = await slotService.createTemporaryReservation(slotId, sessionId);
+    
+    // Save cart info to session (new format)
+    req.session.cart = {
+      classId: classItem._id,
+      classSlug: classItem.slug,
+      classTitle: classItem.title,
+      classImage: classItem.image,
+      classPrice: classItem.price.value,
+      slotId: slot._id,
+      slotDay: slot.dayOfWeek,
+      slotDate: new Date(slot.startDate).toLocaleDateString('en-US', { 
+        month: 'long', 
+        day: 'numeric', 
+        year: 'numeric' 
+      }),
+      slotTime: `${slot.time.start} – ${slot.time.end}`,
+      reservationId: reservation._id,
+      reservationExpiresAt: reservation.expiresAt
+    };
+    
+    // Redirect to checkout page
+    res.redirect('/checkout');
+  } catch (error) {
+    logger.error(`Error adding slot to cart: ${req.params.slotId}`, error);
+    res.status(500).render("error", {
+      errorCode: 500,
+      errorMessage: "Server Error",
+      errorDetail: "Something went wrong. Please try again later."
+    });
+  }
+});
+
 // Rezervasyon iptal rotası - rezervasyon token kontrolü ile
 app.post('/cancel-reservation', validateReservationToken, (req, res) => {
   // Sepeti kontrol et
