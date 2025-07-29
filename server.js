@@ -217,9 +217,17 @@ const MongoStore = require('connect-mongo');
 // --- SESSION MIDDLEWARE ---
 app.use(session({
   secret: process.env.SESSION_SECRET || 'heartpotterysecret',
-  resave: true, 
-  saveUninitialized: true,
+  resave: false,  // MongoStore kullanırken false olmalı
+  saveUninitialized: false, // İhtiyaç olmayan oturumları oluşturmayalım
   rolling: true, // Her istekte session süresini yeniler
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    ttl: 24 * 60 * 60, // 1 gün (saniye cinsinden)
+    crypto: {
+      secret: process.env.SESSION_SECRET || 'heartpotterysecret'
+    },
+    touchAfter: 24 * 3600 // 1 günde bir güncelleme (performans için)
+  }),
   cookie: {
     secure: process.env.NODE_ENV === 'production' ? 
       (process.env.DISABLE_SECURE_COOKIE === 'true' ? false : true) : false,
