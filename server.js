@@ -32,14 +32,36 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const rateLimit = require('express-rate-limit');
 const paymentLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 dakika
-  max: 20,
-  message: "Too many payment requests from this IP, please try again later."
+  max: 20, // IP başına maksimum istek
+  standardHeaders: true, // Standart RateLimit header'ları ekle
+  legacyHeaders: false, // X-RateLimit-* header'larını kaldır
+  message: "Too many payment requests from this IP, please try again later.",
+  handler: (req, res, next, options) => {
+    logger.warn(`Rate limit exceeded for IP: ${req.ip}`);
+    res.status(options.statusCode).render("error", {
+      errorCode: options.statusCode,
+      errorMessage: "Too Many Requests",
+      errorDetail: options.message
+    });
+  }
 });
+
+
 const contactLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  message: "Too many contact form submissions from this IP, please try again later."
-});
+  windowMs: 15 * 60 * 1000, // 15 dakika
+  max: 10, // IP başına maksimum istek
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: "Too many contact form submissions from this IP, please try again later.",
+  handler: (req, res, next, options) => {
+    logger.warn(`Rate limit exceeded for contact form from IP: ${req.ip}`);
+    res.status(options.statusCode).render("error", {
+      errorCode: options.statusCode,
+      errorMessage: "Too Many Requests",
+      errorDetail: options.message
+    });
+  }
+});;
 
 // --- MIDDLEWARE SIRASI ÖNEMLİ ---
 
@@ -63,13 +85,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Log POST requests
-app.use((req, res, next) => {
-  if (req.method === 'POST') {
-    logger.info(`POST Request to: ${req.path}`);
-    logger.info(`Session ID: ${req.session && req.session.id ? req.session.id : 'No session'}`);
-  }
-  next();
-});
+// Debug logları için
+if (process.env.DEBUG_MODE === 'true') {
+  app.use((req, res, next) => {
+    if (req.method === 'POST') {
+      logger.info(`POST Request to: ${req.path}`);
+      logger.info(`Session ID: ${req.session.id}`);
+    }
+    next();
+  });
+}
+
+// Debug endpoint'ini sadece development veya debug modunda aktif et
+if (process.env.NODE_ENV !== 'production' || process.env.DEBUG_MODE === 'true') {
+  app.get('/debug-slot', (req, res) => { /* ... */ });
+}
 
 // Sıkılaştırılmış CORS ayarı
 app.use(cors({
@@ -180,7 +210,10 @@ app.use(express.static(path.join(__dirname, "public")));
 // MongoDB 
 connectDB();
 
-// --- SESSION MIDDLEWARE ---
+// Session store için MongoStore ekleyin
+const MongoStore = require('connect-mongo');
+
+
 // --- SESSION MIDDLEWARE ---
 app.use(session({
   secret: process.env.SESSION_SECRET || 'heartpotterysecret',
@@ -524,41 +557,22 @@ app.post("/remove-from-cart", (req, res) => {
   res.redirect("/checkout");
 });
 
-// Eski promo code rotası - mevcut formlar için korunuyor
-app.post("/apply-promo", (req, res) => {
-  const { promo } = req.body;
-  const validCode = "HEART10";
-  const discount = 0.10; // %10 indirim
-
-  // Kod doğruysa session'a indirim bilgisini ekle
-  if (promo && promo.trim().toUpperCase() === validCode && req.session.cart && req.session.cart.length > 0) {
-    req.session.promo = { code: promo, discount };
-    req.session.promoMessage = "Promo code applied! 10% discount.";
-  } else if (!req.session.cart || req.session.cart.length === 0) {
-    req.session.promo = null;
-    req.session.promoMessage = "Add items to cart before applying promo code.";
-  } else {
-    req.session.promo = null;
-    req.session.promoMessage = "Invalid promo code.";
-  }
-  res.redirect("/checkout");
-});
-
-// Rezervasyon için yeni promo code rotası - rezervasyon token kontrolü ile
 app.post("/apply-promo", validateReservationToken, (req, res) => {
-  // Eğer buraya ulaşırsa, rezervasyon token'ı geçerli demektir
   const { promo } = req.body;
   const validCode = "HEART10";
   const discount = 0.10; // %10 indirim
+  const referer = req.headers.referer || '';
+  const isReservationFlow = referer.includes('/reservation');
 
-  // Sepette ürün var mı kontrol et
-  if (!req.session.cart) {
-    req.session.promoMessage = "Add items to cart before applying promo code.";
-    return res.redirect('/reservation');
-  }
+  // Sepet kontrolü - hem dizi hem de nesne formatını destekler
+  const hasItems = req.session.cart && 
+    (Array.isArray(req.session.cart) ? req.session.cart.length > 0 : true);
   
-  // Kod doğruysa session'a indirim bilgisini ekle
-  if (promo && promo.trim().toUpperCase() === validCode) {
+  if (!hasItems) {
+    req.session.promoMessage = "Add items to cart before applying promo code.";
+  }
+  // Kod kontrolü  
+  else if (promo && promo.trim().toUpperCase() === validCode) {
     req.session.promo = { code: promo, discount };
     req.session.promoMessage = "Promo code applied! 10% discount.";
   } else {
@@ -566,10 +580,12 @@ app.post("/apply-promo", validateReservationToken, (req, res) => {
     req.session.promoMessage = "Invalid promo code.";
   }
   
-  res.redirect('/reservation');
+  // Referans URL'e göre yönlendirme
+  res.redirect(isReservationFlow ? '/reservation' : '/checkout');
 });
 
-// Slot rezervasyon rotası
+
+
 // Slot rezervasyon rotası
 app.post('/reserve-slot', csrfProtection, async (req, res) => {
   try {
@@ -1196,20 +1212,7 @@ app.listen(PORT, () => logger.info(`🚀 Server is running on port ${PORT}`));
 
 
 
-// server.js dosyasının sonuna ekleyin (en alt kısımdaki PORT satırının üstüne)
-app.get('/debug-slot', (req, res) => {
-  // Sabit bir slot ID kullanarak test yapalım
-  const testSlotId = "64d9a1b5c3f4b001a8f7e123"; // Burayı veritabanınızdaki gerçek bir slot ID ile değiştirin
-  
-  res.send(`
-    <h1>Debug Slot Selection</h1>
-    <p>Click the link below to test slot selection:</p>
-    <a href="/select-slot/${testSlotId}" style="padding: 10px; background: blue; color: white;">Select Test Slot</a>
-    <p>Current Session Data:</p>
-    <pre>${JSON.stringify(req.session, null, 2)}</pre>
-  `);
 
-});
 
 // CSRF Token fallback endpoint
 app.post('/api/get-csrf-token', (req, res) => {
