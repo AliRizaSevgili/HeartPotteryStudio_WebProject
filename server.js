@@ -1,7 +1,9 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
+app.set('trust proxy', 1); // Render gibi reverse proxy kullanılan ortamlar için gerekli
 const path = require("path");
+
 const cors = require("cors");
 const helmet = require("helmet");
 const connectDB = require("./config/db");
@@ -182,8 +184,9 @@ connectDB();
 // --- SESSION MIDDLEWARE ---
 app.use(session({
   secret: process.env.SESSION_SECRET || 'heartpotterysecret',
-  resave: true, // true olarak değiştirildi - session daha güvenilir kaydedilecek
+  resave: true, 
   saveUninitialized: true,
+  rolling: true, // Her istekte session süresini yeniler
   cookie: {
     secure: process.env.NODE_ENV === 'production' ? 
       (process.env.DISABLE_SECURE_COOKIE === 'true' ? false : true) : false,
