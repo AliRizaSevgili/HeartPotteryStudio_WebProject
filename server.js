@@ -897,7 +897,9 @@ app.post('/checkout-info', csrfProtection, async (req, res) => {
     }
     
     // Domain bilgisini kontrol et ve varsayılan değer ata
-    const domain = process.env.DOMAIN || 'http://localhost:5000';
+    const domain = process.env.NODE_ENV === 'production' 
+  ? process.env.DOMAIN || 'https://heartpotterystudio-webproject.onrender.com'
+  : 'http://localhost:5000';
     
     // Checkout session oluştur
     const session = await stripe.checkout.sessions.create({
