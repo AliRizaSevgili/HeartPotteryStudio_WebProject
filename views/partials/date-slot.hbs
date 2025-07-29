@@ -28,3 +28,30 @@
   </div>
   {{/if}}
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Tüm slot formlarını bul
+    var slotForms = document.querySelectorAll('form[action="/reserve-slot"]');
+    
+    // Her form için olay dinleyicisi ekle
+    slotForms.forEach(function(form) {
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        try {
+          // Form verilerini al
+          const formData = new FormData(form);
+          const slotId = formData.get('slotId');
+          
+          // Alternatif GET yöntemi kullan
+          window.location.href = '/select-slot/' + slotId;
+        } catch (error) {
+          console.error('Error redirecting to slot selection:', error);
+          // Hata durumunda normal form gönderimini kullan
+          form.submit();
+        }
+      });
+    });
+  });
+</script>

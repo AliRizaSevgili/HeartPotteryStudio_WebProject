@@ -60,6 +60,15 @@ app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Log POST requests
+app.use((req, res, next) => {
+  if (req.method === 'POST') {
+    logger.info(`POST Request to: ${req.path}`);
+    logger.info(`Session ID: ${req.session && req.session.id ? req.session.id : 'No session'}`);
+  }
+  next();
+});
+
 // Sıkılaştırılmış CORS ayarı
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
@@ -170,14 +179,17 @@ app.use(express.static(path.join(__dirname, "public")));
 connectDB();
 
 // --- SESSION MIDDLEWARE ---
+// --- SESSION MIDDLEWARE ---
 app.use(session({
   secret: process.env.SESSION_SECRET || 'heartpotterysecret',
-  resave: false,
+  resave: true, // true olarak değiştirildi - session daha güvenilir kaydedilecek
   saveUninitialized: true,
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // Production'da true olmalı
-    httpOnly: true, // XSS saldırılarına karşı koruma
-    sameSite: 'lax' // 'strict' yerine 'lax' kullanın - CSRF sorununu çözmek için
+    secure: process.env.NODE_ENV === 'production' ? 
+      (process.env.DISABLE_SECURE_COOKIE === 'true' ? false : true) : false,
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: 24 * 60 * 60 * 1000
   }
 }));
 
@@ -555,54 +567,63 @@ app.post("/apply-promo", validateReservationToken, (req, res) => {
 });
 
 // Slot rezervasyon rotası
+// Slot rezervasyon rotası
 app.post('/reserve-slot', csrfProtection, async (req, res) => {
   try {
     const { slotId } = req.body;
     
-    // Slot ID kontrol
     if (!slotId) {
-      return res.status(400).render("error", {
-        errorCode: 400,
-        errorMessage: "Invalid Request",
-        errorDetail: "Please select a time slot."
-      });
+      logger.error('No slot ID provided');
+      return res.status(400).redirect('/learn');
     }
+    
+    logger.info(`Starting slot reservation for slotId: ${slotId}`);
+    logger.info(`Session ID: ${req.session.id}`);
     
     // Slot bilgilerini al
     const slot = await slotService.getSlotById(slotId);
     if (!slot) {
-      return res.status(404).render("error", {
-        errorCode: 404,
-        errorMessage: "Time Slot Not Found",
-        errorDetail: "The selected time slot is no longer available."
-      });
+      logger.error(`Slot not found with ID: ${slotId}`);
+      return res.status(404).redirect('/learn');
     }
     
-    // Slot'u rezerve et
-    const reservationId = await slotService.reserveSlot(slotId);
+    // Class bilgilerini al
+    const classItem = await Class.findById(slot.classId);
+    if (!classItem) {
+      logger.error(`Class not found for slot: ${slotId}`);
+      return res.status(404).redirect('/learn');
+    }
     
-    // Sepeti oluştur (Array formatında)
-    if (!req.session.cart) req.session.cart = [];
+    // Geçici rezervasyon oluştur
+    const sessionId = req.session.id;
+    const reservation = await slotService.createTemporaryReservation(slotId, sessionId);
     
-    req.session.cart.push({
-      classId: slot.classId,
-      classTitle: slot.className,
-      classImage: slot.classImage,
-      classPrice: slot.price,
-      slotDay: slot.day,
+    // Sepet bilgilerini session'a kaydet
+    req.session.cart = {
+      slotId: slot._id,
       slotDate: slot.date,
-      slotTime: slot.time
-    });
+      slotTime: `${slot.time.start} - ${slot.time.end}`,
+      classId: classItem._id,
+      classTitle: classItem.title,
+      classPrice: classItem.price,
+      classImage: classItem.images[0] || '',
+      reservationId: reservation._id
+    };
     
-    // Checkout sayfasına yönlendir
-    res.redirect('/checkout');
-  } catch (error) {
-    logger.error('Error in slot reservation:', error);
-    res.status(500).render("error", {
-      errorCode: 500,
-      errorMessage: "Server Error",
-      errorDetail: "An error occurred during time slot reservation. Please try again later."
+    logger.info(`Cart saved to session: ${JSON.stringify(req.session.cart)}`);
+    
+    // Session'ı kaydet ve sonra yönlendir
+    req.session.save(err => {
+      if (err) {
+        logger.error('Error saving session:', err);
+      }
+      
+      // Checkout sayfasına yönlendir
+      return res.redirect('/checkout');
     });
+  } catch (error) {
+    logger.error(`Error in reserve-slot: ${error.message}`, error);
+    return res.status(500).redirect('/learn');
   }
 });
 
@@ -738,7 +759,11 @@ hbs.registerHelper('totalCost', function(array, discount, taxRate) {
 app.get('/select-slot/:slotId', async (req, res) => {
   try {
     const { slotId } = req.params;
-    
+    logger.info(`====== SLOT SELECTION DEBUG ======`);
+    logger.info(`Slot ID: ${slotId}`);
+    logger.info(`Session ID: ${req.session.id}`);
+    logger.info(`Session cart before: ${JSON.stringify(req.session.cart)}`);
+
     if (!slotId) {
       return res.status(400).render("error", {
         errorCode: 400,
@@ -1160,3 +1185,28 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => logger.info(`🚀 Server is running on port ${PORT}`));
+
+
+
+// server.js dosyasının sonuna ekleyin (en alt kısımdaki PORT satırının üstüne)
+app.get('/debug-slot', (req, res) => {
+  // Sabit bir slot ID kullanarak test yapalım
+  const testSlotId = "64d9a1b5c3f4b001a8f7e123"; // Burayı veritabanınızdaki gerçek bir slot ID ile değiştirin
+  
+  res.send(`
+    <h1>Debug Slot Selection</h1>
+    <p>Click the link below to test slot selection:</p>
+    <a href="/select-slot/${testSlotId}" style="padding: 10px; background: blue; color: white;">Select Test Slot</a>
+    <p>Current Session Data:</p>
+    <pre>${JSON.stringify(req.session, null, 2)}</pre>
+  `);
+
+});
+
+// CSRF Token fallback endpoint
+app.post('/api/get-csrf-token', (req, res) => {
+  res.json({ 
+    csrfToken: req.csrfToken ? req.csrfToken() : 'csrf-disabled',
+    success: true
+  });
+});
