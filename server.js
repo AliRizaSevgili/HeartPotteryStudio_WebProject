@@ -896,7 +896,7 @@ app.post('/checkout-info', csrfProtection, async (req, res) => {
       logger.info(`Created ${lineItems.length} line items for cart`);
     }
     
-    // Domain bilgisini kontrol et ve varsayılan değer ata
+    // Domain bilgisini kontrol et ve varsayılan değer atar
     const domain = process.env.NODE_ENV === 'production' 
   ? process.env.DOMAIN || 'https://heartpotterystudio-webproject.onrender.com'
   : 'http://localhost:5000';
