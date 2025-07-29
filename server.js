@@ -21,6 +21,7 @@ const hbs = require("hbs");
 const contactController = require('./controllers/contactController');
 const logger = require('./utils/logger');
 const slotService = require('./services/slotService'); // Slot servisini import et
+const Class = require('./models/Class'); // Class modelini import et
 
 // Stripe modülü
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -184,8 +185,20 @@ app.use(session({
 app.use(cookieParser()); // CSRF'den önce
 
 // CSRF Middleware
+// CSRF Middleware - Render'da DISABLE_CSRF değişkenine göre davran
 const csrfProtection = csrf({ cookie: true });
-app.use(csrfProtection);
+
+// Eğer DISABLE_CSRF=true ise CSRF korumasını devre dışı bırak (sadece test için)
+if (process.env.DISABLE_CSRF === 'true') {
+  console.warn('⚠️ CSRF protection is disabled! This should only be used for testing.');
+  // CSRF token olmadan da çalışacak sahte middleware
+  app.use((req, res, next) => {
+    req.csrfToken = () => 'csrf-disabled';
+    next();
+  });
+} else {
+  app.use(csrfProtection);
+}
 
 app.use((req, res, next) => {
   res.locals.csrfToken = req.csrfToken();
@@ -919,15 +932,20 @@ app.post('/checkout-info', csrfProtection, async (req, res) => {
     
     logger.info(`Stripe session created: ${session.id}`);
     logger.info(`Redirecting to Stripe URL: ${session.url}`);
+    logger.info(`Session data: ${JSON.stringify({
+      id: session.id,
+      payment_status: session.payment_status || 'unknown',
+      url: session.url
+    })}`);
     
     // Stripe checkout sayfasına yönlendir (düzeltilmiş indentasyon)
     
-    return res.send(`
+   return res.send(`
   <!DOCTYPE html>
   <html>
   <head>
     <title>Redirecting to payment...</title>
-    <meta http-equiv="refresh" content="3;url=${session.url}">
+    <meta http-equiv="refresh" content="0;url=${session.url}">
     <style>
       body { font-family: Arial, sans-serif; text-align: center; padding-top: 50px; }
       .spinner { width: 40px; height: 40px; margin: 20px auto; border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; }
@@ -939,10 +957,8 @@ app.post('/checkout-info', csrfProtection, async (req, res) => {
     <div class="spinner"></div>
     <p>If you are not redirected automatically, <a href="${session.url}">click here</a>.</p>
     <script nonce="${res.locals.nonce}">
-      // Hem setTimeout hem de meta refresh kullanıyoruz (yedek olarak)
-      setTimeout(function() {
-        window.location.href = "${session.url}";
-      }, 1500);
+  // Doğrudan replace ile yönlendir (daha güvenilir)
+  window.location.replace("${session.url}");
     </script>
   </body>
   </html>
