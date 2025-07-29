@@ -993,6 +993,11 @@ app.post('/checkout-info', csrfProtection, async (req, res) => {
 `);
   } catch (error) {
     logger.error('Error in checkout process:', error);
+    logger.error('Error details:', {
+    message: error.message,
+    stack: error.stack,
+    stripeKey: process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.substring(0, 8) + '...' : 'undefined'
+  });
     res.status(500).render("error", {
       errorCode: 500,
       errorMessage: "Payment Error",
