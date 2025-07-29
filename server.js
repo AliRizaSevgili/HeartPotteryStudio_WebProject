@@ -919,9 +919,32 @@ app.post('/checkout-info', csrfProtection, async (req, res) => {
     logger.info(`Redirecting to Stripe URL: ${session.url}`);
     
     // Stripe checkout sayfasına yönlendir (düzeltilmiş indentasyon)
-    res.writeHead(303, { Location: session.url });
-    return res.end();
     
+    return res.send(`
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>Redirecting to payment...</title>
+    <meta http-equiv="refresh" content="3;url=${session.url}">
+    <style>
+      body { font-family: Arial, sans-serif; text-align: center; padding-top: 50px; }
+      .spinner { width: 40px; height: 40px; margin: 20px auto; border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; }
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+  </head>
+  <body>
+    <h2>Redirecting to payment page...</h2>
+    <div class="spinner"></div>
+    <p>If you are not redirected automatically, <a href="${session.url}">click here</a>.</p>
+    <script nonce="${res.locals.nonce}">
+      // Hem setTimeout hem de meta refresh kullanıyoruz (yedek olarak)
+      setTimeout(function() {
+        window.location.href = "${session.url}";
+      }, 1500);
+    </script>
+  </body>
+  </html>
+`);
   } catch (error) {
     logger.error('Error in checkout process:', error);
     res.status(500).render("error", {

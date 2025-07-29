@@ -181,31 +181,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Form submit işlemi - reCAPTCHA ve form gönderim yönetimi
     if (checkoutInfoForm) {
-        checkoutInfoForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Formu normal gönderimini engelle
-            
-            // reCAPTCHA token'ı al
-            if (typeof grecaptcha !== 'undefined') {
-                frontendLogger.info('reCAPTCHA token alma işlemi başlatıldı');
-                grecaptcha.execute('6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI', {action: 'checkout'})
-                    .then(function(token) {
-                        // reCAPTCHA token'ı gizli alana yerleştir
-                        document.getElementById('recaptchaToken').value = token;
-                        
-                        frontendLogger.info('reCAPTCHA token başarıyla alındı, form gönderiliyor');
-                        // Formu programatik olarak gönder
-                        checkoutInfoForm.submit();
-                    })
-                    .catch(function(error) {
-                        frontendLogger.error(`reCAPTCHA error: ${error}`);
-                        // Hata durumunda yine de formu gönder
-                        checkoutInfoForm.submit();
-                    });
-            } else {
-                frontendLogger.info('reCAPTCHA tanımlı değil, form doğrudan gönderiliyor');
-                // reCAPTCHA yüklenmediyse formu normal şekilde gönder
-                checkoutInfoForm.submit();
-            }
-        });
-    }
+    checkoutInfoForm.addEventListener('submit', function(e) {
+        e.preventDefault(); // Formu normal gönderimini engelle
+
+        // reCAPTCHA token'ı al
+        if (typeof grecaptcha !== 'undefined') {
+            frontendLogger.info('reCAPTCHA token alma işlemi başlatıldı');
+            grecaptcha.execute('6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI', {action: 'checkout'})
+                .then(function(token) {
+                    // reCAPTCHA token'ı gizli alana yerleştir
+                    document.getElementById('recaptchaToken').value = token;
+                    frontendLogger.info('reCAPTCHA token başarıyla alındı, form gönderiliyor');
+                    
+                    // FETCH/AJAX KULLANMADAN doğrudan form gönderimi
+                    checkoutInfoForm.removeEventListener('submit', arguments.callee);
+                    checkoutInfoForm.submit();
+                })
+                .catch(function(error) {
+                    frontendLogger.error(`reCAPTCHA error: ${error}`);
+                    // reCAPTCHA hatası durumunda yine de formu gönder
+                    checkoutInfoForm.removeEventListener('submit', arguments.callee);
+                    checkoutInfoForm.submit();
+                });
+        } else {
+            frontendLogger.info('reCAPTCHA tanımlı değil, form doğrudan gönderiliyor');
+            // reCAPTCHA yüklenmediyse formu normal şekilde gönder
+            checkoutInfoForm.removeEventListener('submit', arguments.callee);
+            checkoutInfoForm.submit();
+        }
+    });
+  }
 });
