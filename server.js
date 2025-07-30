@@ -926,40 +926,61 @@ app.post('/checkout-info', csrfProtection, async (req, res) => {
     
     let lineItems = [];
     
+    const taxRate = 0.13;
     // Sepet nesne ise
-    if (req.session.cart && !Array.isArray(req.session.cart)) {
-      lineItems.push({
-        price_data: {
-          currency: 'cad',
-          product_data: {
-            name: req.session.cart.classTitle,
-            description: `${req.session.cart.slotDate} ${req.session.cart.slotTime}`,
-          },
-          unit_amount: Math.round(parseFloat(req.session.cart.classPrice) * 100),
-        },
-        quantity: 1,
-      });
-      
-      logger.info(`Created line item for: ${req.session.cart.classTitle}`);
-    } 
-    // Sepet dizi ise
-    else if (req.session.cart && Array.isArray(req.session.cart)) {
-      req.session.cart.forEach(item => {
-        lineItems.push({
-          price_data: {
-            currency: 'cad',
-            product_data: {
-              name: item.classTitle,
-              description: `${item.slotDate} ${item.slotTime}`,
-            },
-            unit_amount: Math.round(parseFloat(item.classPrice) * 100),
-          },
-          quantity: 1,
-        });
-      });
-      
-      logger.info(`Created ${lineItems.length} line items for cart`);
+if (req.session.cart && !Array.isArray(req.session.cart)) {
+  let price = parseFloat(req.session.cart.classPrice);
+  
+  // Promo kodu indirimini uygula
+  if (req.session.promo && req.session.promo.discount) {
+    price = price * (1 - req.session.promo.discount);
+  }
+  
+  // Vergiyi ekle
+  const totalAmount = price + (price * taxRate);
+  
+  lineItems.push({
+    price_data: {
+      currency: 'cad',
+      product_data: {
+        name: req.session.cart.classTitle,
+        description: `${req.session.cart.slotDate} ${req.session.cart.slotTime} (incl. 13% tax)`,
+      },
+      unit_amount: Math.round(totalAmount * 100), // Vergi dahil toplam
+    },
+    quantity: 1,
+  });
+  
+  logger.info(`Created line item for: ${req.session.cart.classTitle} with tax, total: ${totalAmount}`);
+} 
+// Sepet dizi ise
+else if (req.session.cart && Array.isArray(req.session.cart)) {
+  req.session.cart.forEach(item => {
+    let price = parseFloat(item.classPrice);
+    
+    // Promo kodu indirimini uygula
+    if (req.session.promo && req.session.promo.discount) {
+      price = price * (1 - req.session.promo.discount);
     }
+    
+    // Vergiyi ekle
+    const totalAmount = price + (price * taxRate);
+    
+    lineItems.push({
+      price_data: {
+        currency: 'cad',
+        product_data: {
+          name: item.classTitle,
+          description: `${item.slotDate} ${item.slotTime} (incl. 13% tax)`,
+        },
+        unit_amount: Math.round(totalAmount * 100), // Vergi dahil toplam
+      },
+      quantity: 1,
+    });
+  });
+  
+  logger.info(`Created ${lineItems.length} line items for cart with tax included`);
+}
     
     // Domain bilgisini kontrol et ve varsayılan değer atar
     const domain = process.env.NODE_ENV === 'production' 
@@ -1109,21 +1130,31 @@ app.post('/create-checkout-session', csrfProtection, validateReservationToken, a
     if (req.session.promo && req.session.promo.discount) {
       price = price * (1 - req.session.promo.discount);
     }
-    
+
+    // Aşağıdaki kodu ekleyin - Vergiyi hesapla ve toplam tutara ekle
+      const taxRate = 0.13; // HST 13%
+      const totalAmount = price + (price * taxRate);
+
+      // Domain bilgisini tanımla (BURAYA EKLEYİN)
+      const domain = process.env.NODE_ENV === 'production' 
+        ? process.env.DOMAIN || 'https://heartpotterystudio-webproject.onrender.com'
+        : 'http://localhost:5000';
+          
     // Stripe Checkout oturumu oluştur
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      customer_email: email,
-      line_items: [{
-        price_data: {
-          currency: 'cad',
-          product_data: {
-            name: cartItem.classTitle,
-            images: [cartItem.classImage],
-          },
-          unit_amount: Math.round(price * 100), // Cent'e çevir
-        },
-        quantity: 1,
+  payment_method_types: ['card'],
+  customer_email: email,
+  line_items: [{
+    price_data: {
+      currency: 'cad',
+      product_data: {
+        name: cartItem.classTitle,
+        images: [cartItem.classImage],
+        description: `${cartItem.slotDate} ${cartItem.slotTime} (incl. 13% tax)`, // Vergi dahil olduğunu belirt
+      },
+      unit_amount: Math.round(totalAmount * 100), // Vergi dahil toplam tutar
+    },
+    quantity: 1,
       }],
       mode: 'payment',
       client_reference_id: reservationId, // Rezervasyon ID'si, webhook için
