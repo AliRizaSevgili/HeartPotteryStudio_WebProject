@@ -109,13 +109,16 @@ app.use(cors({
   credentials: true // Çerezlerin gönderilmesine izin ver
 }));
 
-// Nonce oluşturma middleware'i
+// Nonce oluşturma middleware'i - HER İSTEK için benzersiz
 app.use((req, res, next) => {
-  res.locals.nonce = Buffer.from(Date.now().toString()).toString('base64'); // Benzersiz nonce oluştur
+  const nonce = crypto.randomBytes(16).toString('base64');
+  res.locals.nonce = nonce;
+  // Helmet için nonce'u request nesnesine de ekleyelim
+  req.nonce = nonce; 
   next();
 });
 
-// Helmet Middleware
+// Helmet Middleware - Dinamik nonce ve Stripe kaynaklarıyla
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -124,7 +127,8 @@ app.use(
         imgSrc: [
           "'self'",
           "https://res.cloudinary.com",
-          "data:"
+          "data:",
+          "https://*.stripe.com"
         ],
         mediaSrc: [
           "'self'",
@@ -133,16 +137,21 @@ app.use(
         frameSrc: [
           "'self'",
           "https://www.google.com",
-          "https://www.gstatic.com"
+          "https://www.gstatic.com",
+          "https://checkout.stripe.com",
+          "https://js.stripe.com",
+          "https://hooks.stripe.com"
         ],
         scriptSrc: [
           "'self'",
-          `'nonce-${Buffer.from(Date.now().toString()).toString('base64')}'`, // Statik nonce kullanımı
+          (req, res) => `'nonce-${req.nonce}'`, // Dinamik nonce
           "https://cdn.jsdelivr.net",
           "https://www.google.com",
           "https://www.gstatic.com",
           "https://www.google.com/recaptcha/",
-          "https://www.recaptcha.net"
+          "https://www.recaptcha.net",
+          "https://checkout.stripe.com",
+          "https://js.stripe.com"
         ],
         scriptSrcAttr: [
           "'self'",
@@ -153,7 +162,8 @@ app.use(
           "'unsafe-inline'",
           "https://unpkg.com",
           "https://cdn.jsdelivr.net",
-          "https://fonts.googleapis.com"
+          "https://fonts.googleapis.com",
+          "https://checkout.stripe.com"
         ],
         fontSrc: [
           "'self'",
@@ -164,7 +174,10 @@ app.use(
           "https://www.google.com",
           "https://www.gstatic.com",
           "https://www.google.com/recaptcha/",
-          "https://www.recaptcha.net"
+          "https://www.recaptcha.net",
+          "https://checkout.stripe.com",
+          "https://api.stripe.com",
+          "https://*.stripe.com"
         ]
       }
     }
