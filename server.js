@@ -254,7 +254,7 @@ app.use(session({
 app.use(cookieParser()); // CSRF'den önce
 
 // CSRF Middleware
-// CSRF Middleware - Render'da DISABLE_CSRF değişkenine göre davran
+// CSRF Middleware - Render'da DISABLE_CSRF 
 const csrfProtection = csrf({ cookie: true });
 
 // Eğer DISABLE_CSRF=true ise CSRF korumasını devre dışı bırak (sadece test için)
