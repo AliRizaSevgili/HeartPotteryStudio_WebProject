@@ -18,6 +18,9 @@ router.get('/reservation', cartController.viewCart);
 // Rezervasyon iptal
 router.post('/cancel-reservation', cartController.removeFromCart);
 
+// Remove from cart route'unu ekleyin
+router.post('/remove-from-cart', cartController.removeFromCart);
+
 // Promo kod uygulama
 router.post('/apply-promo', cartController.applyPromoCode);
 

@@ -101,12 +101,12 @@ async function createTemporaryReservation(slotId, sessionId) {
       
       // 3. Yeni rezervasyon oluştur
       const reservation = new Reservation({
-        slotId,
-        sessionId,
-        status: 'temporary',
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000) // 15 dakika geçerli
-      });
-      
+          slotId,
+          sessionId,
+          status: 'temporary',
+          expiresAt: new Date(Date.now() + 30 * 60 * 1000) // 30 dakika geçerli
+        });;
+              
       await reservation.save({ session });
       
       // 4. Slot'un bookedSlots sayısını artır

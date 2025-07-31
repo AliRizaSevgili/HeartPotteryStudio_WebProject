@@ -257,6 +257,21 @@ if (process.env.DISABLE_CSRF === 'true') {
 }
 
 app.use((req, res, next) => {
+  if (req.session && req.session.cart && Array.isArray(req.session.cart)) {
+    let changed = false;
+    req.session.cart = req.session.cart.map(item => {
+      if (!item.cartItemId) {
+        item.cartItemId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+        changed = true;
+      }
+      return item;
+    });
+    
+  }
+  next();
+});
+
+app.use((req, res, next) => {
   res.locals.csrfToken = req.csrfToken();
   next();
 });
@@ -544,26 +559,7 @@ app.get("/checkout", (req, res) => {
   });
 });
 
-app.post("/remove-from-cart", (req, res) => {
-  const { classId, slotDay, slotDate, slotTime } = req.body;
-  if (!req.session.cart) return res.redirect("/checkout");
 
-  // Cart'tan item silindiğinde, eğer cart tamamen boşsa promo kodunu sıfırla
-  req.session.cart = req.session.cart.filter(
-    item =>
-      !(
-        item.classId === classId &&
-        item.slotDay === slotDay &&
-        item.slotDate === slotDate &&
-        item.slotTime === slotTime
-      )
-  );
-  if (!req.session.cart.length) {
-    req.session.promo = null;
-    req.session.promoMessage = null;
-  }
-  res.redirect("/checkout");
-});
 
 app.post("/apply-promo", validateReservationToken, (req, res) => {
   const { promo } = req.body;
@@ -626,7 +622,13 @@ app.post('/reserve-slot', csrfProtection, async (req, res) => {
     const reservation = await slotService.createTemporaryReservation(slotId, sessionId);
     
     // Sepet bilgilerini session'a kaydet
-    req.session.cart = {
+    // Sepeti dizi olarak başlat (eğer yoksa)
+  if (!req.session.cart || !Array.isArray(req.session.cart)) {
+    req.session.cart = [];
+  }
+
+// Sepete yeni ürünü ekle
+    req.session.cart.push({
       slotId: slot._id,
       slotDate: slot.date,
       slotTime: `${slot.time.start} - ${slot.time.end}`,
@@ -634,8 +636,9 @@ app.post('/reserve-slot', csrfProtection, async (req, res) => {
       classTitle: classItem.title,
       classPrice: classItem.price,
       classImage: classItem.images[0] || '',
-      reservationId: reservation._id
-    };
+      reservationId: reservation._id,
+      reservationExpiresAt: reservation.expiresAt
+    });
     
     logger.info(`Cart saved to session: ${JSON.stringify(req.session.cart)}`);
     
@@ -818,8 +821,13 @@ app.get('/select-slot/:slotId', async (req, res) => {
     // Create temporary reservation
     const reservation = await slotService.createTemporaryReservation(slotId, sessionId);
     
-    // Save cart info to session (new format)
-    req.session.cart = {
+      // Sepeti dizi olarak başlat (eğer yoksa)
+    if (!req.session.cart || !Array.isArray(req.session.cart)) {
+      req.session.cart = [];
+    }
+
+    // Sepete yeni ürünü ekle
+    req.session.cart.push({
       classId: classItem._id,
       classSlug: classItem.slug,
       classTitle: classItem.title,
@@ -835,8 +843,8 @@ app.get('/select-slot/:slotId', async (req, res) => {
       slotTime: `${slot.time.start} – ${slot.time.end}`,
       reservationId: reservation._id,
       reservationExpiresAt: reservation.expiresAt
-    };
-    
+    });
+        
     // Redirect to checkout page
     res.redirect('/checkout');
   } catch (error) {
