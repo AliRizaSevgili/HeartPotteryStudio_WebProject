@@ -9,3 +9,34 @@ main {
   min-height: 100vh;
   padding-top: 80px; /* ✅ header boşluğu burada kalsın */
 }
+
+/* Sepet simgesi animasyonları */
+@keyframes twinkle {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+.cart-icon-container {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.cart-icon-container:hover svg {
+  transform: scale(1.1);
+}
+
+.cart-badge {
+  animation: pulse 2s infinite;
+}
+
+/* Yıldız animasyonu */
+.cart-icon-container svg + span + span svg {
+  animation: twinkle 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}

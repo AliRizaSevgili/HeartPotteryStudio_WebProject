@@ -291,6 +291,13 @@ app.use((req, res, next) => {
   next();
 });
 
+// Session değişkenlerini şablonlara aktar - BURAYA EKLEYİN
+app.use((req, res, next) => {
+  res.locals.session = req.session;
+  res.locals.cart = req.session.cart;
+  next();
+});
+
 // Rezervasyon sayfası için özel token oluşturma middleware
 app.use('/reservation', (req, res, next) => {
   // Benzersiz rezervasyon token'ı oluştur
@@ -799,6 +806,32 @@ hbs.registerHelper('totalCost', function(array, discount, taxRate) {
   return (subtotal + tax).toFixed(2);
 });
 
+// Sepette ürün var mı kontrolü
+hbs.registerHelper('cartHasItems', function() {
+  const cart = this.cart || this.session?.cart;
+  
+  if (!cart) return false;
+  
+  if (Array.isArray(cart)) {
+    return cart.length > 0;
+  } else {
+    return Object.keys(cart).length > 0;
+  }
+});
+
+// Sepetteki ürün sayısını hesapla
+hbs.registerHelper('cartItemCount', function() {
+  const cart = this.cart || this.session?.cart;
+  
+  if (!cart) return 0;
+  
+  if (Array.isArray(cart)) {
+    return cart.length;
+  } else {
+    return 1; // Tek öğeli sepet
+  }
+});
+
 
 // GET alternative slot reservation route - ENGLISH ERROR MESSAGES
 app.get('/select-slot/:slotId', async (req, res) => {
@@ -1015,7 +1048,7 @@ else if (req.session.cart && Array.isArray(req.session.cart)) {
           payment_method_types: ['card'],
           line_items: lineItems,
           mode: 'payment',
-          locale: 'en', // İngilizce dil desteği ekledim
+          locale: 'auto', // İngilizce dil desteği ekledim
           payment_intent_data: {
             setup_future_usage: 'off_session',
               },
