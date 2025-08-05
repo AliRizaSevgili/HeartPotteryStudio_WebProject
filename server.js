@@ -1008,21 +1008,22 @@ else if (req.session.cart && Array.isArray(req.session.cart)) {
   ? process.env.DOMAIN || 'https://heartpotterystudio-webproject.onrender.com'
   : 'http://localhost:5000';
     
-    // Checkout session oluştur
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: lineItems,
-      mode: 'payment',
-      success_url: `${domain}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${domain}/checkout`,
-      customer_email: validEmail,
-      client_reference_id: req.session.reservationToken || '',
-      metadata: {
-        firstName,
-        lastName,
-        contactNumber
-      }
-    });
+            // Checkout session oluştur
+        const session = await stripe.checkout.sessions.create({
+          payment_method_types: ['card'],
+          line_items: lineItems,
+          mode: 'payment',
+          success_url: `${domain}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${domain}/checkout`,
+          customer_email: validEmail,
+          // Sadece reservationToken varsa ekle, yoksa parametreyi kullanma
+          ...(req.session.reservationToken ? { client_reference_id: req.session.reservationToken } : {}),
+          metadata: {
+            firstName,
+            lastName,
+            contactNumber
+          }
+        });
     
     logger.info(`Stripe session created: ${session.id}`);
     logger.info(`Redirecting to Stripe URL: ${session.url}`);
@@ -1162,26 +1163,27 @@ app.post('/create-checkout-session', csrfProtection, validateReservationToken, a
         : 'http://localhost:5000';
           
     // Stripe Checkout oturumu oluştur
-    const session = await stripe.checkout.sessions.create({
-  payment_method_types: ['card'],
-  customer_email: email,
-  line_items: [{
-    price_data: {
-      currency: 'cad',
-      product_data: {
-        name: cartItem.classTitle,
-        images: [cartItem.classImage],
-        description: `${cartItem.slotDate} ${cartItem.slotTime} (incl. 13% tax)`, // Vergi dahil olduğunu belirt
-      },
-      unit_amount: Math.round(totalAmount * 100), // Vergi dahil toplam tutar
-    },
-    quantity: 1,
-      }],
-      mode: 'payment',
-      client_reference_id: reservationId, // Rezervasyon ID'si, webhook için
-      success_url: `${domain}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.protocol}://${req.get('host')}${cancelUrl}`,
-    });
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        customer_email: email,
+        line_items: [{
+          price_data: {
+            currency: 'cad',
+            product_data: {
+              name: cartItem.classTitle,
+              images: [cartItem.classImage],
+              description: `${cartItem.slotDate} ${cartItem.slotTime} (incl. 13% tax)`, // Vergi dahil olduğunu belirt
+            },
+            unit_amount: Math.round(totalAmount * 100), // Vergi dahil toplam tutar
+          },
+          quantity: 1,
+        }],
+        mode: 'payment',
+        // Sadece reservationId varsa ve geçerli bir değerse ekle
+        ...(reservationId ? { client_reference_id: reservationId } : {}),
+        success_url: `${domain}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.protocol}://${req.get('host')}${cancelUrl}`,
+      });
     
     if (process.env.NODE_ENV !== 'production') {
       logger.info(`Created Stripe checkout session: ${session.id} with amount: ${price}`);
