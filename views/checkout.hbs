@@ -105,23 +105,46 @@
             <!-- Dizi formatı için sepet görünümü -->
             {{#each cart}}
               <div class="md:flex items-stretch py-8 md:py-10 lg:py-8 border-t border-gray-50">
+                <!-- Sepet Öğe Görüntüsü -->
                 <div class="md:w-4/12 2xl:w-1/4 w-full">
-                  <img src="{{classImage}}" alt="{{classTitle}}" 
-                      class="w-full h-auto object-center object-contain rounded-lg" />
+                  {{#if (eq type "event")}}
+                    <img src="{{eventImage}}" alt="{{eventTitle}}" class="w-full h-auto object-center object-contain rounded-lg" />
+                  {{else}}
+                    <img src="{{classImage}}" alt="{{classTitle}}" class="w-full h-auto object-center object-contain rounded-lg" />
+                  {{/if}}
                 </div>
+                
+                <!-- Sepet Öğe Detayları -->
                 <div class="md:pl-3 md:w-8/12 2xl:w-3/4 flex flex-col justify-center">
-                  <p class="text-base font-bold text-gray-800 mb-2">{{classTitle}}</p>
-                  <p class="text-sm text-gray-600 mb-1"><strong>Day:</strong> {{slotDay}}</p>
-                  <p class="text-sm text-gray-600 mb-1"><strong>Date:</strong> {{slotDate}}</p>
-                  <p class="text-sm text-gray-600 mb-1"><strong>Time:</strong> {{slotTime}}</p>
+                  {{#if (eq type "event")}}
+                    <!-- Event tipi için gösterim -->
+                    <p class="text-base font-bold text-gray-800 mb-2">{{eventTitle}}</p>
+                    <p class="text-sm text-gray-600 mb-1"><strong>Date:</strong> {{eventDate}}</p>
+                    <p class="text-sm text-gray-600 mb-1"><strong>Time:</strong> {{eventTime}}</p>
+                    <p class="text-sm text-gray-600 mb-1"><strong>Location:</strong> {{eventLocation}}</p>
+                    <p class="text-sm text-gray-600 mb-1"><strong>Quantity:</strong> {{quantity}}</p>
+                  {{else}}
+                    <!-- Class tipi için gösterim -->
+                    <p class="text-base font-bold text-gray-800 mb-2">{{classTitle}}</p>
+                    <p class="text-sm text-gray-600 mb-1"><strong>Day:</strong> {{slotDay}}</p>
+                    <p class="text-sm text-gray-600 mb-1"><strong>Date:</strong> {{slotDate}}</p>
+                    <p class="text-sm text-gray-600 mb-1"><strong>Time:</strong> {{slotTime}}</p>
+                  {{/if}}
+                  
                   <div class="flex items-center justify-between pt-5">
-                    <p class="text-base font-black leading-none text-gray-800">${{classPrice}}</p>
+                    {{#if (eq type "event")}}
+                      <p class="text-base font-black leading-none text-gray-800">${{multiply price quantity}}</p>
+                    {{else}}
+                      <p class="text-base font-black leading-none text-gray-800">${{classPrice}}</p>
+                    {{/if}}
+                    
+                    <!-- Sepetten Kaldırma Düğmesi -->
                     <form method="POST" action="/remove-from-cart" class="ml-4">
                       <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-                        <input type="hidden" name="cartItemId" value="{{cartItemId}}">
-                        <button type="submit" class="text-xs leading-3 underline text-red-500 cursor-pointer hover:text-red-700 transition">
-                          Remove
-                        </button>
+                      <input type="hidden" name="cartItemId" value="{{cartItemId}}">
+                      <button type="submit" class="text-xs leading-3 underline text-red-500 cursor-pointer hover:text-red-700 transition">
+                        Remove
+                      </button>
                     </form>
                   </div>
                 </div>
@@ -162,7 +185,7 @@
         <h1 class="font-semibold text-2xl border-b pb-8">Order Summary</h1>
         <div class="mt-8 mb-5">
           <!-- Order Summary -->
-          <ul class="divide-y divide-gray-200">
+                    <ul class="divide-y divide-gray-200">
             {{#if cart}}
               {{#if (isObject cart)}}
                 <li class="flex justify-between py-2">
@@ -172,8 +195,13 @@
               {{else}}
                 {{#each cart}}
                   <li class="flex justify-between py-2">
-                    <span class="text-sm text-gray-700">{{classTitle}} ({{slotDate}} {{slotTime}})</span>
-                    <span class="text-sm font-semibold text-gray-900">${{classPrice}}</span>
+                    {{#if (eq type "event")}}
+                      <span class="text-sm text-gray-700">{{eventTitle}} {{#if quantity}}({{quantity}}){{/if}}</span>
+                      <span class="text-sm font-semibold text-gray-900">${{multiply price quantity}}</span>
+                    {{else}}
+                      <span class="text-sm text-gray-700">{{classTitle}} ({{slotDate}} {{slotTime}})</span>
+                      <span class="text-sm font-semibold text-gray-900">${{classPrice}}</span>
+                    {{/if}}
                   </li>
                 {{/each}}
               {{/if}}
@@ -197,7 +225,7 @@
               {{#if (isObject cart)}}
                 ${{cartSubtotal cart}}
               {{else}}
-                ${{sum cart "classPrice"}}
+                ${{calculateSubtotal cart}}
               {{/if}}
             {{else}}
               $0
@@ -229,20 +257,6 @@
         <div class="border-t mt-8">
           <div class="space-y-1 mb-4 mt-4">
             <div class="flex justify-between text-sm text-gray-700">
-              <span>Subtotal</span>
-              <span>
-                {{#if cart}}
-                  {{#if (isObject cart)}}
-                    ${{cartSubtotal cart}}
-                  {{else}}
-                    ${{sum cart "classPrice"}}
-                  {{/if}}
-                {{else}}
-                  $0
-                {{/if}}
-              </span>
-            </div>
-            <div class="flex justify-between text-sm text-gray-700">
               <span>Savings</span>
               <span>
                 {{#if cart}}
@@ -254,7 +268,7 @@
                     {{/if}}
                   {{else}}
                     {{#if promo}}
-                      -${{discountAmount cart promo.discount}}
+                      -${{calculateDiscount cart promo.discount}}
                     {{else}}
                       $0
                     {{/if}}
@@ -264,20 +278,21 @@
                 {{/if}}
               </span>
             </div>
+           
             <div class="flex justify-between text-sm text-gray-700">
-                <span>Tax (HST 13%)</span>
-                <span>
-                  {{#if cart}}
-                    {{#if (isObject cart)}}
-                      ${{cartTax cart promo 0.13}}
-                    {{else}}
-                      ${{taxAmount cart 0.13}}
-                    {{/if}}
+              <span>Tax (HST 13%)</span>
+              <span>
+                {{#if cart}}
+                  {{#if (isObject cart)}}
+                    ${{cartTax cart promo 0.13}}
                   {{else}}
-                    $0.00
+                    ${{calculateTax cart promo.discount 0.13}}
                   {{/if}}
-                </span>
-              </div>
+                {{else}}
+                  $0.00
+                {{/if}}
+              </span>
+            </div>
           </div>
 
           <!-- Total Cost kısmı -->
@@ -289,9 +304,9 @@
                   ${{cartTotal cart promo 0.13}}
                 {{else}}
                   {{#if promo}}
-                    ${{totalCost cart promo.discount 0.13}}
+                    ${{calculateTotal cart promo.discount 0.13}}
                   {{else}}
-                    ${{totalCost cart 0 0.13}}
+                    ${{calculateTotal cart 0 0.13}}
                   {{/if}}
                 {{/if}}
               {{else}}

@@ -19,6 +19,7 @@ const classRoutes = require('./routes/classRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const infoRoutes = require("./routes/info");
 const cartRoutes = require('./routes/cartRoutes');
+const eventRoutes = require('./routes/eventRoutes');
 const hbs = require("hbs");
 const contactController = require('./controllers/contactController');
 const logger = require('./utils/logger');
@@ -255,7 +256,11 @@ app.use(session({
 // Cookie Parser Middleware
 app.use(cookieParser()); // CSRF'den önce
 
-// CSRF Middleware
+// Flash middleware'ini buraya ekleyin
+const flash = require('connect-flash');
+app.use(flash());
+
+
 // CSRF Middleware - Render'da DISABLE_CSRF 
 const csrfProtection = csrf({ cookie: true });
 
@@ -364,6 +369,7 @@ app.use('/contact', contactRoutes);
 app.use('/class', classRoutes);
 app.use('/', cartRoutes); // Yeni cart rotaları
 app.use(infoRoutes);
+app.use('/', eventRoutes);
 logger.info("✅ Server loaded galleryRoutes!");
 app.use("/api/gallery", galleryRoutes);
 
@@ -393,7 +399,8 @@ app.get("/events", (req, res) => {
   res.render("events", { 
     layout: "layouts/main", 
     title: "Events",
-    activeGallery: true,
+    csrfToken: req.csrfToken(), // CSRF token ekle
+    activeEvents: true,
     isEventsPage: true
   });
 });
@@ -832,6 +839,94 @@ hbs.registerHelper('cartItemCount', function() {
   }
 });
 
+// EŞİTLİK KARŞILAŞTIRMASI İÇİN HELPER - BURAYA EKLEYİN
+hbs.registerHelper('eq', function(a, b) {
+  return a === b;
+});
+
+// ÇARPMA İŞLEMİ İÇİN HELPER - BURAYA EKLEYİN
+hbs.registerHelper('multiply', function(a, b) {
+  return parseFloat(a) * parseFloat(b);
+});
+
+
+// Sepet subtotal hesaplama (event ve class tipi için)
+hbs.registerHelper('calculateSubtotal', function(cart) {
+  if (!cart || !Array.isArray(cart) || cart.length === 0) return "0.00";
+  
+  let subtotal = 0;
+  cart.forEach(item => {
+    if (item.type === 'event') {
+      subtotal += parseFloat(item.price) * (item.quantity || 1);
+    } else {
+      subtotal += parseFloat(item.classPrice);
+    }
+  });
+  
+  return subtotal.toFixed(2);
+});
+
+// İndirim tutarı hesaplama
+hbs.registerHelper('calculateDiscount', function(cart, discount) {
+  if (!cart || !Array.isArray(cart) || cart.length === 0 || !discount) return "0.00";
+  
+  let subtotal = 0;
+  cart.forEach(item => {
+    if (item.type === 'event') {
+      subtotal += parseFloat(item.price) * (item.quantity || 1);
+    } else {
+      subtotal += parseFloat(item.classPrice);
+    }
+  });
+  
+  return (subtotal * discount).toFixed(2);
+});
+
+// Vergi hesaplama
+hbs.registerHelper('calculateTax', function(cart, discount, taxRate) {
+  if (!cart || !Array.isArray(cart) || cart.length === 0) return "0.00";
+  
+  let subtotal = 0;
+  cart.forEach(item => {
+    if (item.type === 'event') {
+      subtotal += parseFloat(item.price) * (item.quantity || 1);
+    } else {
+      subtotal += parseFloat(item.classPrice);
+    }
+  });
+  
+  // İndirim varsa uygula
+  if (discount) {
+    subtotal = subtotal * (1 - discount);
+  }
+  
+  return (subtotal * (taxRate || 0.13)).toFixed(2);
+});
+
+// Toplam hesaplama
+hbs.registerHelper('calculateTotal', function(cart, discount, taxRate) {
+  if (!cart || !Array.isArray(cart) || cart.length === 0) return "0.00";
+  
+  let subtotal = 0;
+  cart.forEach(item => {
+    if (item.type === 'event') {
+      subtotal += parseFloat(item.price) * (item.quantity || 1);
+    } else {
+      subtotal += parseFloat(item.classPrice);
+    }
+  });
+  
+  // İndirim varsa uygula
+  if (discount) {
+    subtotal = subtotal * (1 - discount);
+  }
+  
+  // Vergiyi ekle
+  const tax = subtotal * (taxRate || 0.13);
+  
+  return (subtotal + tax).toFixed(2);
+});
+
 
 // GET alternative slot reservation route - ENGLISH ERROR MESSAGES
 app.get('/select-slot/:slotId', async (req, res) => {
@@ -1012,28 +1107,59 @@ if (req.session.cart && !Array.isArray(req.session.cart)) {
 // Sepet dizi ise
 else if (req.session.cart && Array.isArray(req.session.cart)) {
   req.session.cart.forEach(item => {
-    let price = parseFloat(item.classPrice);
+  let price;
+  let name;
+  let description;
+  let quantity = 1;
+  
+  // Event tipindeki ürünler için
+  if (item.type === 'event') {
+    price = parseFloat(item.price || 0);
+    name = item.eventTitle || 'Event';
+    description = `${item.eventDate || ''} ${item.eventTime || ''}`;
+    quantity = parseInt(item.quantity) || 1;
     
-    // Promo kodu indirimini uygula
-    if (req.session.promo && req.session.promo.discount) {
-      price = price * (1 - req.session.promo.discount);
-    }
-    
-    // Vergiyi ekle
-    const totalAmount = price + (price * taxRate);
-    
-    lineItems.push({
-      price_data: {
-        currency: 'cad',
-        product_data: {
-          name: item.classTitle,
-          description: `${item.slotDate} ${item.slotTime} (incl. 13% tax)`,
-        },
-        unit_amount: Math.round(totalAmount * 100), // Vergi dahil toplam
-      },
-      quantity: 1,
+    // Debug için
+    console.log('Event item debug:', {
+      title: name,
+      originalPrice: item.price,
+      parsedPrice: price,
+      quantity: quantity
     });
+  } 
+  // Class tipindeki ürünler için
+  else {
+    price = parseFloat(item.classPrice || 0);
+    name = item.classTitle || 'Class';
+    description = `${item.slotDate || ''} ${item.slotTime || ''}`;
+  }
+  
+  // NaN kontrolü ekle
+  if (isNaN(price)) {
+    console.error('Invalid price detected:', item);
+    price = 0; // Geçersiz fiyat durumunda 0 kullan
+  }
+  
+  // Promo kodu indirimini uygula
+  if (req.session.promo && req.session.promo.discount) {
+    price = price * (1 - req.session.promo.discount);
+  }
+  
+  // Vergiyi ekle
+  const totalAmount = price + (price * taxRate);
+  
+  lineItems.push({
+    price_data: {
+      currency: 'cad',
+      product_data: {
+        name: name,
+        description: `${description} (incl. 13% tax)`,
+      },
+      unit_amount: Math.round(totalAmount * 100), // Vergi dahil toplam
+    },
+    quantity: quantity
   });
+});
   
   logger.info(`Created ${lineItems.length} line items for cart with tax included`);
 }

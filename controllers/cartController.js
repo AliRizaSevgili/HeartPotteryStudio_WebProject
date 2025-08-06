@@ -161,12 +161,39 @@ exports.viewCart = async (req, res) => {
         remainingTime = Math.max(0, Math.floor((expiresAt - now) / 60000));
       }
       
+      // Event tipindeki ürünler için görüntüleme bilgileri ekle
+        cart = cart.map(item => {
+          // Event tipindeki ürünler için
+          if (item.type === 'event') {
+            return {
+              ...item, // Mevcut tüm özellikleri koru
+              displayType: 'Event',
+              displayTitle: item.eventTitle,
+              displayImage: item.eventImage,
+              displayInfo: `${item.eventDate} · ${item.eventTime}`,
+              displayLocation: item.eventLocation,
+              displayPrice: item.priceDisplay,
+              totalPrice: item.price * item.quantity,
+              formattedTotalPrice: `$${(item.price * item.quantity).toFixed(2)}`
+            };
+          }
+          // Event tipinde olmayan ürünleri olduğu gibi döndür
+          return item;
+        });
+
+
+
       // Toplam fiyatları hesapla
-      let subtotal = 0;
-      cart.forEach(item => {
-        subtotal += parseFloat(item.classPrice);
-      });
-      
+        let subtotal = 0;
+        cart.forEach(item => {
+          // Event tipindeki ürünler için quantity ile çarp
+          if (item.type === 'event') {
+            subtotal += parseFloat(item.price) * (item.quantity || 1);
+          } else {
+            // Normal kurslar için
+            subtotal += parseFloat(item.classPrice);
+          }
+        });
       // Promo kodu varsa indirim uygula
       let discountedSubtotal = subtotal;
       if (promo && promo.discount) {
@@ -278,44 +305,46 @@ exports.removeFromCart = async (req, res) => {
   try {
     // Sepette ürün var mı kontrol et
     if (!req.session.cart) {
-      return res.redirect('/learn');
+      req.session.promoMessage = "Add items to cart before applying promo code.";
+      
+      // Event için yapılan alışverişlerde /events sayfasına dönülsün
+      const hasEventItems = Array.isArray(req.session.cart) && 
+                          req.session.cart.some(item => item.type === 'event');
+      
+      return res.redirect(hasEventItems ? '/events' : '/learn');
     }
     
     const { cartItemId } = req.body;
     
     // Sepet bir dizi mi kontrol et
-      if (Array.isArray(req.session.cart)) {
-        
-        
-        // Kaldırılacak öğeyi bul (cartItemId ile)
-        const itemIndex = req.session.cart.findIndex(item => 
-          item.cartItemId === cartItemId
-        );
-        
-        console.log("FOUND ITEM INDEX:", itemIndex);
+    if (Array.isArray(req.session.cart)) {
+      // Kaldırılacak öğeyi bul (cartItemId ile)
+      const itemIndex = req.session.cart.findIndex(item => 
+        item.cartItemId === cartItemId
+      );
       
+      console.log("FOUND ITEM INDEX:", itemIndex);
+    
       if (itemIndex !== -1) {
-        // Rezervasyonu iptal et
+        // Silinecek öğeyi al
         const itemToRemove = req.session.cart[itemIndex];
-        if (itemToRemove.reservationId) {
-          try {
-            await slotService.cancelReservation(itemToRemove.reservationId);
-          } catch (err) {
-            logger.error('Error canceling reservation:', err);
+        
+        // Event tipinde bir ürün değilse rezervasyon iptal et
+        if (!itemToRemove.type || itemToRemove.type !== 'event') {
+          if (itemToRemove.reservationId) {
+            try {
+              await slotService.cancelReservation(itemToRemove.reservationId);
+            } catch (err) {
+              logger.error('Error canceling reservation:', err);
+            }
           }
         }
         
         // Sepetten çıkar
         req.session.cart.splice(itemIndex, 1);
         
-        // Sepet boşalırsa promo kodunu sıfırla
-        if (req.session.cart.length === 0) {
-          req.session.promo = null;
-          req.session.promoMessage = null;
-        }
+        return res.redirect('/checkout');
       }
-      
-      return res.redirect('/checkout');
     }
     // Eski format sepet (nesne)
     else {
