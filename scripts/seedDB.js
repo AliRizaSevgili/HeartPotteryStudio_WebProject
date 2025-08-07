@@ -220,15 +220,15 @@ async function seedDatabase() {
     const septemberSlots = [
       // 4 haftalık kurs için Eylül slotları
       {
-        classId: fourWeekClass._id,
-        startDate: getDateForDayAndMonth(1, 9, 2025),
-        endDate: getDateForDayAndMonth(22, 9, 2025),
-        time: { start: "6:00 PM", end: "8:00 PM" },
-        dayOfWeek: "Monday",
-        label: formatDateRange(getDateForDayAndMonth(1, 9, 2025), getDateForDayAndMonth(22, 9, 2025)),
-        totalSlots: 8,
-        bookedSlots: 0
-      },
+          classId: fourWeekClass._id,
+          startDate: getDateForDayAndMonth(3, 9, 2025),
+          endDate: getDateForDayAndMonth(24, 9, 2025), // 4 haftalık kurs
+          time: { start: "6:30 PM", end: "9:30 PM" },
+          dayOfWeek: "Wednesday",
+          label: formatDateRange(getDateForDayAndMonth(3, 9, 2025), getDateForDayAndMonth(24, 9, 2025)),
+          totalSlots: 8,
+          bookedSlots: 0
+        },
       // Deneme kursu için Eylül slotları
       {
         classId: tryoutClass._id,
@@ -241,9 +241,37 @@ async function seedDatabase() {
         bookedSlots: 0
       }
     ];
+
+
+   // Ekim 2025 slotları
+const octoberSlots = [
+  // Ekim slot 1
+  {
+    classId: fourWeekClass._id,
+    startDate: getDateForDayAndMonth(1, 10, 2025),
+    endDate: getDateForDayAndMonth(22, 10, 2025), // 4 haftalık kurs
+    time: { start: "6:30 PM", end: "9:30 PM" },
+    dayOfWeek: "Wednesday",
+    label: formatDateRange(getDateForDayAndMonth(1, 10, 2025), getDateForDayAndMonth(22, 10, 2025)),
+    totalSlots: 8,
+    bookedSlots: 0
+  },
+  // Ekim slot 2
+  {
+    classId: fourWeekClass._id,
+    startDate: getDateForDayAndMonth(29, 10, 2025),
+    endDate: getDateForDayAndMonth(19, 11, 2025), // 4 haftalık kurs (Kasım'a uzanıyor)
+    time: { start: "6:30 PM", end: "9:30 PM" },
+    dayOfWeek: "Wednesday",
+    label: formatDateRange(getDateForDayAndMonth(29, 10, 2025), getDateForDayAndMonth(19, 11, 2025)),
+    totalSlots: 8,
+    bookedSlots: 0
+  }
+];
+
     
     // Tüm slotları birleştir
-    const allSlots = [...augustSlots, ...septemberSlots];
+    const allSlots = [...augustSlots, ...septemberSlots,...octoberSlots];
     
     // Slotları veritabanına kaydet
     await ClassSlot.create(allSlots);
