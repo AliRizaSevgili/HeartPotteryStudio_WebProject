@@ -395,15 +395,7 @@ app.get("/about", (req, res) => {
   });
 });
 
-app.get("/events", (req, res) => {
-  res.render("events", { 
-    layout: "layouts/main", 
-    title: "Events",
-    csrfToken: req.csrfToken(), // CSRF token ekle
-    activeEvents: true,
-    isEventsPage: true
-  });
-});
+
 
 app.get("/learn", (req, res) => {
   res.render("learn", { 
