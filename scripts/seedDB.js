@@ -116,7 +116,45 @@ const classData = [
       "Rescheduling with at least 48 hours notice is allowed"
     ],
     classRefund: "At Heart Pottery Studio, we are dedicated to fostering a warm, inclusive, and creative environment."
-  }
+  },
+
+  {
+  slug: "4-week-hand-building",
+  title: "4-Week Hand-Building Pottery Class",
+  description: "Want to get creative with clay—without using the pottery wheel? Our 4-Week Hand-Building Class is the perfect place to start.",
+  intro: [
+    "In this fun and accessible course, you'll explore sculptural and functional techniques to create beautiful, one-of-a-kind ceramic pieces—like mugs, vases, and trays.",
+    "This class is ideal for total beginners or anyone who wants to slow down, connect with their hands, and enjoy a mindful, hands-on experience with clay."
+  ],
+  details: [
+    "Week 1: Introduction to the studio. Learning pinch pot and coiling techniques to create expressive, organic forms.",
+    "Week 2: Slab-building basics: constructing mugs, trays, and functional forms using slabs and molds.",
+    "Week 3: Last day of building: time to finish, refine, and decorate your pieces before firing.",
+    "Week 4: Glazing and surface decoration—adding color and character to your work."
+  ],
+  price: {
+    value: 285,
+    currency: "CAD",
+    display: "$285 + tax"
+  },
+  image: "https://res.cloudinary.com/dnemf1asq/image/upload/f_auto,q_auto,dpr_auto/v1745188095/pexels-cottonbro-6694308_xpabkn.jpg",
+  included: [
+    "One 5 kg bag of clay",
+    "Additional clay available for $25/bag",
+    "All tools, glazes, and firing costs",
+    "Up to 6 finished glazed pieces",
+    "Full use of studio tools and equipment",
+    "Personalized instruction in a small group setting"
+  ],
+  pickupInfo: "Your glazed pieces will be ready for pick-up approximately 2–3 weeks after the last class. You'll be notified by email. Pieces not picked up within 2 months will be discarded.",
+  notes: [
+    "This course is non-refundable",
+    "Rescheduling and make-up classes are not available",
+    "Aprons are provided",
+    "Please wear comfortable clothing and trim your nails for best results."
+  ],
+  classRefund: "At Heart Pottery Studio, we are dedicated to fostering a warm, inclusive, and creative environment."
+}
 ];
 
 // Slot örnekleri için tarih yardımcı fonksiyonu
@@ -158,6 +196,7 @@ async function seedDatabase() {
     const fourWeekClass = classes.find(c => c.slug === "4-week-wheel");
     const eightWeekClass = classes.find(c => c.slug === "8-week-wheel");
     const tryoutClass = classes.find(c => c.slug === "tryout-wheel");
+    const handBuildingClass = classes.find(c => c.slug === "4-week-hand-building");
     
     // Slot nesnelerini oluştur (Ağustos 2025)
     const augustSlots = [
@@ -218,26 +257,104 @@ async function seedDatabase() {
     
     // Eylül 2025 slotları
     const septemberSlots = [
+      
       // 4 haftalık kurs için Eylül slotları
-      {
-          classId: fourWeekClass._id,
-          startDate: getDateForDayAndMonth(3, 9, 2025),
-          endDate: getDateForDayAndMonth(24, 9, 2025), // 4 haftalık kurs
-          time: { start: "6:30 PM", end: "9:30 PM" },
-          dayOfWeek: "Wednesday",
-          label: formatDateRange(getDateForDayAndMonth(3, 9, 2025), getDateForDayAndMonth(24, 9, 2025)),
-          totalSlots: 8,
+        // Deneme kursu için Eylül slotları (mevcut slotu güncelle ve yeni slotlar ekle)
+        {
+          classId: tryoutClass._id,
+          startDate: getDateForDayAndMonth(6, 9, 2025),
+          endDate: getDateForDayAndMonth(6, 9, 2025),
+          time: { start: "02:00 PM", end: "04:00 PM" }, // Saati güncellendi
+          dayOfWeek: "Saturday",
+          label: "Saturday September 6",
+          totalSlots: 8, 
           bookedSlots: 0
         },
-      // Deneme kursu için Eylül slotları
+        {
+          classId: tryoutClass._id,
+          startDate: getDateForDayAndMonth(13, 9, 2025),
+          endDate: getDateForDayAndMonth(13, 9, 2025),
+          time: { start: "02:00 PM", end: "04:00 PM" },
+          dayOfWeek: "Saturday",
+          label: "Saturday September 13",
+          totalSlots: 8, 
+          bookedSlots: 0
+        },
+        {
+          classId: tryoutClass._id,
+          startDate: getDateForDayAndMonth(20, 9, 2025),
+          endDate: getDateForDayAndMonth(20, 9, 2025),
+          time: { start: "02:00 PM", end: "04:00 PM" },
+          dayOfWeek: "Saturday",
+          label: "Saturday September 20",
+          totalSlots: 8, 
+          bookedSlots: 0
+        },
+        {
+          classId: tryoutClass._id,
+          startDate: getDateForDayAndMonth(27, 9, 2025),
+          endDate: getDateForDayAndMonth(27, 9, 2025),
+          time: { start: "02:00 PM", end: "04:00 PM" },
+          dayOfWeek: "Saturday",
+          label: "Saturday September 27",
+          totalSlots: 8, 
+          bookedSlots: 0
+        },
+
+      // 8-WEEK sınıfı için yeni Eylül slotları
       {
-        classId: tryoutClass._id,
-        startDate: getDateForDayAndMonth(6, 9, 2025),
-        endDate: getDateForDayAndMonth(6, 9, 2025),
-        time: { start: "10:00 AM", end: "12:00 PM" },
-        dayOfWeek: "Saturday",
-        label: "Saturday September 6",
-        totalSlots: 8, 
+        classId: eightWeekClass._id,  // 8-haftalık sınıf ID'si
+        startDate: getDateForDayAndMonth(1, 9, 2025),
+        endDate: getDateForDayAndMonth(20, 10, 2025),
+        time: { start: "6:30 PM", end: "9:30 PM" },
+        dayOfWeek: "Monday",
+        label: formatDateRange(getDateForDayAndMonth(1, 9, 2025), getDateForDayAndMonth(20, 10, 2025)),
+        totalSlots: 8,
+        bookedSlots: 0
+      },
+
+      {
+        classId: eightWeekClass._id,  // 8-haftalık sınıf ID'si
+        startDate: getDateForDayAndMonth(2, 9, 2025),
+        endDate: getDateForDayAndMonth(21, 10, 2025),
+        time: { start: "6:30 PM", end: "9:30 PM" },
+        dayOfWeek: "Tuesday",
+        label: formatDateRange(getDateForDayAndMonth(2, 9, 2025), getDateForDayAndMonth(21, 10, 2025)),
+        totalSlots: 8,
+        bookedSlots: 0
+      },
+      
+      {
+        classId: eightWeekClass._id,  // 8-haftalık sınıf ID'si
+        startDate: getDateForDayAndMonth(4, 9, 2025),
+        endDate: getDateForDayAndMonth(23, 10, 2025),
+        time: { start: "6:30 PM", end: "9:30 PM" },
+        dayOfWeek: "Thursday",
+        label: formatDateRange(getDateForDayAndMonth(4, 9, 2025), getDateForDayAndMonth(23, 10, 2025)),
+        totalSlots: 8,
+        bookedSlots: 0
+      },
+
+
+      // 4-Week Hand-Building için Eylül 2025 slotları
+      {
+        classId: handBuildingClass._id,
+        startDate: getDateForDayAndMonth(2, 9, 2025),
+        endDate: getDateForDayAndMonth(23, 9, 2025),
+        time: { start: "1:30 PM", end: "4:30 PM" },
+        dayOfWeek: "Tuesday",
+        label: formatDateRange(getDateForDayAndMonth(2, 9, 2025), getDateForDayAndMonth(23, 9, 2025)),
+        totalSlots: 8,
+        bookedSlots: 0
+      },
+      {
+        classId: handBuildingClass._id,
+        startDate: getDateForDayAndMonth(30, 9, 2025),
+        endDate: getDateForDayAndMonth(21, 10, 2025),
+        time: { start: "1:30 PM", end: "4:30 PM" },
+        dayOfWeek: "Tuesday",
+        label: formatDateRange(getDateForDayAndMonth(30, 9, 2025), getDateForDayAndMonth(21, 10, 2025)),
+        totalSlots: 8,
         bookedSlots: 0
       }
     ];
@@ -266,12 +383,170 @@ const octoberSlots = [
     label: formatDateRange(getDateForDayAndMonth(29, 10, 2025), getDateForDayAndMonth(19, 11, 2025)),
     totalSlots: 8,
     bookedSlots: 0
+  },
+
+    // 8-WEEK sınıfı için Ekim-Aralık slotları
+    {
+      classId: eightWeekClass._id,
+      startDate: getDateForDayAndMonth(27, 10, 2025),
+      endDate: getDateForDayAndMonth(22, 12, 2025),
+      time: { start: "6:30 PM", end: "9:30 PM" },
+      dayOfWeek: "Monday",
+      label: formatDateRange(getDateForDayAndMonth(27, 10, 2025), getDateForDayAndMonth(22, 12, 2025)),
+      totalSlots: 8,
+      bookedSlots: 0
+    },
+
+    {
+      classId: eightWeekClass._id,
+      startDate: getDateForDayAndMonth(28, 10, 2025),
+      endDate: getDateForDayAndMonth(23, 12, 2025),
+      time: { start: "6:30 PM", end: "9:30 PM" },
+      dayOfWeek: "Tuesday",
+      label: formatDateRange(getDateForDayAndMonth(28, 10, 2025), getDateForDayAndMonth(23, 12, 2025)),
+      totalSlots: 8,
+      bookedSlots: 0
+    },
+
+    {
+      classId: eightWeekClass._id,
+      startDate: getDateForDayAndMonth(30, 10, 2025),
+      endDate: getDateForDayAndMonth(25, 12, 2025),
+      time: { start: "6:30 PM", end: "9:30 PM" },
+      dayOfWeek: "Thursday",
+      label: formatDateRange(getDateForDayAndMonth(30, 10, 2025), getDateForDayAndMonth(25, 12, 2025)),
+      totalSlots: 8,
+      bookedSlots: 0
+    },
+
+
+    // Deneme kursu için Ekim 2025 slotları
+  {
+    classId: tryoutClass._id,
+    startDate: getDateForDayAndMonth(4, 10, 2025),
+    endDate: getDateForDayAndMonth(4, 10, 2025),
+    time: { start: "02:00 PM", end: "04:00 PM" },
+    dayOfWeek: "Saturday",
+    label: "Saturday October 4",
+    totalSlots: 8, 
+    bookedSlots: 0
+  },
+  {
+    classId: tryoutClass._id,
+    startDate: getDateForDayAndMonth(11, 10, 2025),
+    endDate: getDateForDayAndMonth(11, 10, 2025),
+    time: { start: "02:00 PM", end: "04:00 PM" },
+    dayOfWeek: "Saturday",
+    label: "Saturday October 11",
+    totalSlots: 8, 
+    bookedSlots: 0
+  },
+  {
+    classId: tryoutClass._id,
+    startDate: getDateForDayAndMonth(18, 10, 2025),
+    endDate: getDateForDayAndMonth(18, 10, 2025),
+    time: { start: "02:00 PM", end: "04:00 PM" },
+    dayOfWeek: "Saturday",
+    label: "Saturday October 18",
+    totalSlots: 8, 
+    bookedSlots: 0
+  },
+  {
+    classId: tryoutClass._id,
+    startDate: getDateForDayAndMonth(25, 10, 2025),
+    endDate: getDateForDayAndMonth(25, 10, 2025),
+    time: { start: "02:00 PM", end: "04:00 PM" },
+    dayOfWeek: "Saturday",
+    label: "Saturday October 25",
+    totalSlots: 8, 
+    bookedSlots: 0
+  },
+
+  // 4-Week Hand-Building için Ekim 2025 slotu
+  {
+    classId: handBuildingClass._id,
+    startDate: getDateForDayAndMonth(28, 10, 2025),
+    endDate: getDateForDayAndMonth(18, 11, 2025),
+    time: { start: "1:30 PM", end: "4:30 PM" },
+    dayOfWeek: "Tuesday",
+    label: formatDateRange(getDateForDayAndMonth(28, 10, 2025), getDateForDayAndMonth(18, 11, 2025)),
+    totalSlots: 8,
+    bookedSlots: 0
+  }
+];
+
+
+
+// Kasım 2025 slotları
+const novemberSlots = [
+  // Deneme kursu için Kasım 2025 slotları
+  {
+    classId: tryoutClass._id,
+    startDate: getDateForDayAndMonth(1, 11, 2025),
+    endDate: getDateForDayAndMonth(1, 11, 2025),
+    time: { start: "02:00 PM", end: "04:00 PM" },
+    dayOfWeek: "Saturday",
+    label: "Saturday November 1",
+    totalSlots: 8, 
+    bookedSlots: 0
+  },
+  {
+    classId: tryoutClass._id,
+    startDate: getDateForDayAndMonth(8, 11, 2025),
+    endDate: getDateForDayAndMonth(8, 11, 2025),
+    time: { start: "02:00 PM", end: "04:00 PM" },
+    dayOfWeek: "Saturday",
+    label: "Saturday November 8",
+    totalSlots: 8, 
+    bookedSlots: 0
+  },
+  {
+    classId: tryoutClass._id,
+    startDate: getDateForDayAndMonth(15, 11, 2025),
+    endDate: getDateForDayAndMonth(15, 11, 2025),
+    time: { start: "02:00 PM", end: "04:00 PM" },
+    dayOfWeek: "Saturday",
+    label: "Saturday November 15",
+    totalSlots: 8, 
+    bookedSlots: 0
+  },
+  {
+    classId: tryoutClass._id,
+    startDate: getDateForDayAndMonth(22, 11, 2025),
+    endDate: getDateForDayAndMonth(22, 11, 2025),
+    time: { start: "02:00 PM", end: "04:00 PM" },
+    dayOfWeek: "Saturday",
+    label: "Saturday November 22",
+    totalSlots: 8, 
+    bookedSlots: 0
+  },
+  {
+    classId: tryoutClass._id,
+    startDate: getDateForDayAndMonth(29, 11, 2025),
+    endDate: getDateForDayAndMonth(29, 11, 2025),
+    time: { start: "02:00 PM", end: "04:00 PM" },
+    dayOfWeek: "Saturday",
+    label: "Saturday November 29",
+    totalSlots: 8, 
+    bookedSlots: 0
+  },
+
+  // 4-Week Hand-Building için Kasım 2025 slotu
+  {
+    classId: handBuildingClass._id,
+    startDate: getDateForDayAndMonth(25, 11, 2025),
+    endDate: getDateForDayAndMonth(16, 12, 2025),
+    time: { start: "1:30 PM", end: "4:30 PM" },
+    dayOfWeek: "Tuesday",
+    label: formatDateRange(getDateForDayAndMonth(25, 11, 2025), getDateForDayAndMonth(16, 12, 2025)),
+    totalSlots: 8,
+    bookedSlots: 0
   }
 ];
 
     
     // Tüm slotları birleştir
-    const allSlots = [...augustSlots, ...septemberSlots,...octoberSlots];
+    const allSlots = [...augustSlots,...septemberSlots,...octoberSlots,...novemberSlots];
     
     // Slotları veritabanına kaydet
     await ClassSlot.create(allSlots);
