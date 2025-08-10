@@ -154,6 +154,40 @@ const classData = [
     "Please wear comfortable clothing and trim your nails for best results."
   ],
   classRefund: "At Heart Pottery Studio, we are dedicated to fostering a warm, inclusive, and creative environment."
+},
+  {
+  slug: "hand-building-everyone",
+  title: "Hand Building for Everyone",
+  description: "Looking for a fun and creative experience for the whole family? Our 2-hour Hand Building for Everyone class is the perfect Sunday activity!",
+  intro: [
+    "Whether you're a child, adult, parent, grandparent—or just someone curious about clay—this playful and relaxed class welcomes all ages and skill levels to explore the most freeing form of ceramics: hand building.",
+    "No experience needed—just bring your imagination and enjoy creating side by side with your loved ones!"
+  ],
+  details: [
+    "This 2-hour workshop is open to all ages and designed to spark creativity through the simple joys of shaping clay by hand. You'll be guided through basic techniques and make your very own ceramic piece.",
+    "Sundays | 12:00 PM – 2:00 PM"
+  ],
+  price: {
+    value: 70,
+    currency: "CAD",
+    display: "$70 + tax per person"
+  },
+  image: "https://res.cloudinary.com/dnemf1asq/image/upload/v1754853651/WhatsApp_Image_2025-08-06_at_23.27.14_64bd9240_dkrkgc.jpg",
+  included: [
+    "One hand-built piece per participant (includes glazing and firing)",
+    "$10 for each additional piece per person (firing fee)",
+    "All materials and tools provided",
+    "A supportive, guided experience for all ages"
+  ],
+  pickupInfo: "Your piece(s) will be ready for pick-up at least 2 weeks after the class. We'll notify you by email when they're ready. Please pick them up within 2 months—unclaimed pieces will be discarded.",
+  notes: [
+    "This class is suitable for ages 6 and up. Children under 14 must be accompanied by an adult.",
+    "No refunds for cancellations.",
+    "Rescheduling requests must be made at least 3 days in advance. Requests made with less than 3 days' notice are subject to a $35 rescheduling fee.",
+    "Please arrive 5 minutes early. Late arrivals of more than 15 minutes will not be accepted.",
+    "Aprons are provided. Please dress comfortably and avoid long nails."
+  ],
+  classRefund: "At Heart Pottery Studio, we are dedicated to fostering a warm, inclusive, and creative environment."
 }
 ];
 
@@ -197,7 +231,8 @@ async function seedDatabase() {
     const eightWeekClass = classes.find(c => c.slug === "8-week-wheel");
     const tryoutClass = classes.find(c => c.slug === "tryout-wheel");
     const handBuildingClass = classes.find(c => c.slug === "4-week-hand-building");
-    
+    const handBuildingEveryoneClass = classes.find(c => c.slug === "hand-building-everyone");
+
     // Slot nesnelerini oluştur (Ağustos 2025)
     const augustSlots = [
       // 4 haftalık kurs için Ağustos 2025 slotları
@@ -356,7 +391,49 @@ async function seedDatabase() {
         label: formatDateRange(getDateForDayAndMonth(30, 9, 2025), getDateForDayAndMonth(21, 10, 2025)),
         totalSlots: 8,
         bookedSlots: 0
-      }
+      },
+
+      // Hand Building for Everyone için Eylül 2025 slotları
+{
+  classId: handBuildingEveryoneClass._id,
+  startDate: getDateForDayAndMonth(7, 9, 2025),
+  endDate: getDateForDayAndMonth(7, 9, 2025),
+  time: { start: "12:00 PM", end: "2:00 PM" },
+  dayOfWeek: "Sunday",
+  label: "Sunday September 7",
+  totalSlots: 10,
+  bookedSlots: 0
+},
+  {
+    classId: handBuildingEveryoneClass._id,
+    startDate: getDateForDayAndMonth(14, 9, 2025),
+    endDate: getDateForDayAndMonth(14, 9, 2025),
+    time: { start: "12:00 PM", end: "2:00 PM" },
+    dayOfWeek: "Sunday",
+    label: "Sunday September 14",
+    totalSlots: 10,
+    bookedSlots: 0
+  },
+  {
+    classId: handBuildingEveryoneClass._id,
+    startDate: getDateForDayAndMonth(21, 9, 2025),
+    endDate: getDateForDayAndMonth(21, 9, 2025),
+    time: { start: "12:00 PM", end: "2:00 PM" },
+    dayOfWeek: "Sunday",
+    label: "Sunday September 21",
+    totalSlots: 10,
+    bookedSlots: 0
+  },
+  {
+    classId: handBuildingEveryoneClass._id,
+    startDate: getDateForDayAndMonth(28, 9, 2025),
+    endDate: getDateForDayAndMonth(28, 9, 2025),
+    time: { start: "12:00 PM", end: "2:00 PM" },
+    dayOfWeek: "Sunday",
+    label: "Sunday September 28",
+    totalSlots: 10,
+    bookedSlots: 0
+  }
     ];
 
 
@@ -472,7 +549,49 @@ const octoberSlots = [
     label: formatDateRange(getDateForDayAndMonth(28, 10, 2025), getDateForDayAndMonth(18, 11, 2025)),
     totalSlots: 8,
     bookedSlots: 0
-  }
+  },
+
+  // Hand Building for Everyone için Ekim 2025 slotları
+{
+  classId: handBuildingEveryoneClass._id,
+  startDate: getDateForDayAndMonth(5, 10, 2025),
+  endDate: getDateForDayAndMonth(5, 10, 2025),
+  time: { start: "12:00 PM", end: "2:00 PM" },
+  dayOfWeek: "Sunday",
+  label: "Sunday October 5",
+  totalSlots: 10,
+  bookedSlots: 0
+},
+{
+  classId: handBuildingEveryoneClass._id,
+  startDate: getDateForDayAndMonth(12, 10, 2025),
+  endDate: getDateForDayAndMonth(12, 10, 2025),
+  time: { start: "12:00 PM", end: "2:00 PM" },
+  dayOfWeek: "Sunday",
+  label: "Sunday October 12",
+  totalSlots: 10,
+  bookedSlots: 0
+},
+{
+  classId: handBuildingEveryoneClass._id,
+  startDate: getDateForDayAndMonth(19, 10, 2025),
+  endDate: getDateForDayAndMonth(19, 10, 2025),
+  time: { start: "12:00 PM", end: "2:00 PM" },
+  dayOfWeek: "Sunday",
+  label: "Sunday October 19",
+  totalSlots: 10,
+  bookedSlots: 0
+},
+{
+  classId: handBuildingEveryoneClass._id,
+  startDate: getDateForDayAndMonth(26, 10, 2025),
+  endDate: getDateForDayAndMonth(26, 10, 2025),
+  time: { start: "12:00 PM", end: "2:00 PM" },
+  dayOfWeek: "Sunday",
+  label: "Sunday October 26",
+  totalSlots: 10,
+  bookedSlots: 0
+}
 ];
 
 
@@ -541,7 +660,58 @@ const novemberSlots = [
     label: formatDateRange(getDateForDayAndMonth(25, 11, 2025), getDateForDayAndMonth(16, 12, 2025)),
     totalSlots: 8,
     bookedSlots: 0
-  }
+  },
+  // Hand Building for Everyone için Kasım 2025 slotları
+{
+  classId: handBuildingEveryoneClass._id,
+  startDate: getDateForDayAndMonth(2, 11, 2025),
+  endDate: getDateForDayAndMonth(2, 11, 2025),
+  time: { start: "12:00 PM", end: "2:00 PM" },
+  dayOfWeek: "Sunday",
+  label: "Sunday November 2",
+  totalSlots: 10,
+  bookedSlots: 0
+},
+{
+  classId: handBuildingEveryoneClass._id,
+  startDate: getDateForDayAndMonth(9, 11, 2025),
+  endDate: getDateForDayAndMonth(9, 11, 2025),
+  time: { start: "12:00 PM", end: "2:00 PM" },
+  dayOfWeek: "Sunday",
+  label: "Sunday November 9",
+  totalSlots: 10,
+  bookedSlots: 0
+},
+{
+  classId: handBuildingEveryoneClass._id,
+  startDate: getDateForDayAndMonth(16, 11, 2025),
+  endDate: getDateForDayAndMonth(16, 11, 2025),
+  time: { start: "12:00 PM", end: "2:00 PM" },
+  dayOfWeek: "Sunday",
+  label: "Sunday November 16",
+  totalSlots: 10,
+  bookedSlots: 0
+},
+{
+  classId: handBuildingEveryoneClass._id,
+  startDate: getDateForDayAndMonth(23, 11, 2025),
+  endDate: getDateForDayAndMonth(23, 11, 2025),
+  time: { start: "12:00 PM", end: "2:00 PM" },
+  dayOfWeek: "Sunday",
+  label: "Sunday November 23",
+  totalSlots: 10,
+  bookedSlots: 0
+},
+{
+  classId: handBuildingEveryoneClass._id,
+  startDate: getDateForDayAndMonth(30, 11, 2025),
+  endDate: getDateForDayAndMonth(30, 11, 2025),
+  time: { start: "12:00 PM", end: "2:00 PM" },
+  dayOfWeek: "Sunday",
+  label: "Sunday November 30",
+  totalSlots: 10,
+  bookedSlots: 0
+}
 ];
 
     
