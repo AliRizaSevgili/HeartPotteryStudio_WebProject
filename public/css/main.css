@@ -40,3 +40,8 @@ main {
   50% { transform: scale(1.2); }
   100% { transform: scale(1); }
 }
+
+#essential-cookies + div {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

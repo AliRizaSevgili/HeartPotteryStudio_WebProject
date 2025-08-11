@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 app.set('trust proxy', 1); // Render gibi reverse proxy kullanılan ortamlar için gerekli
 const path = require("path");
+const partialsPath = path.join(__dirname, 'views', 'partials');
 
 const cors = require("cors");
 const helmet = require("helmet");

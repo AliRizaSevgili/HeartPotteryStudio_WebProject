@@ -566,3 +566,29 @@ select.has-value + label {
         min-height: 100vh;
         padding-top: 120px; /* Header ile boşluk */
     }
+
+    /* Cookie banner smooth animations */
+.cookie-banner-enter {
+  transform: translateY(100%);
+  opacity: 0;
+}
+.cookie-banner-enter-active {
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform 300ms, opacity 300ms;
+}
+.cookie-banner-exit {
+  transform: translateY(0);
+  opacity: 1;
+}
+.cookie-banner-exit-active {
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 300ms, opacity 300ms;
+}
+
+/* Essential cookies toggle'ını daha net disabled göstermek için */
+#essential-cookies + div {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
