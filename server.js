@@ -154,7 +154,9 @@ app.use(
           "https://www.recaptcha.net",
           "https://checkout.stripe.com",
           "https://*.stripe.com",
-          "https://js.stripe.com"
+          "https://js.stripe.com",
+          "https://www.google-analytics.com",      // Google Analytics için eklendi
+          "https://*.googletagmanager.com" 
         ],
         scriptSrcAttr: [
           "'self'",
@@ -181,7 +183,9 @@ app.use(
           "https://checkout.stripe.com",
           "https://api.stripe.com",
           "https://*.stripe.com",
-          "https://cdn.stripe.com"
+          "https://cdn.stripe.com",
+          "https://www.google-analytics.com",      // Google Analytics için eklendi
+          "https://*.googletagmanager.com" 
         ]
       }
     }
