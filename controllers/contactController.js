@@ -74,6 +74,14 @@ exports.submitContactForm = async (req, res) => {
           errors: errors.array(),
           formSource: formSource
         });
+
+        case 'returns':
+    return res.render("returns", {
+      layout: "layouts/main",
+      title: "Return & Policies",
+      formSuccess: true
+       })
+    
       case 'contact':
       default:
         return res.render("contact", {

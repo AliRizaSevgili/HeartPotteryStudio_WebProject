@@ -119,6 +119,14 @@
 
   <!-- Form -->
   <form action="/contact" method="POST" class="mx-auto mt-16 max-w-xl sm:mt-20">
+  <!-- CSRF Token - Eklendi -->
+  <input type="hidden" name="_csrf" value="{{csrfToken}}">
+  
+  <!-- Form Source - Eklendi -->
+  <input type="hidden" name="formSource" value="returns">
+  
+  <!-- Form içeriği aynı kalacak... -->
+  <input type="hidden" name="recaptchaToken" id="recaptchaToken">
     <div class="grid grid-cols-1 gap-x-12 gap-y-6 sm:grid-cols-2">
 
   <!-- First Name -->
@@ -314,7 +322,6 @@
   </button>
 </div>
 
-<input type="hidden" name="recaptchaToken" id="recaptchaToken">
   </form>
    <!-- ✅ Success Message (Animated & Styled) -->
   <div id="success-message"
@@ -335,42 +342,14 @@
 
 </section>
 
-    
-    
-    
-    
-    
-    
+
     </div>
   </div>
 </div>
     
   <!-- JavaScript -->
 <script src="https://www.google.com/recaptcha/api.js?render=6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const form = document.querySelector("form[action='/contact']");
-  const toggle = document.getElementById("toggle-agreement");
-  const toggleError = document.getElementById("toggle-error");
-  if (form) {
-    form.onsubmit = null;
-    form.addEventListener("submit", function(e) {
-      // Önce toggle kontrolü
-      if (toggle && !toggle.checked) {
-        if (toggleError) toggleError.classList.remove("hidden");
-        e.preventDefault();
-        return;
-      } else {
-        if (toggleError) toggleError.classList.add("hidden");
-      }
-      e.preventDefault();
-      grecaptcha.ready(function() {
-        grecaptcha.execute('6Lfk1X0rAAAAABIekRWzhhzOs9yqkXroGTCmhmmI', {action: 'submit'}).then(function(token) {
-          document.getElementById('recaptchaToken').value = token;
-          form.submit();
-        });
-      });
-    });
-  }
-});
-</script>
+<script src="/js/contact_form.js"></script>
+<script src="/js/recaptcha-handler.js"></script>
+
+

@@ -446,10 +446,11 @@ app.get("/privacy", (req, res) => {
   });
 });
 
-app.get("/returns", (req, res) => {
+app.get("/returns", csrfProtection, (req, res) => {
   res.render("returns", { 
     layout: "layouts/main", 
-    title: "Return & Refund" 
+    title: "Return & Refund",
+    csrfToken: req.csrfToken() 
   });
 });
 
