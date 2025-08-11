@@ -76,10 +76,10 @@ exports.submitContactForm = async (req, res) => {
         });
 
         case 'returns':
-    return res.render("returns", {
-      layout: "layouts/main",
-      title: "Return & Policies",
-      formSuccess: true
+          return res.render("returns", {
+            layout: "layouts/main",
+            title: "Return & Policies",
+            formSuccess: true
        })
     
       case 'contact':
@@ -148,23 +148,10 @@ exports.submitContactForm = async (req, res) => {
     logger.info(`[${requestId}] 🔄 İşlem tamamlandı, yönlendiriliyor: ${formSource}`);
       
     // TÜM form başarılarını /contact-success sayfasına yönlendir
-    // Sadece 'events' için aynı sayfada başarı mesajı göster
-    switch(formSource) {
-      case 'events':
-        logger.info(`[${requestId}] ### EVENTS SAYFASINDAN GELEN FORM`);
-        return res.render("events", {
-          layout: "layouts/main",
-          title: "Events",
-          activeGallery: true,
-          isEventsPage: true,
-          success: true,
-          formSource: formSource
-        });
-      default:
-        // Tüm diğer formları contact-success sayfasına yönlendir
-        logger.info(`[${requestId}] ### ${formSource.toUpperCase()} SAYFASINDAN GELEN FORM`);
-        return res.redirect('/contact-success');
-    }
+    // TÜM formları contact-success sayfasına yönlendir
+    logger.info(`[${requestId}] ### ${formSource.toUpperCase()} SAYFASINDAN GELEN FORM`);
+    return res.redirect('/contact-success');
+    
   } catch (error) {
     logger.error(`[${requestId}] ❌ Form submission error:`, error);
     

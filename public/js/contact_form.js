@@ -1,9 +1,31 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // 📞 Phone input karakter sınırlayıcı
+  // 📞 Modern telefon formatı - Sadece rakam alıp otomatik formatlama
   const contactNumber = document.getElementById("contactNumber");
   if (contactNumber) {
     contactNumber.addEventListener("input", function (e) {
-      e.target.value = e.target.value.replace(/[^+\d\s-]/g, '');
+      // Sadece rakamları al
+      const numbersOnly = e.target.value.replace(/\D/g, '');
+      
+      // Rakamları formatlı hale getir
+      let formattedNumber = '';
+      
+      if (numbersOnly.length > 0) {
+        // İlk 3 rakam (alan kodu)
+        formattedNumber = numbersOnly.substring(0, 3);
+        
+        // Sonraki 3 rakam
+        if (numbersOnly.length > 3) {
+          formattedNumber += " " + numbersOnly.substring(3, 6);
+          
+          // Son 4 rakam
+          if (numbersOnly.length > 6) {
+            formattedNumber += " " + numbersOnly.substring(6, 10);
+          }
+        }
+      }
+      
+      // Değeri güncelle
+      e.target.value = formattedNumber;
     });
   }
 

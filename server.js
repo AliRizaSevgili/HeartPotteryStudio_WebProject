@@ -383,12 +383,13 @@ app.get("/favicon.ico", (req, res) => {
 });
 
 // Main Pages Routes
-app.get("/", (req, res) => {
+app.get("/", csrfProtection, (req, res) => {
   res.render("homepage", { 
     layout: "layouts/main", 
     title: "Home",
     activeHome: true,
-    isHomepagePage: true
+    isHomepagePage: true,
+    csrfToken: req.csrfToken() // CSRF token eklendi
   });
 });
 

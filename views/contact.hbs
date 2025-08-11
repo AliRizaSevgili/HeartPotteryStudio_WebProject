@@ -320,28 +320,28 @@
     </div>
 
     <!-- Phone Input -->
-    <input
-      id="contactNumber"
-      name="contactNumber"
-      placeholder=""
-      class="peer w-full bg-transparent placeholder:text-slate-400 text-gray-700 text-sm 
-             border border-gray-300 rounded-md pr-3 pl-10 py-2 
-             focus:outline-none focus:border-transparent focus:ring-2 focus:ring-pink-100 
-             shadow-none appearance-none transition duration-200 ease-in-out"
-      pattern="^\+\d{1,3}\s\d{1,3}-\d{3}-\d{4}$"
-      title="Phone number must be in the format: +1 123-456-7890"
-      maxlength="16"
-      required
-      oninput="this.classList.toggle('has-value', this.value.trim().length > 0)"
-    />
+      <input
+        id="contactNumber"
+        name="contactNumber"
+        placeholder=""
+        class="peer w-full bg-transparent placeholder:text-slate-400 text-gray-700 text-sm 
+              border border-gray-300 rounded-md pr-3 pl-10 py-2 
+              focus:outline-none focus:border-transparent focus:ring-2 focus:ring-pink-100 
+              shadow-none appearance-none transition duration-200 ease-in-out"
+        pattern="^\d{3}\s\d{3}\s\d{4}$"
+        title="Phone number must be in the format: 123 456 7890"
+        maxlength="12"
+        required
+        oninput="this.classList.toggle('has-value', this.value.trim().length > 0)"
+      />
 
-    <!-- Floating Label -->
-    <label for="contactNumber"
-      class="absolute cursor-text bg-white px-1 left-9 top-2.5 text-slate-400 text-sm transition-all transform origin-left 
-             peer-focus:-top-2 peer-focus:left-10 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90 
-             has-value:-top-2 has-value:left-10 has-value:text-xs has-value:text-slate-400 has-value:scale-90">
-      e.g., +1 123-456-7890
-    </label>
+      <!-- Floating Label -->
+      <label for="contactNumber"
+        class="absolute cursor-text bg-white px-1 left-9 top-2.5 text-slate-400 text-sm transition-all transform origin-left 
+              peer-focus:-top-2 peer-focus:left-10 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90 
+              has-value:-top-2 has-value:left-10 has-value:text-xs has-value:text-slate-400 has-value:scale-90">
+        e.g., 123 456 7890
+      </label>
   </div>
 </div>
 
