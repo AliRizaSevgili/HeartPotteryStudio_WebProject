@@ -4974,11 +4974,6 @@ select.has-value + label {
     font-size: 3rem;
     line-height: 1;
   }
-
-  .sm\:text-7xl {
-    font-size: 4.5rem;
-    line-height: 1;
-  }
 }
 
 @media (min-width: 768px) {

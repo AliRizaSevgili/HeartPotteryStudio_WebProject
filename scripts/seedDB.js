@@ -21,7 +21,7 @@ const classData = [
     description: "Build a solid foundation in ceramics with this 4-week hands-on wheel throwing class.",
     intro: [
       "Ready to take your pottery journey to the next level? Our 4-Week Beginner Wheel Throwing Class is designed for those who want to build a solid foundation in ceramics.",
-      "Whether you're completely new or have tried it once or twice, this immersive course will give you the skills and confidence to work with clay on the wheel. Throughout the 4 weeks, you'll learn how to center, pull, trim, and glaze—plus explore a bit of hand-building. You'll finish the course with multiple unique pieces and a deeper understanding of the pottery process."
+      "Whether you're completely new or have tried it once or twice, this immersive course will give you the skills and confidence to work with clay on the wheel. Throughout the 4 weeks, you'll learn how to center, pull, trim, and glaze plus explore a bit of hand-building. You'll finish the course with multiple unique pieces and a deeper understanding of the pottery process."
     ],
     details: [
       "Week 1: Introduction to the studio and tools, learning how the wheel works, centering clay, and practicing basic forms.",
@@ -54,7 +54,7 @@ const classData = [
     title: "8-Week Beginner Wheel Throwing Class",
     description: "Explore both traditional and contemporary pottery techniques over 8 weeks.",
     intro: [
-      "Our most comprehensive wheel throwing course—the perfect way to dive deep into the world of ceramics. This 8-week program gives you double the time to develop your skills and create a wider variety of pieces.",
+      "Our most comprehensive wheel throwing course the perfect way to dive deep into the world of ceramics. This 8-week program gives you double the time to develop your skills and create a wider variety of pieces.",
       "From basic cylinder forms to more complex shapes, you'll have the space to experiment and find your unique style. With more sessions, you'll gain confidence on the wheel and learn to troubleshoot common challenges. By the end, you'll have an impressive collection of finished pieces and a solid technical foundation."
     ],
     details: [
@@ -86,7 +86,7 @@ const classData = [
   {
     slug: "tryout-wheel",
     title: "Pottery Tryout Class",
-    description: "Try your hand at pottery in this fun, no-pressure 2-hour session—no experience needed!",
+    description: "Try your hand at pottery in this fun, no-pressure 2-hour session no experience needed!",
     intro: [
       "Curious about pottery but not ready to commit to a full course? Our 2-hour Pottery Tryout Class is the perfect introduction to clay.",
       "This hands-on session gives you a taste of what it's like to work on the wheel without the commitment of a multi-week course. Our experienced instructors will guide you through the basics of centering and pulling up walls to create your very own small bowl or cup. It's a fun, relaxed way to see if pottery is right for you!"
@@ -121,16 +121,16 @@ const classData = [
   {
   slug: "4-week-hand-building",
   title: "4-Week Hand-Building Pottery Class",
-  description: "Want to get creative with clay—without using the pottery wheel? Our 4-Week Hand-Building Class is the perfect place to start.",
+  description: "Want to get creative with clay without using the pottery wheel? Our 4-Week Hand-Building Class is the perfect place to start.",
   intro: [
-    "In this fun and accessible course, you'll explore sculptural and functional techniques to create beautiful, one-of-a-kind ceramic pieces—like mugs, vases, and trays.",
+    "In this fun and accessible course, you'll explore sculptural and functional techniques to create beautiful, one-of-a-kind ceramic pieces like mugs, vases, and trays.",
     "This class is ideal for total beginners or anyone who wants to slow down, connect with their hands, and enjoy a mindful, hands-on experience with clay."
   ],
   details: [
     "Week 1: Introduction to the studio. Learning pinch pot and coiling techniques to create expressive, organic forms.",
     "Week 2: Slab-building basics: constructing mugs, trays, and functional forms using slabs and molds.",
     "Week 3: Last day of building: time to finish, refine, and decorate your pieces before firing.",
-    "Week 4: Glazing and surface decoration—adding color and character to your work."
+    "Week 4: Glazing and surface decoration adding color and character to your work."
   ],
   price: {
     value: 285,
@@ -160,8 +160,8 @@ const classData = [
   title: "Hand Building for Everyone",
   description: "Looking for a fun and creative experience for the whole family? Our 2-hour Hand Building for Everyone class is the perfect Sunday activity!",
   intro: [
-    "Whether you're a child, adult, parent, grandparent—or just someone curious about clay—this playful and relaxed class welcomes all ages and skill levels to explore the most freeing form of ceramics: hand building.",
-    "No experience needed—just bring your imagination and enjoy creating side by side with your loved ones!"
+    "Whether you're a child, adult, parent, grandparent or just someone curious about clay this playful and relaxed class welcomes all ages and skill levels to explore the most freeing form of ceramics: hand building.",
+    "No experience needed just bring your imagination and enjoy creating side by side with your loved ones!"
   ],
   details: [
     "This 2-hour workshop is open to all ages and designed to spark creativity through the simple joys of shaping clay by hand. You'll be guided through basic techniques and make your very own ceramic piece.",
@@ -179,7 +179,7 @@ const classData = [
     "All materials and tools provided",
     "A supportive, guided experience for all ages"
   ],
-  pickupInfo: "Your piece(s) will be ready for pick-up at least 2 weeks after the class. We'll notify you by email when they're ready. Please pick them up within 2 months—unclaimed pieces will be discarded.",
+  pickupInfo: "Your piece(s) will be ready for pick-up at least 2 weeks after the class. We'll notify you by email when they're ready. Please pick them up within 2 months unclaimed pieces will be discarded.",
   notes: [
     "This class is suitable for ages 6 and up. Children under 14 must be accompanied by an adult.",
     "No refunds for cancellations.",
