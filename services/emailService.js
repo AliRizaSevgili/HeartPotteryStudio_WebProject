@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// Sipariş onay e-postası gönderme fonksiyonu
+// Sipariş onay e-postası gönderme 
 async function sendOrderConfirmation(order) {
   try {
     const { customerInfo, paymentDetails, productName, orderNumber, createdAt } = order;
