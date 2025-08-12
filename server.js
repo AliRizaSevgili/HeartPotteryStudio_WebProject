@@ -1613,6 +1613,8 @@ app.post('/api/payment/webhook', express.raw({ type: 'application/json' }), asyn
     logger.error(err.stack);
     res.status(500).send('Internal Server Error');
   }
+  
+  }); 
 
 // Test error route
 app.get('/test-error', (req, res) => {
