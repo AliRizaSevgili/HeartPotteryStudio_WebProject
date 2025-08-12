@@ -25,6 +25,7 @@ const hbs = require("hbs");
 const contactController = require('./controllers/contactController');
 const logger = require('./utils/logger');
 const slotService = require('./services/slotService'); // Slot servisini import et
+const emailService = require('./services/emailService'); // Email servis
 const Class = require('./models/Class'); // Class modelini import et
 
 // Stripe modülü
@@ -540,6 +541,14 @@ app.get("/checkout-success", async (req, res) => {
           
           await newOrder.save();
           logger.info(`Manual order creation for reservation: ${reservationId}`);
+          // Sipariş onay e-postası gönder
+          try {
+            await emailService.sendOrderConfirmation(newOrder);
+            logger.info(`✅ Order confirmation email sent to: ${newOrder.customerInfo.email}`);
+          } catch (emailError) {
+            logger.error(`❌ Failed to send confirmation email: ${emailError.message}`);
+            // Email hatası olsa bile işleme devam et
+          }
         }
       } catch (error) {
         logger.error(`Error in checkout-success fallback: ${error.message}`);
@@ -1613,6 +1622,15 @@ app.post('/api/payment/webhook', express.raw({ type: 'application/json' }), asyn
         // 4. Order kaydet
         await newOrder.save();
         logger.info(`✅ Order created for reservation: ${reservationId}`);
+
+        // 5. Sipariş onay e-postası gönder
+        try {
+          await emailService.sendOrderConfirmation(newOrder);
+          logger.info(`✅ Order confirmation email sent to: ${newOrder.customerInfo.email}`);
+        } catch (emailError) {
+          logger.error(`❌ Failed to send confirmation email: ${emailError.message}`);
+          // Email hatası olsa bile işleme devam et
+        }
       } catch (error) {
         logger.error(`❌ Error processing webhook: ${error.message}`);
         logger.error(error.stack);
@@ -1626,7 +1644,7 @@ app.post('/api/payment/webhook', express.raw({ type: 'application/json' }), asyn
     res.status(500).send('Internal Server Error');
   }
   
-  }); 
+  });
 
 // Test error route
 app.get('/test-error', (req, res) => {
