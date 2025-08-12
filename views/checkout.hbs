@@ -335,6 +335,18 @@
   <!-- Formlarda CSRF tokeni -->
   <form id="checkout-info-form" action="/checkout-info" method="POST" class="mx-auto mt-4 max-w-xl sm:mt-6">
     <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+    <!-- Rezervasyon ID gizli alanı -->
+        {{#if cart}}
+          {{#if (isObject cart)}}
+            {{#if cart.reservationId}}
+            <input type="hidden" name="hiddenReservationId" value="{{cart.reservationId}}">
+            {{/if}}
+          {{else}}
+            {{#if cart.[0].reservationId}}
+            <input type="hidden" name="hiddenReservationId" value="{{cart.[0].reservationId}}">
+            {{/if}}
+          {{/if}}
+        {{/if}}
     <div class="grid grid-cols-1 gap-x-12 gap-y-6 sm:grid-cols-2">
       <!-- First Name -->
       <div>

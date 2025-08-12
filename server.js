@@ -456,11 +456,109 @@ app.get("/returns", csrfProtection, (req, res) => {
 });
 
 
-// Checkout success sayfası - payment-success'e yönlendir
+// Payment success page - Rezervasyon onayı ve Order oluşturma yedek mekanizması
 app.get("/checkout-success", async (req, res) => {
-  // Session ID'yi alıp payment-success'e yönlendir
-  const sessionId = req.query.session_id;
-  res.redirect(`/payment-success${sessionId ? '?session_id=' + sessionId : ''}`);
+  const { session_id } = req.query;
+  
+  if (!session_id) {
+    return res.redirect('/');
+  }
+  
+  try {
+    // Session bilgisini al
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    logger.info(`Success page loaded for session: ${session_id}`);
+    
+    // Rezervasyon ID kontrolü
+    const reservationId = session.client_reference_id || 
+                         (session.metadata && session.metadata.reservationId) || 
+                         null;
+    
+    if (reservationId) {
+      logger.info(`Found reservation ID: ${reservationId} in success page`);
+      
+      // Eğer webhook çalışmadıysa burada da işlem yapabilirsiniz
+      try {
+        // Rezervasyon durumunu kontrol et
+        const Reservation = require('./models/Reservation');
+        const reservation = await Reservation.findById(reservationId);
+        
+        if (reservation && reservation.status === 'temporary') {
+          logger.info(`Manual update of reservation status for: ${reservationId}`);
+          
+          // Metadata'dan müşteri bilgilerini al
+          const metadata = session.metadata || {};
+          let customerInfo = {};
+          try {
+            if (metadata.customerInfo) {
+              customerInfo = JSON.parse(metadata.customerInfo);
+            }
+          } catch (e) {
+            logger.error(`Error parsing customer info: ${e.message}`);
+          }
+          
+          // Rezervasyonu güncelle
+          await slotService.confirmReservation(reservationId, {
+            email: session.customer_email || metadata.email || '',
+            paymentId: session.payment_intent,
+            paymentStatus: 'completed',
+            stripeSessionId: session.id,
+            customerInfo: {
+              firstName: metadata.firstName || customerInfo.firstName || '',
+              lastName: metadata.lastName || customerInfo.lastName || '',
+              contactNumber: metadata.contactNumber || customerInfo.contactNumber || '',
+              address: metadata.address || customerInfo.address || '',
+              company: metadata.company || customerInfo.company || ''
+            }
+          });
+          
+          // Order objesi oluştur
+          const Order = require('./models/Order');
+          const newOrder = new Order({
+            reservationId: reservationId,
+            customerInfo: {
+              firstName: metadata.firstName || customerInfo.firstName || '',
+              lastName: metadata.lastName || customerInfo.lastName || '',
+              email: session.customer_email || metadata.email || '',
+              contactNumber: metadata.contactNumber || customerInfo.contactNumber || '',
+              address: metadata.address || customerInfo.address || '',
+              company: metadata.company || customerInfo.company || ''
+            },
+            paymentDetails: {
+              amount: session.amount_total / 100,
+              currency: session.currency,
+              paymentId: session.payment_intent,
+              sessionId: session.id,
+              paymentMethod: 'stripe',
+              paymentStatus: 'completed'
+            },
+            productName: metadata.productName || 'Pottery Class'
+          });
+          
+          await newOrder.save();
+          logger.info(`Manual order creation for reservation: ${reservationId}`);
+        }
+      } catch (error) {
+        logger.error(`Error in checkout-success fallback: ${error.message}`);
+      }
+    } else {
+      logger.warn(`No reservation ID found in success page for session: ${session_id}`);
+    }
+    
+    // Sepeti temizle
+    req.session.cart = null;
+    req.session.reservationToken = null;
+    req.session.promo = null;
+    
+    // Başarı sayfasına yönlendir
+    res.render('payment-success', {
+      title: 'Payment Successful',
+      orderNumber: session.payment_intent ? session.payment_intent.slice(-8) : 'Unknown'
+    });
+  } catch (error) {
+    logger.error(`Error retrieving session: ${error.message}`);
+    res.redirect('/');
+  }
 });
 
 // Payment success page - GÜNCELLENDİ: Rezervasyon onayı eklendi
@@ -1025,9 +1123,10 @@ app.post('/cancel-reservation', validateReservationToken, (req, res) => {
   res.redirect('/learn');
 });
 
+
 // Checkout bilgilerini işleme rotası
 app.post('/checkout-info', csrfProtection, async (req, res) => {
-  console.log('CHECKOUT-INFO ROUTE HANDLER TRIGGERED');
+  logger.info('CHECKOUT-INFO ROUTE HANDLER TRIGGERED');
   try {
     // Debug için
     logger.debug('Checkout form data:', {
@@ -1077,117 +1176,165 @@ app.post('/checkout-info', csrfProtection, async (req, res) => {
     let lineItems = [];
     
     const taxRate = 0.13;
-    // Sepet nesne ise
-if (req.session.cart && !Array.isArray(req.session.cart)) {
-  let price = parseFloat(req.session.cart.classPrice);
-  
-  // Promo kodu indirimini uygula
-  if (req.session.promo && req.session.promo.discount) {
-    price = price * (1 - req.session.promo.discount);
-  }
-  
-  // Vergiyi ekle
-  const totalAmount = price + (price * taxRate);
-  
-  lineItems.push({
-    price_data: {
-      currency: 'cad',
-      product_data: {
-        name: req.session.cart.classTitle,
-        description: `${req.session.cart.slotDate} ${req.session.cart.slotTime} (incl. 13% tax)`,
-      },
-      unit_amount: Math.round(totalAmount * 100), // Vergi dahil toplam
-    },
-    quantity: 1,
-  });
-  
-  logger.info(`Created line item for: ${req.session.cart.classTitle} with tax, total: ${totalAmount}`);
-} 
-// Sepet dizi ise
-else if (req.session.cart && Array.isArray(req.session.cart)) {
-  req.session.cart.forEach(item => {
-  let price;
-  let name;
-  let description;
-  let quantity = 1;
-  
-  // Event tipindeki ürünler için
-  if (item.type === 'event') {
-    price = parseFloat(item.price || 0);
-    name = item.eventTitle || 'Event';
-    description = `${item.eventDate || ''} ${item.eventTime || ''}`;
-    quantity = parseInt(item.quantity) || 1;
     
-    // Debug için
-    console.log('Event item debug:', {
-      title: name,
-      originalPrice: item.price,
-      parsedPrice: price,
-      quantity: quantity
-    });
-  } 
-  // Class tipindeki ürünler için
-  else {
-    price = parseFloat(item.classPrice || 0);
-    name = item.classTitle || 'Class';
-    description = `${item.slotDate || ''} ${item.slotTime || ''}`;
-  }
-  
-  // NaN kontrolü ekle
-  if (isNaN(price)) {
-    console.error('Invalid price detected:', item);
-    price = 0; // Geçersiz fiyat durumunda 0 kullan
-  }
-  
-  // Promo kodu indirimini uygula
-  if (req.session.promo && req.session.promo.discount) {
-    price = price * (1 - req.session.promo.discount);
-  }
-  
-  // Vergiyi ekle
-  const totalAmount = price + (price * taxRate);
-  
-  lineItems.push({
-    price_data: {
-      currency: 'cad',
-      product_data: {
-        name: name,
-        description: `${description} (incl. 13% tax)`,
-      },
-      unit_amount: Math.round(totalAmount * 100), // Vergi dahil toplam
-    },
-    quantity: quantity
-  });
-});
-  
-  logger.info(`Created ${lineItems.length} line items for cart with tax included`);
-}
+    // Rezervasyon ID'sini belirle - her iki sepet formatını destekleyecek şekilde
+    let reservationId = null;
+    let productName = '';
+    
+    // Sepet nesne ise
+    if (req.session.cart && !Array.isArray(req.session.cart)) {
+      let price = parseFloat(req.session.cart.classPrice);
+      
+      // Rezervasyon ID'sini al
+      if (req.session.cart.reservationId) {
+        reservationId = req.session.cart.reservationId;
+        logger.info(`Found reservationId in cart object: ${reservationId}`);
+      }
+      
+      productName = req.session.cart.classTitle;
+      
+      // Promo kodu indirimini uygula
+      if (req.session.promo && req.session.promo.discount) {
+        price = price * (1 - req.session.promo.discount);
+      }
+      
+      // Vergiyi ekle
+      const totalAmount = price + (price * taxRate);
+      
+      lineItems.push({
+        price_data: {
+          currency: 'cad',
+          product_data: {
+            name: req.session.cart.classTitle,
+            description: `${req.session.cart.slotDate} ${req.session.cart.slotTime} (incl. 13% tax)`,
+          },
+          unit_amount: Math.round(totalAmount * 100), // Vergi dahil toplam
+        },
+        quantity: 1,
+      });
+      
+      logger.info(`Created line item for: ${req.session.cart.classTitle} with tax, total: ${totalAmount}`);
+    } 
+    // Sepet dizi ise
+    else if (req.session.cart && Array.isArray(req.session.cart)) {
+      // Dizi formatında ilk elemanda rezervasyon ID'si var mı kontrol et
+      if (req.session.cart.length > 0 && req.session.cart[0].reservationId) {
+        reservationId = req.session.cart[0].reservationId;
+        logger.info(`Found reservationId in cart array: ${reservationId}`);
+      }
+      
+      req.session.cart.forEach(item => {
+        let price;
+        let name;
+        let description;
+        let quantity = 1;
+        
+        // Event tipindeki ürünler için
+        if (item.type === 'event') {
+          price = parseFloat(item.price || 0);
+          name = item.eventTitle || 'Event';
+          description = `${item.eventDate || ''} ${item.eventTime || ''}`;
+          quantity = parseInt(item.quantity) || 1;
+          
+          // Ürün adını güncelle
+          if (!productName) productName = name;
+          
+          // Debug için
+          logger.debug('Event item debug:', {
+            title: name,
+            originalPrice: item.price,
+            parsedPrice: price,
+            quantity: quantity
+          });
+        } 
+        // Class tipindeki ürünler için
+        else {
+          price = parseFloat(item.classPrice || 0);
+          name = item.classTitle || 'Class';
+          description = `${item.slotDate || ''} ${item.slotTime || ''}`;
+          
+          // Ürün adını güncelle
+          if (!productName) productName = name;
+        }
+        
+        // NaN kontrolü ekle
+        if (isNaN(price)) {
+          logger.error('Invalid price detected:', item);
+          price = 0; // Geçersiz fiyat durumunda 0 kullan
+        }
+        
+        // Promo kodu indirimini uygula
+        if (req.session.promo && req.session.promo.discount) {
+          price = price * (1 - req.session.promo.discount);
+        }
+        
+        // Vergiyi ekle
+        const totalAmount = price + (price * taxRate);
+        
+        lineItems.push({
+          price_data: {
+            currency: 'cad',
+            product_data: {
+              name: name,
+              description: `${description} (incl. 13% tax)`,
+            },
+            unit_amount: Math.round(totalAmount * 100), // Vergi dahil toplam
+          },
+          quantity: quantity
+        });
+      });
+      
+      logger.info(`Created ${lineItems.length} line items for cart with tax included`);
+    }
     
     // Domain bilgisini kontrol et ve varsayılan değer atar
     const domain = process.env.NODE_ENV === 'production' 
-  ? process.env.DOMAIN || 'https://heartpotterystudio-webproject.onrender.com'
-  : 'http://localhost:5000';
+      ? process.env.DOMAIN || 'https://heartpotterystudio-webproject.onrender.com'
+      : 'http://localhost:5000';
     
-                  // Checkout session oluştur
-        const session = await stripe.checkout.sessions.create({
-          payment_method_types: ['card'],
-          line_items: lineItems,
-          mode: 'payment',
-          locale: 'auto', // İngilizce dil desteği ekledim
-          payment_intent_data: {
-            setup_future_usage: 'off_session',
-              },
-          success_url: `${domain}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${domain}/checkout`,
-          customer_email: validEmail,
-          // Sadece reservationToken varsa ekle, yoksa parametreyi kullanma
-          ...(req.session.reservationToken ? { client_reference_id: req.session.reservationToken } : {}),
-          metadata: {
-            firstName,
-            lastName,
-            contactNumber
-          }
-        });
+    // Müşteri bilgileri JSON formatına çevir
+    const customerInfoJSON = JSON.stringify({
+      firstName,
+      lastName,
+      email: validEmail,
+      contactNumber,
+      address,
+      company
+    });
+    
+    // Checkout session oluştur
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: lineItems,
+      mode: 'payment',
+      locale: 'auto', 
+      payment_intent_data: {
+        setup_future_usage: 'off_session',
+      },
+      success_url: `${domain}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${domain}/checkout`,
+      customer_email: validEmail,
+      // Rezervasyon ID'si varsa client_reference_id olarak kullan, yoksa fallback olarak reservationToken'ı kullan
+      client_reference_id: reservationId || req.session.reservationToken || undefined,
+      metadata: {
+        // Müşteri bilgileri
+        firstName,
+        lastName,
+        email: validEmail,
+        contactNumber,
+        address,
+        company,
+        // Müşteri bilgilerinin JSON formatı (daha kolay parse etmek için)
+        customerInfo: customerInfoJSON,
+        // Rezervasyon ve ürün bilgileri
+        reservationId: reservationId || '',
+        productName: productName || 'Pottery Class',
+        // İşlem detayları
+        hasPromo: req.session.promo ? 'true' : 'false',
+        promoDiscount: req.session.promo ? req.session.promo.discount.toString() : '',
+        taxRate: taxRate.toString()
+      }
+    });
             
     logger.info(`Stripe session created: ${session.id}`);
     logger.info(`Redirecting to Stripe URL: ${session.url}`);
@@ -1225,10 +1372,10 @@ else if (req.session.cart && Array.isArray(req.session.cart)) {
   } catch (error) {
     logger.error('Error in checkout process:', error);
     logger.error('Error details:', {
-    message: error.message,
-    stack: error.stack,
-    stripeKey: process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.substring(0, 8) + '...' : 'undefined'
-  });
+      message: error.message,
+      stack: error.stack,
+      stripeKey: process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.substring(0, 8) + '...' : 'undefined'
+    });
     res.status(500).render("error", {
       errorCode: 500,
       errorMessage: "Payment Error",
@@ -1363,40 +1510,109 @@ app.post('/create-checkout-session', csrfProtection, validateReservationToken, a
   }
 });
 
-// Stripe Webhook Route - GÜNCELLENDİ: Rezervasyon onayı eklendi
-app.post('/api/payment/webhook', (req, res) => {
+
+// Stripe Webhook Route - mevcut kodu bu kod bloğu ile değiştirin
+app.post('/api/payment/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
-
-  let event;
+  
+  logger.info('Webhook event received');
+  
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
-  } catch (err) {
-    logger.error('Webhook signature verification failed:', err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  // Ödeme başarılı event'i
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
-    logger.info('Payment successful for session:', session.id);
-    
-    // Rezervasyon ID'si varsa rezervasyonu onayla
-    const reservationId = session.client_reference_id;
-    if (reservationId) {
-      slotService.confirmReservation(reservationId, {
-        email: session.customer_email
-      }).then(() => {
-        logger.info(`Webhook: Reservation confirmed: ${reservationId}`);
-      }).catch(err => {
-        logger.error(`Webhook: Error confirming reservation ${reservationId}:`, err);
-      });
-    } else {
-      logger.info('Webhook: No reservation ID in session');
+    // Daha ayrıntılı hata yakalama
+    let event;
+    try {
+      event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+      logger.info(`Webhook event type: ${event.type}`);
+    } catch (err) {
+      logger.error(`⚠️ Webhook signature verification failed: ${err.message}`);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
     }
+    
+    // Payment completion olayı
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object;
+      logger.info(`Payment completed for session: ${session.id}`);
+      
+      // Veri kontrolü ve logging
+      logger.info(`Session client_reference_id: ${session.client_reference_id || 'NOT_FOUND'}`);
+      logger.info(`Session metadata: ${JSON.stringify(session.metadata || {})}`);
+      
+      const reservationId = session.client_reference_id || 
+                           (session.metadata && session.metadata.reservationId) || 
+                           null;
+      
+      if (!reservationId) {
+        logger.error('❌ No reservation ID found in session');
+        return res.status(200).send('Webhook received but no reservation ID found');
+      }
+      
+      logger.info(`✅ Processing reservation: ${reservationId}`);
+      
+      try {
+        // 1. Müşteri bilgilerini al
+        const metadata = session.metadata || {};
+        let customerInfo = {};
+        try {
+          if (metadata.customerInfo) {
+            customerInfo = JSON.parse(metadata.customerInfo);
+          }
+        } catch (e) {
+          logger.error(`Error parsing customer info: ${e.message}`);
+        }
+        
+        // 2. Rezervasyonu güncelle
+        await slotService.confirmReservation(reservationId, {
+          email: session.customer_email || metadata.email,
+          paymentId: session.payment_intent,
+          paymentStatus: 'completed',
+          stripeSessionId: session.id,
+          customerInfo: {
+            firstName: metadata.firstName || customerInfo.firstName || '',
+            lastName: metadata.lastName || customerInfo.lastName || '',
+            contactNumber: metadata.contactNumber || customerInfo.contactNumber || '',
+            address: metadata.address || customerInfo.address || '',
+            company: metadata.company || customerInfo.company || ''
+          }
+        });
+        
+        // 3. Order objesi oluştur
+        const Order = require('./models/Order');
+        const newOrder = new Order({
+          reservationId: reservationId,
+          customerInfo: {
+            firstName: metadata.firstName || customerInfo.firstName || '',
+            lastName: metadata.lastName || customerInfo.lastName || '',
+            email: session.customer_email || metadata.email || '',
+            contactNumber: metadata.contactNumber || customerInfo.contactNumber || '',
+            address: metadata.address || customerInfo.address || '',
+            company: metadata.company || customerInfo.company || ''
+          },
+          paymentDetails: {
+            amount: session.amount_total / 100,
+            currency: session.currency,
+            paymentId: session.payment_intent,
+            sessionId: session.id,
+            paymentMethod: 'stripe',
+            paymentStatus: 'completed'
+          },
+          productName: metadata.productName || 'Pottery Class'
+        });
+        
+        // 4. Order kaydet
+        await newOrder.save();
+        logger.info(`✅ Order created for reservation: ${reservationId}`);
+      } catch (error) {
+        logger.error(`❌ Error processing webhook: ${error.message}`);
+        logger.error(error.stack);
+      }
+    }
+    
+    res.status(200).send('Webhook processed successfully');
+  } catch (err) {
+    logger.error(`Unhandled webhook error: ${err.message}`);
+    logger.error(err.stack);
+    res.status(500).send('Internal Server Error');
   }
-
-  res.status(200).send('Received webhook');
-});
 
 // Test error route
 app.get('/test-error', (req, res) => {

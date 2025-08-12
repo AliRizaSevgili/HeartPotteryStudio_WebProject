@@ -135,27 +135,55 @@ async function createTemporaryReservation(slotId, sessionId) {
  * Rezervasyonu onayla (ödeme sonrası)
  */
 async function confirmReservation(reservationId, paymentDetails) {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  
   try {
-    const reservation = await Reservation.findById(reservationId);
+    const reservation = await Reservation.findById(reservationId).session(session);
     
     if (!reservation) {
       throw new Error(`Reservation not found: ${reservationId}`);
+    }
+    
+    if (reservation.status === 'confirmed') {
+      // Zaten onaylanmış, işlem yapmaya gerek yok
+      await session.abortTransaction();
+      session.endSession();
+      return reservation;
     }
     
     if (reservation.status !== 'temporary') {
       throw new Error(`Cannot confirm reservation with status: ${reservation.status}`);
     }
     
+    // Rezervasyonu güncelle
     reservation.status = 'confirmed';
     reservation.confirmedAt = new Date();
+    reservation.paymentId = paymentDetails.paymentId;
+    reservation.paymentStatus = paymentDetails.paymentStatus;
     reservation.stripeSessionId = paymentDetails.stripeSessionId;
-    reservation.customerInfo = paymentDetails.customerInfo;
     
-    await reservation.save();
+    // Müşteri bilgilerini kaydet
+    reservation.customerInfo = {
+      email: paymentDetails.email,
+      firstName: paymentDetails.customerInfo?.firstName,
+      lastName: paymentDetails.customerInfo?.lastName,
+      contactNumber: paymentDetails.customerInfo?.contactNumber
+    };
+    
+    await reservation.save({ session });
+    
+    // İşlemi tamamla
+    await session.commitTransaction();
+    session.endSession();
     
     logger.info(`✅ Confirmed reservation: ${reservationId}`);
     return reservation;
   } catch (error) {
+    // Hata durumunda işlemi geri al
+    await session.abortTransaction();
+    session.endSession();
+    
     logger.error(`❌ Error confirming reservation: ${reservationId}`, error);
     throw error;
   }
