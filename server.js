@@ -156,7 +156,8 @@ app.use(
           "https://*.stripe.com",
           "https://js.stripe.com",
           "https://www.google-analytics.com",      // Google Analytics için eklendi
-          "https://*.googletagmanager.com" 
+          "https://*.googletagmanager.com" ,
+          "https://cdn.tailwindcss.com"
         ],
         scriptSrcAttr: [
           "'self'",
@@ -168,7 +169,8 @@ app.use(
           "https://unpkg.com",
           "https://cdn.jsdelivr.net",
           "https://fonts.googleapis.com",
-          "https://checkout.stripe.com"
+          "https://checkout.stripe.com",
+          "https://cdn.tailwindcss.com"
         ],
         fontSrc: [
           "'self'",
@@ -185,7 +187,8 @@ app.use(
           "https://*.stripe.com",
           "https://cdn.stripe.com",
           "https://www.google-analytics.com",      // Google Analytics için eklendi
-          "https://*.googletagmanager.com" 
+          "https://*.googletagmanager.com",
+          "https://cdn.tailwindcss.com" 
         ]
       }
     }
@@ -552,6 +555,7 @@ app.get("/checkout-success", async (req, res) => {
     
     // Başarı sayfasına yönlendir
     res.render('payment-success', {
+      layout: false, // Ana layout'u devre dışı bırak
       title: 'Payment Successful',
       orderNumber: session.payment_intent ? session.payment_intent.slice(-8) : 'Unknown'
     });
@@ -561,6 +565,7 @@ app.get("/checkout-success", async (req, res) => {
   }
 });
 
+// Payment success page - GÜNCELLENDİ: Rezervasyon onayı eklendi
 // Payment success page - GÜNCELLENDİ: Rezervasyon onayı eklendi
 app.get("/payment-success", async (req, res) => {
   try {
@@ -589,10 +594,17 @@ app.get("/payment-success", async (req, res) => {
       req.session.promoMessage = null;
     }
     
+    // Session ID'yi al
+    const { session_id } = req.query;
+    
+    // Sipariş numarası oluştur
+    const orderNumber = session_id ? session_id.slice(-8) : 'Unknown';
+    
     // Başarılı ödeme sayfasını göster
     res.render("payment-success", {
-      layout: "layouts/main",
-      title: "Payment Successful"
+      layout: false,  // Ana layout'u devre dışı bırak
+      title: "Payment Successful",
+      orderNumber: orderNumber // Order numarasını ekle
     });
   } catch (error) {
     logger.error('Error in payment success handler:', error);

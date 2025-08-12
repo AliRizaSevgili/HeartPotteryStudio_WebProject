@@ -1,39 +1,55 @@
-<section class="min-h-screen flex flex-col items-center justify-center bg-white px-4 py-24">
-  <div class="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center animate-fade-in-scale">
-    <div class="flex justify-center mb-6">
-      <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-green-100">
-        <svg class="h-12 w-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-      </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful! | Heart Pottery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .animate-fade-in-scale {
+            animation: fadeInScale 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen px-4">
+
+    <div class="bg-white p-8 sm:p-12 rounded-xl shadow-2xl max-w-lg w-full text-center animate-fade-in-scale">
+        <div class="mx-auto flex items-center justify-center h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-green-100 mb-6">
+            <svg class="h-12 w-12 sm:h-16 sm:w-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+        </div>
+
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Payment Successful!</h1>
+        
+        <p class="text-gray-600 text-lg mb-6">
+            Thank you for your purchase. Your order has been processed and you will receive a confirmation email shortly.
+        </p>
+
+        <div class="bg-gray-50 p-4 rounded-md mb-8">
+            <p class="text-gray-700">Order #: <span class="font-semibold">{{orderNumber}}</span></p>
+            <p class="text-gray-700 mt-2">
+                You will be automatically redirected to homepage in 
+                <span id="countdown-timer" class="font-semibold text-red-600">5</span> seconds.
+            </p>
+        </div>
+
+        <a href="/" id="manual-redirect-link" class="inline-block px-6 py-3 bg-[#b5651d] hover:bg-[#a05a1b] text-white font-medium rounded-md transition-colors duration-200">
+            Go to Homepage Now
+        </a>
     </div>
-    <h1 class="text-3xl font-bold text-gray-800 mb-4">Payment Successful!</h1>
-    <p class="text-gray-600 mb-6">
-      Thank you for your purchase. Your payment has been processed successfully.<br>
-      A confirmation email has been sent to you.
-    </p>
-    <div class="bg-gray-50 p-4 rounded-md mb-8">
-      <p class="text-gray-700">
-        You will be automatically redirected to your homepage in 
-        <span id="countdown-timer" class="font-semibold text-red-600">5</span> seconds.
-      </p>
-    </div>
-    <a href="/" id="manual-redirect-link" class="inline-block bg-[#b5651d] hover:bg-[#a05a1b] text-white font-semibold px-6 py-3 rounded-lg transition">
-      Go to Homepage
-    </a>
-  </div>
-  <style>
-    @keyframes fadeInScale {
-      from { opacity: 0; transform: scale(0.95);}
-      to { opacity: 1; transform: scale(1);}
-    }
-    .animate-fade-in-scale {
-      animation: fadeInScale 0.5s ease-out forwards;
-    }
-  </style>
-  
-</section>
 
-
-
-<script src="/js/payment_success.js"></script>
+    <script src="/js/payment_success.js"></script>
+</body>
+</html>
