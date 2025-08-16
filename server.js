@@ -824,14 +824,11 @@ hbs.registerHelper('cartDiscount', function(cart, promo) {
   return (price * promo.discount).toFixed(2);
 });
 
-hbs.registerHelper('cartDiscountedSubtotal', function(cart, promo) {
-  if (!cart) return "0.00";
+hbs.registerHelper('cartDiscount', function(cart, promo) {
+  if (!cart || !promo || !promo.discount) return "0.00";
   let price = parseFloat(cart.classPrice) || 0;
   const quantity = parseInt(cart.quantity || 1, 10);
-  if (promo && promo.discount) {
-    price = price * (1 - promo.discount);
-  }
-  return (price * quantity).toFixed(2);
+  return (price * quantity * promo.discount).toFixed(2);
 });
 
 
@@ -875,7 +872,8 @@ hbs.registerHelper('discountedTotal', function(array, discount) {
     array.forEach(item => {
       let val = item["classPrice"];
       if (typeof val === "string") val = val.replace(/[^0-9.]/g, "");
-      total += parseFloat(val) || 0;
+      const quantity = parseInt(item.quantity || 1, 10);
+      total += (parseFloat(val) || 0) * quantity;
     });
   }
   return (total * (1 - (discount || 0))).toFixed(2);
@@ -887,7 +885,8 @@ hbs.registerHelper('discountAmount', function(array, discount) {
     array.forEach(item => {
       let val = item["classPrice"];
       if (typeof val === "string") val = val.replace(/[^0-9.]/g, "");
-      total += parseFloat(val) || 0;
+      const quantity = parseInt(item.quantity || 1, 10);
+      total += (parseFloat(val) || 0) * quantity;
     });
   }
   return (total * (discount || 0)).toFixed(2);
@@ -995,10 +994,11 @@ hbs.registerHelper('calculateDiscount', function(cart, discount) {
   
   let subtotal = 0;
   cart.forEach(item => {
+    const quantity = parseInt(item.quantity || 1, 10);
     if (item.type === 'event') {
-      subtotal += parseFloat(item.price) * (item.quantity || 1);
+      subtotal += parseFloat(item.price) * quantity;
     } else {
-      subtotal += parseFloat(item.classPrice);
+      subtotal += parseFloat(item.classPrice) * quantity;
     }
   });
   
