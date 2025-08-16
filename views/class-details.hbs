@@ -251,7 +251,7 @@
 
     --}}
 
-    {{#if septemberDates}}
+  {{#if septemberDates}}
 <!-- 🟧 SEPTEMBER -->
 <div class="bg-white rounded-lg p-5 shadow space-y-4">
   <h2 class="text-xl font-bold text-[#b5651d] text-center">September 2025</h2>
@@ -272,16 +272,38 @@
           <p><strong>Date:</strong> {{date}}</p>
           <p><strong>Time:</strong> {{time}}</p>
           
-          <!-- YENİ FORM -->
-          <form method="POST" action="/reserve-slot">
-            <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-            <input type="hidden" name="slotId" value="{{../id}}">
-            <button type="submit" 
-              class="mt-2 {{#if ../isFull}}bg-gray-400{{else}}bg-[#b5651d]{{/if}} text-white px-3 py-1 rounded hover:{{#if ../isFull}}bg-gray-500{{else}}bg-[#8c4516]{{/if}} transition"
-              {{#if ../isFull}}disabled{{/if}}>
-              {{#if ../isFull}}Fully Booked{{else}}Select this slot{{/if}}
-            </button>
-          </form>
+          {{#if ../isFull}}
+            <!-- Eğer slot doluysa, sadece "Fully Booked" mesajını göster -->
+            <div class="mt-4 py-2 px-3 bg-gray-100 text-gray-500 rounded text-center">
+              Fully Booked
+            </div>
+          {{else}}
+            <!-- Quantity seçici ve form -->
+            <div class="mt-3">
+              <div class="flex items-center mb-2">
+                <label for="quantity-{{../id}}" class="text-sm font-medium text-gray-700 mr-2">
+                  Number of People:
+                </label>
+                <select id="quantity-{{../id}}" class="bg-white border border-gray-300 text-gray-700 text-sm rounded px-2 py-1 focus:outline-none focus:ring-[#b5651d] focus:border-[#b5651d]">
+                  {{#for 1 ../availableSlots}}
+                    <option value="{{this}}">{{this}} {{#if (eq this 1)}}Person{{else}}People{{/if}}</option>
+                  {{/for}}
+                </select>
+              </div>
+
+              <!-- Form yapısı korundu, sadece method ve action değiştirildi -->
+              <form method="GET" action="/select-slot/{{../id}}">
+                <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+                <input type="hidden" name="slotId" value="{{../id}}">
+                <input type="hidden" id="hiddenQuantity-{{../id}}" name="quantity" value="1">
+                <button type="submit" 
+                  class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition w-full"
+                  onclick="document.getElementById('hiddenQuantity-{{../id}}').value = document.getElementById('quantity-{{../id}}').value;">
+                  Select this slot
+                </button>
+              </form>
+            </div>
+          {{/if}}
         </div>
       {{/each}}
     </details>
@@ -310,16 +332,38 @@
           <p><strong>Date:</strong> {{date}}</p>
           <p><strong>Time:</strong> {{time}}</p>
           
-          <!-- YENİ FORM -->
-          <form method="POST" action="/reserve-slot">
-            <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-            <input type="hidden" name="slotId" value="{{../id}}">
-            <button type="submit" 
-              class="mt-2 {{#if ../isFull}}bg-gray-400{{else}}bg-[#b5651d]{{/if}} text-white px-3 py-1 rounded hover:{{#if ../isFull}}bg-gray-500{{else}}bg-[#8c4516]{{/if}} transition"
-              {{#if ../isFull}}disabled{{/if}}>
-              {{#if ../isFull}}Fully Booked{{else}}Select this slot{{/if}}
-            </button>
-          </form>
+          {{#if ../isFull}}
+            <!-- Eğer slot doluysa, sadece "Fully Booked" mesajını göster -->
+            <div class="mt-4 py-2 px-3 bg-gray-100 text-gray-500 rounded text-center">
+              Fully Booked
+            </div>
+          {{else}}
+            <!-- Quantity seçici ve form -->
+            <div class="mt-3">
+              <div class="flex items-center mb-2">
+                <label for="quantity-{{../id}}" class="text-sm font-medium text-gray-700 mr-2">
+                  Number of People:
+                </label>
+                <select id="quantity-{{../id}}" class="bg-white border border-gray-300 text-gray-700 text-sm rounded px-2 py-1 focus:outline-none focus:ring-[#b5651d] focus:border-[#b5651d]">
+                  {{#for 1 ../availableSlots}}
+                    <option value="{{this}}">{{this}} {{#if (eq this 1)}}Person{{else}}People{{/if}}</option>
+                  {{/for}}
+                </select>
+              </div>
+
+              <!-- Form yapısı korundu, sadece method ve action değiştirildi -->
+              <form method="GET" action="/select-slot/{{../id}}">
+                <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+                <input type="hidden" name="slotId" value="{{../id}}">
+                <input type="hidden" id="hiddenQuantity-{{../id}}" name="quantity" value="1">
+                <button type="submit" 
+                  class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition w-full"
+                  onclick="document.getElementById('hiddenQuantity-{{../id}}').value = document.getElementById('quantity-{{../id}}').value;">
+                  Select this slot
+                </button>
+              </form>
+            </div>
+          {{/if}}
         </div>
       {{/each}}
     </details>
@@ -327,44 +371,66 @@
 </div>
 {{/if}}
 
+
   {{#if novemberDates}}
-  <!-- 🟫 NOVEMBER -->
-  <div class="bg-white rounded-lg p-5 shadow space-y-4">
-    <h2 class="text-xl font-bold text-[#b5651d] text-center">November 2025</h2>
+<!-- 🟫 NOVEMBER -->
+<div class="bg-white rounded-lg p-5 shadow space-y-4">
+  <h2 class="text-xl font-bold text-[#b5651d] text-center">November 2025</h2>
 
-    {{#each novemberDates}}
-      <details class="group border border-gray-200 rounded">
-        <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-100">
-          <h4 class="text-md text-[#b5651d] font-medium">{{label}}</h4>
-          <span class="transition group-open:rotate-180">
-            <svg fill="none" height="20" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="20">
-              <path d="M6 9l6 6 6-6"></path>
-            </svg>
-          </span>
-        </summary>
-        {{#each slots}}
-          <div class="p-4 text-sm bg-white text-gray-700 space-y-2">
-            <p><strong>Day:</strong> {{day}}</p>
-            <p><strong>Date:</strong> {{date}}</p>
-            <p><strong>Time:</strong> {{time}}</p>
-            
-            <!-- YENİ FORM -->
-            <form method="POST" action="/reserve-slot">
-              <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-              <input type="hidden" name="slotId" value="{{../id}}">
-              <button type="submit" 
-                class="mt-2 {{#if ../isFull}}bg-gray-400{{else}}bg-[#b5651d]{{/if}} text-white px-3 py-1 rounded hover:{{#if ../isFull}}bg-gray-500{{else}}bg-[#8c4516]{{/if}} transition"
-                {{#if ../isFull}}disabled{{/if}}>
-                {{#if ../isFull}}Fully Booked{{else}}Select this slot{{/if}}
-              </button>
-            </form>
-          </div>
-        {{/each}}
-      </details>
-    {{/each}}
-  </div>
-  {{/if}}
+  {{#each novemberDates}}
+    <details class="group border border-gray-200 rounded">
+      <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-100">
+        <h4 class="text-md text-[#b5651d] font-medium">{{label}}</h4>
+        <span class="transition group-open:rotate-180">
+          <svg fill="none" height="20" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="20">
+            <path d="M6 9l6 6 6-6"></path>
+          </svg>
+        </span>
+      </summary>
+      {{#each slots}}
+        <div class="p-4 text-sm bg-white text-gray-700 space-y-2">
+          <p><strong>Day:</strong> {{day}}</p>
+          <p><strong>Date:</strong> {{date}}</p>
+          <p><strong>Time:</strong> {{time}}</p>
+          
+          {{#if ../isFull}}
+            <!-- Eğer slot doluysa, sadece "Fully Booked" mesajını göster -->
+            <div class="mt-4 py-2 px-3 bg-gray-100 text-gray-500 rounded text-center">
+              Fully Booked
+            </div>
+          {{else}}
+            <!-- Quantity seçici ve form -->
+            <div class="mt-3">
+              <div class="flex items-center mb-2">
+                <label for="quantity-{{../id}}" class="text-sm font-medium text-gray-700 mr-2">
+                  Number of People:
+                </label>
+                <select id="quantity-{{../id}}" class="bg-white border border-gray-300 text-gray-700 text-sm rounded px-2 py-1 focus:outline-none focus:ring-[#b5651d] focus:border-[#b5651d]">
+                  {{#for 1 ../availableSlots}}
+                    <option value="{{this}}">{{this}} {{#if (eq this 1)}}Person{{else}}People{{/if}}</option>
+                  {{/for}}
+                </select>
+              </div>
 
+              <!-- Form yapısı korundu, sadece method ve action değiştirildi -->
+              <form method="GET" action="/select-slot/{{../id}}">
+                <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+                <input type="hidden" name="slotId" value="{{../id}}">
+                <input type="hidden" id="hiddenQuantity-{{../id}}" name="quantity" value="1">
+                <button type="submit" 
+                  class="mt-2 bg-[#b5651d] text-white px-3 py-1 rounded hover:bg-[#8c4516] transition w-full"
+                  onclick="document.getElementById('hiddenQuantity-{{../id}}').value = document.getElementById('quantity-{{../id}}').value;">
+                  Select this slot
+                </button>
+              </form>
+            </div>
+          {{/if}}
+        </div>
+      {{/each}}
+    </details>
+  {{/each}}
+</div>
+{{/if}}
 
 
   </div>

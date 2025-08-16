@@ -6,6 +6,7 @@ const logger = require('../utils/logger');
 exports.addToCart = async (req, res) => {
   try {
     const { slotId } = req.body;
+    const quantity = parseInt(req.body.quantity || 1, 10); // Quantity parametresi eklendi
     
     if (!slotId) {
       return res.status(400).render("error", {
@@ -29,12 +30,12 @@ exports.addToCart = async (req, res) => {
       });
     }
     
-    // Slot dolu mu kontrol et - virtual property olarak kontrol et
-    if (slot.bookedSlots >= slot.totalSlots) {
+      // Kapasite kontrolü - quantity'ye göre kontrol
+    if (slot.bookedSlots + quantity > slot.totalSlots) {
       return res.status(409).render("error", {
         errorCode: 409,
-        errorMessage: "Slot Full",
-        errorDetail: "Sorry, this slot is already fully booked."
+        errorMessage: "Not Enough Capacity",
+        errorDetail: `Sorry, only ${slot.totalSlots - slot.bookedSlots} seats available for this slot.`
       });
     }
     
@@ -49,33 +50,50 @@ exports.addToCart = async (req, res) => {
       });
     }
     
-    // Geçici rezervasyon oluştur
-    const reservation = await slotService.createTemporaryReservation(slotId, sessionId);
-    
-        // Sepeti dizi olarak başlat (eğer yoksa)
-      if (!req.session.cart || !Array.isArray(req.session.cart)) {
-        req.session.cart = [];
-      }
+    // Sepeti dizi olarak başlat (eğer yoksa)
+if (!req.session.cart || !Array.isArray(req.session.cart)) {
+  req.session.cart = [];
+}
 
-      // Sepete yeni ürünü ekle
-      req.session.cart.push({
-        cartItemId: Date.now().toString() + Math.random().toString(36).substr(2, 9), // Benzersiz ID
-        classId: classItem._id,
-        classSlug: classItem.slug,
-        classTitle: classItem.title,
-        classImage: classItem.image,
-        classPrice: classItem.price.value,
-        slotId: slot._id,
-        slotDay: slot.dayOfWeek,
-        slotDate: new Date(slot.startDate).toLocaleDateString('en-US', { 
-          month: 'long', 
-          day: 'numeric', 
-          year: 'numeric' 
-        }),
-        slotTime: `${slot.time.start} – ${slot.time.end}`,
-        reservationId: reservation._id,
-        reservationExpiresAt: reservation.expiresAt
-      });
+// Sepette aynı slot var mı kontrol et
+const existingItemIndex = req.session.cart.findIndex(item => 
+  item.slotId && item.slotId.toString() === slotId.toString()
+);
+
+// Geçici rezervasyon oluştur veya güncelle (quantity parametresi eklendi)
+const reservation = await slotService.createTemporaryReservation(slotId, sessionId, quantity);
+
+if (existingItemIndex !== -1) {
+  // Varolan öğeyi güncelle
+  req.session.cart[existingItemIndex].quantity = quantity;
+  req.session.cart[existingItemIndex].reservationId = reservation._id;
+  req.session.cart[existingItemIndex].reservationExpiresAt = reservation.expiresAt;
+  
+  logger.info(`Updated cart item with new quantity: ${quantity} for slot: ${slotId}`);
+} else {
+  // Sepete yeni ürünü ekle (quantity alanı eklendi)
+  req.session.cart.push({
+    cartItemId: Date.now().toString() + Math.random().toString(36).substr(2, 9), // Benzersiz ID
+    classId: classItem._id,
+    classSlug: classItem.slug,
+    classTitle: classItem.title,
+    classImage: classItem.image,
+    classPrice: classItem.price.value,
+    slotId: slot._id,
+    slotDay: slot.dayOfWeek,
+    slotDate: new Date(slot.startDate).toLocaleDateString('en-US', { 
+      month: 'long', 
+      day: 'numeric', 
+      year: 'numeric' 
+    }),
+    slotTime: `${slot.time.start} – ${slot.time.end}`,
+    reservationId: reservation._id,
+    reservationExpiresAt: reservation.expiresAt,
+    quantity: quantity // Quantity eklendi
+  });
+}
+
+      
     
     // Yeni ürün eklenince promo kodunu sıfırla
     req.session.promo = null;
@@ -161,39 +179,49 @@ exports.viewCart = async (req, res) => {
         remainingTime = Math.max(0, Math.floor((expiresAt - now) / 60000));
       }
       
-      // Event tipindeki ürünler için görüntüleme bilgileri ekle
-        cart = cart.map(item => {
-          // Event tipindeki ürünler için
-          if (item.type === 'event') {
-            return {
-              ...item, // Mevcut tüm özellikleri koru
-              displayType: 'Event',
-              displayTitle: item.eventTitle,
-              displayImage: item.eventImage,
-              displayInfo: `${item.eventDate} · ${item.eventTime}`,
-              displayLocation: item.eventLocation,
-              displayPrice: item.priceDisplay,
-              totalPrice: item.price * item.quantity,
-              formattedTotalPrice: `$${(item.price * item.quantity).toFixed(2)}`
-            };
-          }
-          // Event tipinde olmayan ürünleri olduğu gibi döndür
-          return item;
-        });
+      // Kurs ve etkinlikler için görüntüleme bilgileri ekle
+      cart = cart.map(item => {
+        // Event tipindeki ürünler için
+        if (item.type === 'event') {
+          return {
+            ...item, // Mevcut tüm özellikleri koru
+            displayType: 'Event',
+            displayTitle: item.eventTitle,
+            displayImage: item.eventImage,
+            displayInfo: `${item.eventDate} · ${item.eventTime}`,
+            displayLocation: item.eventLocation,
+            displayPrice: item.priceDisplay,
+            totalPrice: item.price * (item.quantity || 1),
+            formattedTotalPrice: `$${(item.price * (item.quantity || 1)).toFixed(2)}`
+          };
+        }
+        // Kurs/slot tipindeki ürünler için - quantity eklenmiş
+        return {
+          ...item,
+          displayType: 'Class',
+          displayTitle: item.classTitle,
+          displayImage: item.classImage,
+          displayInfo: `${item.slotDay}, ${item.slotDate} · ${item.slotTime}`,
+          displayPrice: `$${item.classPrice}`,
+          totalPrice: item.classPrice * (item.quantity || 1),
+          formattedTotalPrice: `$${(parseFloat(item.classPrice) * (item.quantity || 1)).toFixed(2)}`
+        };
+      });
 
 
 
-      // Toplam fiyatları hesapla
-        let subtotal = 0;
-        cart.forEach(item => {
-          // Event tipindeki ürünler için quantity ile çarp
-          if (item.type === 'event') {
-            subtotal += parseFloat(item.price) * (item.quantity || 1);
-          } else {
-            // Normal kurslar için
-            subtotal += parseFloat(item.classPrice);
-          }
-        });
+            // Toplam fiyatları hesapla - quantity dikkate alınacak şekilde güncellendi
+      let subtotal = 0;
+      cart.forEach(item => {
+        // Event tipindeki ürünler için quantity ile çarp
+        if (item.type === 'event') {
+          subtotal += parseFloat(item.price) * (item.quantity || 1);
+        } else {
+          // Normal kurslar için - quantity ile çarp
+          subtotal += parseFloat(item.classPrice) * (item.quantity || 1);
+        }
+      });
+
       // Promo kodu varsa indirim uygula
       let discountedSubtotal = subtotal;
       if (promo && promo.discount) {
@@ -255,8 +283,8 @@ exports.viewCart = async (req, res) => {
         remainingTime = Math.max(0, Math.floor((expiresAt - now) / 60000));
       }
       
-      // Fiyat hesaplamaları
-      const subtotal = parseFloat(cart.classPrice);
+            // Fiyat hesaplamaları - quantity'yi dikkate alarak
+      const subtotal = parseFloat(cart.classPrice) * (cart.quantity || 1);
       
       // Promo kodu varsa indirim uygula
       let discountedSubtotal = subtotal;

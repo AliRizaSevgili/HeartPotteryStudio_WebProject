@@ -89,6 +89,7 @@
                 <p class="text-sm text-gray-600 mb-1"><strong>Day:</strong> {{cart.slotDay}}</p>
                 <p class="text-sm text-gray-600 mb-1"><strong>Date:</strong> {{cart.slotDate}}</p>
                 <p class="text-sm text-gray-600 mb-1"><strong>Time:</strong> {{cart.slotTime}}</p>
+                <p class="text-sm text-gray-600 mb-1"><strong>Number of people:</strong> {{formatQuantity cart.quantity}}</p>
                 <div class="flex items-center justify-between pt-5">
                   <p class="text-base font-black leading-none text-gray-800">${{cartSubtotal cart}}</p>
                   <form method="POST" action="/cancel-reservation" class="ml-4">
@@ -129,24 +130,25 @@
                     <p class="text-sm text-gray-600 mb-1"><strong>Day:</strong> {{slotDay}}</p>
                     <p class="text-sm text-gray-600 mb-1"><strong>Date:</strong> {{slotDate}}</p>
                     <p class="text-sm text-gray-600 mb-1"><strong>Time:</strong> {{slotTime}}</p>
+                    <p class="text-sm text-gray-600 mb-1"><strong>Number of people:</strong> {{formatQuantity quantity}}</p>
                   {{/if}}
                   
-                  <div class="flex items-center justify-between pt-5">
-                    {{#if (eq type "event")}}
-                      <p class="text-base font-black leading-none text-gray-800">${{multiply price quantity}}</p>
-                    {{else}}
-                      <p class="text-base font-black leading-none text-gray-800">${{classPrice}}</p>
-                    {{/if}}
-                    
-                    <!-- Sepetten Kaldırma Düğmesi -->
-                    <form method="POST" action="/remove-from-cart" class="ml-4">
-                      <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-                      <input type="hidden" name="cartItemId" value="{{cartItemId}}">
-                      <button type="submit" class="text-xs leading-3 underline text-red-500 cursor-pointer hover:text-red-700 transition">
-                        Remove
-                      </button>
-                    </form>
-                  </div>
+                 <div class="flex items-center justify-between pt-5">
+                  {{#if (eq type "event")}}
+                    <p class="text-base font-black leading-none text-gray-800">${{multiply price quantity}}</p>
+                  {{else}}
+                    <p class="text-base font-black leading-none text-gray-800">${{multiply classPrice quantity}}</p>
+                  {{/if}}
+                  
+                  <!-- Sepetten Kaldırma Düğmesi -->
+                  <form method="POST" action="/remove-from-cart" class="ml-4">
+                    <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+                    <input type="hidden" name="cartItemId" value="{{cartItemId}}">
+                    <button type="submit" class="text-xs leading-3 underline text-red-500 cursor-pointer hover:text-red-700 transition">
+                      Remove
+                    </button>
+                  </form>
+                </div>
                 </div>
               </div>
             {{/each}}
@@ -187,22 +189,22 @@
           <!-- Order Summary -->
                     <ul class="divide-y divide-gray-200">
             {{#if cart}}
-              {{#if (isObject cart)}}
-                <li class="flex justify-between py-2">
-                  <span class="text-sm text-gray-700">{{cart.classTitle}} ({{cart.slotDate}} {{cart.slotTime}})</span>
-                  <span class="text-sm font-semibold text-gray-900">${{cartSubtotal cart}}</span>
-                </li>
-              {{else}}
-                {{#each cart}}
-                  <li class="flex justify-between py-2">
-                    {{#if (eq type "event")}}
-                      <span class="text-sm text-gray-700">{{eventTitle}} {{#if quantity}}({{quantity}}){{/if}}</span>
-                      <span class="text-sm font-semibold text-gray-900">${{multiply price quantity}}</span>
+                    {{#if (isObject cart)}}
+                      <li class="flex justify-between py-2">
+                        <span class="text-sm text-gray-700">{{cart.classTitle}} ({{cart.slotDate}} {{cart.slotTime}}) {{#if cart.quantity}}({{formatQuantity cart.quantity}}){{/if}}</span>
+                        <span class="text-sm font-semibold text-gray-900">${{cartSubtotal cart}}</span>
+                      </li>
                     {{else}}
-                      <span class="text-sm text-gray-700">{{classTitle}} ({{slotDate}} {{slotTime}})</span>
-                      <span class="text-sm font-semibold text-gray-900">${{classPrice}}</span>
-                    {{/if}}
-                  </li>
+                              {{#each cart}}
+                  <li class="flex justify-between py-2">
+                  {{#if (eq type "event")}}
+                    <span class="text-sm text-gray-700">{{eventTitle}} {{#if quantity}}({{quantity}}){{/if}}</span>
+                    <span class="text-sm font-semibold text-gray-900">${{multiply price quantity}}</span>
+                  {{else}}
+                    <span class="text-sm text-gray-700">{{classTitle}} ({{slotDate}} {{slotTime}}) {{#if quantity}}({{formatQuantity quantity}}){{/if}}</span>
+                    <span class="text-sm font-semibold text-gray-900">${{multiply classPrice quantity}}</span>
+                  {{/if}}
+                </li>
                 {{/each}}
               {{/if}}
             {{/if}}

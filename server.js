@@ -814,7 +814,8 @@ hbs.registerHelper('isObject', function(item) {
 hbs.registerHelper('cartSubtotal', function(cart) {
   if (!cart) return "0.00";
   let price = parseFloat(cart.classPrice) || 0;
-  return price.toFixed(2);
+  const quantity = parseInt(cart.quantity || 1, 10);
+  return (price * quantity).toFixed(2);
 });
 
 hbs.registerHelper('cartDiscount', function(cart, promo) {
@@ -826,29 +827,33 @@ hbs.registerHelper('cartDiscount', function(cart, promo) {
 hbs.registerHelper('cartDiscountedSubtotal', function(cart, promo) {
   if (!cart) return "0.00";
   let price = parseFloat(cart.classPrice) || 0;
+  const quantity = parseInt(cart.quantity || 1, 10);
   if (promo && promo.discount) {
     price = price * (1 - promo.discount);
   }
-  return price.toFixed(2);
+  return (price * quantity).toFixed(2);
 });
+
 
 hbs.registerHelper('cartTax', function(cart, promo, taxRate = 0.13) {
   if (!cart) return "0.00";
   let price = parseFloat(cart.classPrice) || 0;
+  const quantity = parseInt(cart.quantity || 1, 10);
   if (promo && promo.discount) {
     price = price * (1 - promo.discount);
   }
-  return (price * taxRate).toFixed(2);
+  return (price * quantity * taxRate).toFixed(2);
 });
 
 hbs.registerHelper('cartTotal', function(cart, promo, taxRate = 0.13) {
   if (!cart) return "0.00";
   let price = parseFloat(cart.classPrice) || 0;
+  const quantity = parseInt(cart.quantity || 1, 10);
   if (promo && promo.discount) {
     price = price * (1 - promo.discount);
   }
   let tax = price * taxRate;
-  return (price + tax).toFixed(2);
+  return ((price + tax) * quantity).toFixed(2);
 });
 
 // Eski sepet formatı için helperlar
@@ -975,9 +980,9 @@ hbs.registerHelper('calculateSubtotal', function(cart) {
   let subtotal = 0;
   cart.forEach(item => {
     if (item.type === 'event') {
-      subtotal += parseFloat(item.price) * (item.quantity || 1);
+      subtotal += parseFloat(item.price) * (parseInt(item.quantity || 1, 10));
     } else {
-      subtotal += parseFloat(item.classPrice);
+      subtotal += parseFloat(item.classPrice) * (parseInt(item.quantity || 1, 10));
     }
   });
   
@@ -1000,49 +1005,86 @@ hbs.registerHelper('calculateDiscount', function(cart, discount) {
   return (subtotal * discount).toFixed(2);
 });
 
-// Vergi hesaplama
-hbs.registerHelper('calculateTax', function(cart, discount, taxRate) {
+hbs.registerHelper('calculateTax', function(cart, discount = 0, taxRate = 0.13) {
   if (!cart || !Array.isArray(cart) || cart.length === 0) return "0.00";
   
-  let subtotal = 0;
+  let taxableAmount = 0;
   cart.forEach(item => {
+    const quantity = parseInt(item.quantity || 1, 10);
+    let itemPrice = 0;
+    
     if (item.type === 'event') {
-      subtotal += parseFloat(item.price) * (item.quantity || 1);
+      itemPrice = parseFloat(item.price);
     } else {
-      subtotal += parseFloat(item.classPrice);
+      itemPrice = parseFloat(item.classPrice);
     }
+    
+    // İndirim varsa uygula
+    if (discount > 0) {
+      itemPrice = itemPrice * (1 - parseFloat(discount));
+    }
+    
+    // Quantity ile çarp ve vergiye tabi tutara ekle
+    taxableAmount += itemPrice * quantity;
   });
   
-  // İndirim varsa uygula
-  if (discount) {
-    subtotal = subtotal * (1 - discount);
-  }
-  
-  return (subtotal * (taxRate || 0.13)).toFixed(2);
+  return (taxableAmount * parseFloat(taxRate)).toFixed(2);
 });
 
 // Toplam hesaplama
-hbs.registerHelper('calculateTotal', function(cart, discount, taxRate) {
+hbs.registerHelper('calculateTotal', function(cart, discount = 0, taxRate = 0.13) {
   if (!cart || !Array.isArray(cart) || cart.length === 0) return "0.00";
   
-  let subtotal = 0;
+  let total = 0;
   cart.forEach(item => {
+    const quantity = parseInt(item.quantity || 1, 10);
+    let itemPrice = 0;
+    
     if (item.type === 'event') {
-      subtotal += parseFloat(item.price) * (item.quantity || 1);
+      itemPrice = parseFloat(item.price);
     } else {
-      subtotal += parseFloat(item.classPrice);
+      itemPrice = parseFloat(item.classPrice);
     }
+    
+    // İndirim varsa uygula
+    if (discount > 0) {
+      itemPrice = itemPrice * (1 - parseFloat(discount));
+    }
+    
+    // Vergi ekle
+    const withTax = itemPrice * (1 + parseFloat(taxRate));
+    
+    // Quantity ile çarp ve toplama ekle
+    total += withTax * quantity;
   });
   
-  // İndirim varsa uygula
-  if (discount) {
-    subtotal = subtotal * (1 - discount);
+  return total.toFixed(2);
+});
+
+
+// Quantity için çarpma işlemi helper'ı
+hbs.registerHelper('multiply', function(a, b) {
+  return (parseFloat(a) * parseInt(b, 10)).toFixed(2);
+});
+
+// Quantity formatı için helper
+hbs.registerHelper('formatQuantity', function(quantity) {
+  const qty = parseInt(quantity, 10) || 1;
+  return qty === 1 ? '1 Person' : `${qty} People`;
+});
+
+// Karşılaştırma helper'ı (quantity seçiminde kullanılacak)
+hbs.registerHelper('eq', function(a, b) {
+  return a === b;
+});
+
+// For döngüsü helper'ı (select options oluşturmak için)
+hbs.registerHelper('for', function(from, to, block) {
+  let result = '';
+  for (let i = from; i <= to; i++) {
+    result += block.fn(i);
   }
-  
-  // Vergiyi ekle
-  const tax = subtotal * (taxRate || 0.13);
-  
-  return (subtotal + tax).toFixed(2);
+  return result;
 });
 
 
@@ -1050,8 +1092,11 @@ hbs.registerHelper('calculateTotal', function(cart, discount, taxRate) {
 app.get('/select-slot/:slotId', async (req, res) => {
   try {
     const { slotId } = req.params;
+    const quantity = parseInt(req.query.quantity || 1, 10); // Quantity parametresi eklendi
+    
     logger.info(`====== SLOT SELECTION DEBUG ======`);
     logger.info(`Slot ID: ${slotId}`);
+    logger.info(`Quantity: ${quantity}`);
     logger.info(`Session ID: ${req.session.id}`);
     logger.info(`Session cart before: ${JSON.stringify(req.session.cart)}`);
 
@@ -1076,36 +1121,65 @@ app.get('/select-slot/:slotId', async (req, res) => {
       });
     }
     
+    // Kapasite kontrolü - quantity'ye göre kontrol
+    if (slot.bookedSlots + quantity > slot.totalSlots) {
+      return res.status(409).render("error", {
+        errorCode: 409,
+        errorMessage: "Not Enough Capacity",
+        errorDetail: `Sorry, only ${slot.totalSlots - slot.bookedSlots} seats available for this slot.`
+      });
+    }
+    
     // Get related class details
     const classItem = await Class.findById(slot.classId);
     
-    // Create temporary reservation
-    const reservation = await slotService.createTemporaryReservation(slotId, sessionId);
-    
-      // Sepeti dizi olarak başlat (eğer yoksa)
+    // Sepeti dizi olarak başlat (eğer yoksa)
     if (!req.session.cart || !Array.isArray(req.session.cart)) {
       req.session.cart = [];
     }
-
-    // Sepete yeni ürünü ekle
-    req.session.cart.push({
-      classId: classItem._id,
-      classSlug: classItem.slug,
-      classTitle: classItem.title,
-      classImage: classItem.image,
-      classPrice: classItem.price.value,
-      slotId: slot._id,
-      slotDay: slot.dayOfWeek,
-      slotDate: new Date(slot.startDate).toLocaleDateString('en-US', { 
-        month: 'long', 
-        day: 'numeric', 
-        year: 'numeric' 
-      }),
-      slotTime: `${slot.time.start} – ${slot.time.end}`,
-      reservationId: reservation._id,
-      reservationExpiresAt: reservation.expiresAt
-    });
-        
+    
+    // Sepette aynı slot var mı kontrol et
+    const existingItemIndex = req.session.cart.findIndex(item => 
+      item.slotId && item.slotId.toString() === slotId.toString()
+    );
+    
+    // Create temporary reservation with quantity
+    const reservation = await slotService.createTemporaryReservation(slotId, sessionId, quantity);
+    
+    if (existingItemIndex !== -1) {
+      // Varolan öğeyi güncelle
+      req.session.cart[existingItemIndex].quantity = quantity;
+      req.session.cart[existingItemIndex].reservationId = reservation._id;
+      req.session.cart[existingItemIndex].reservationExpiresAt = reservation.expiresAt;
+      
+      logger.info(`Updated cart item with new quantity: ${quantity} for slot: ${slotId}`);
+    } else {
+      // Sepete yeni ürünü ekle
+      req.session.cart.push({
+        cartItemId: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        classId: classItem._id,
+        classSlug: classItem.slug,
+        classTitle: classItem.title,
+        classImage: classItem.image,
+        classPrice: classItem.price.value,
+        slotId: slot._id,
+        slotDay: slot.dayOfWeek,
+        slotDate: new Date(slot.startDate).toLocaleDateString('en-US', { 
+          month: 'long', 
+          day: 'numeric', 
+          year: 'numeric' 
+        }),
+        slotTime: `${slot.time.start} – ${slot.time.end}`,
+        reservationId: reservation._id,
+        reservationExpiresAt: reservation.expiresAt,
+        quantity: quantity // Quantity eklendi
+      });
+    }
+    
+    // Yeni ürün eklenince promo kodunu sıfırla
+    req.session.promo = null;
+    req.session.promoMessage = null;
+    
     // Redirect to checkout page
     res.redirect('/checkout');
   } catch (error) {
@@ -1214,6 +1288,9 @@ app.post('/checkout-info', csrfProtection, async (req, res) => {
       
       productName = req.session.cart.classTitle;
       
+      // Quantity değerini al (varsayılan olarak 1)
+      const quantity = parseInt(req.session.cart.quantity || 1, 10);
+      
       // Promo kodu indirimini uygula
       if (req.session.promo && req.session.promo.discount) {
         price = price * (1 - req.session.promo.discount);
@@ -1231,11 +1308,11 @@ app.post('/checkout-info', csrfProtection, async (req, res) => {
           },
           unit_amount: Math.round(totalAmount * 100), // Vergi dahil toplam
         },
-        quantity: 1,
+        quantity: quantity, // Sepetteki quantity değerini kullan
       });
       
-      logger.info(`Created line item for: ${req.session.cart.classTitle} with tax, total: ${totalAmount}`);
-    } 
+      logger.info(`Created line item for: ${req.session.cart.classTitle} with quantity: ${quantity}, tax, total: ${totalAmount}`);
+} 
     // Sepet dizi ise
     else if (req.session.cart && Array.isArray(req.session.cart)) {
       // Dizi formatında ilk elemanda rezervasyon ID'si var mı kontrol et
@@ -1268,15 +1345,25 @@ app.post('/checkout-info', csrfProtection, async (req, res) => {
             quantity: quantity
           });
         } 
+        
         // Class tipindeki ürünler için
-        else {
-          price = parseFloat(item.classPrice || 0);
-          name = item.classTitle || 'Class';
-          description = `${item.slotDate || ''} ${item.slotTime || ''}`;
-          
-          // Ürün adını güncelle
-          if (!productName) productName = name;
-        }
+            else {
+              price = parseFloat(item.classPrice || 0);
+              name = item.classTitle || 'Class';
+              description = `${item.slotDate || ''} ${item.slotTime || ''}`;
+              quantity = parseInt(item.quantity || 1, 10); // Class tipi için quantity eklendi
+              
+              // Ürün adını güncelle
+              if (!productName) productName = name;
+              
+              // Debug için
+              logger.debug('Class item debug:', {
+                title: name,
+                originalPrice: item.classPrice,
+                parsedPrice: price,
+                quantity: quantity
+              });
+            }
         
         // NaN kontrolü ekle
         if (isNaN(price)) {
@@ -1494,45 +1581,46 @@ app.post('/create-checkout-session', csrfProtection, validateReservationToken, a
         ? process.env.DOMAIN || 'https://heartpotterystudio-webproject.onrender.com'
         : 'http://localhost:5000';
           
-            // Stripe Checkout oturumu oluştur
-        const session = await stripe.checkout.sessions.create({
-          payment_method_types: ['card'],
-          customer_email: email,
-          line_items: [{
-            price_data: {
-              currency: 'cad',
-              product_data: {
-                name: cartItem.classTitle,
-                images: [cartItem.classImage],
-                description: `${cartItem.slotDate} ${cartItem.slotTime} (incl. 13% tax)`, // Vergi dahil olduğunu belirt
-              },
-              unit_amount: Math.round(totalAmount * 100), // Vergi dahil toplam tutar
-            },
-            quantity: 1,
-          }],
-          mode: 'payment',
-          locale: 'en', // İngilizce dil desteği ekledim
-          // Sadece reservationId varsa ve geçerli bir değerse ekle
-          ...(reservationId ? { client_reference_id: reservationId } : {}),
-          success_url: `${domain}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${req.protocol}://${req.get('host')}${cancelUrl}`,
-        });
-    
-    if (process.env.NODE_ENV !== 'production') {
-      logger.info(`Created Stripe checkout session: ${session.id} with amount: ${price}`);
-    }
-    
-    res.redirect(303, session.url);
+            // Quantity değerini al (varsayılan olarak 1)
+const quantity = parseInt(cartItem.quantity || 1, 10);
+
+// Stripe Checkout oturumu oluştur
+const session = await stripe.checkout.sessions.create({
+  payment_method_types: ['card'],
+  customer_email: email,
+  line_items: [{
+    price_data: {
+      currency: 'cad',
+      product_data: {
+        name: cartItem.classTitle,
+        images: [cartItem.classImage],
+        description: `${cartItem.slotDate} ${cartItem.slotTime} (incl. 13% tax)`,
+      },
+      unit_amount: Math.round(totalAmount * 100),
+    },
+    quantity: quantity,
+  }],
+  mode: 'payment',
+  locale: 'en',
+  ...(reservationId ? { client_reference_id: reservationId } : {}),
+  success_url: `${domain}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
+  cancel_url: `${req.protocol}://${req.get('host')}${cancelUrl}`,
+});
+
+// Session URL'ine yönlendir
+res.redirect(303, session.url);
+
   } catch (error) {
-    if (process.env.NODE_ENV !== 'production') {
-      logger.error('Error creating Stripe Checkout session:', error.message);
-    }
-    res.status(500).send('Internal Server Error');
+    logger.error(`Error creating checkout session: ${error.message}`);
+    res.status(500).render("error", {
+      errorCode: 500,
+      errorMessage: "Payment Error",
+      errorDetail: "An error occurred while creating your checkout session. Please try again."
+    });
   }
 });
 
-
-// Stripe Webhook Route - mevcut kodu bu kod bloğu ile değiştirin
+// Stripe Webhook Route - Artık ayrı bir rota olarak düzgün şekilde tanımlandı
 app.post('/api/payment/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
   

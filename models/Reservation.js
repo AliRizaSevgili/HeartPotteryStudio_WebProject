@@ -18,6 +18,13 @@ const ReservationSchema = new mongoose.Schema({
     email: String,
     phone: String
   },
+  // YENİ ALAN: Quantity (kişi sayısı)
+  quantity: {
+    type: Number,
+    default: 1,
+    min: 1,
+    required: true
+  },
   createdAt: {
     type: Date,
     default: Date.now

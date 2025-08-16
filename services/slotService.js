@@ -66,9 +66,15 @@ async function getSlotById(slotId) {
 
 /**
  * Geçici rezervasyon oluşturur
+ * @param {string} slotId - Slot ID
+ * @param {string} sessionId - Session ID
+ * @param {number} quantity - Rezervasyon kişi sayısı (varsayılan: 1)
  */
-async function createTemporaryReservation(slotId, sessionId) {
+async function createTemporaryReservation(slotId, sessionId, quantity = 1) {
   try {
+    // Quantity'nin sayı olduğundan emin ol
+    quantity = parseInt(quantity, 10) || 1;
+    
     // İşlemi atomik olarak gerçekleştir (race condition önlemek için)
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -81,8 +87,9 @@ async function createTemporaryReservation(slotId, sessionId) {
         throw new Error(`Slot not found with ID: ${slotId}`);
       }
       
-      if (slot.bookedSlots >= slot.totalSlots) {
-        throw new Error(`Slot is already full: ${slotId}`);
+      // Quantity için kapasite kontrolü
+      if (slot.bookedSlots + quantity > slot.totalSlots) {
+        throw new Error(`Not enough available slots. Requested: ${quantity}, Available: ${slot.totalSlots - slot.bookedSlots}`);
       }
       
       // 2. Bu session için mevcut rezervasyon var mı kontrol et
@@ -93,9 +100,28 @@ async function createTemporaryReservation(slotId, sessionId) {
       }).session(session);
       
       if (existingReservation) {
-        // Zaten rezervasyon var, güncel rezervasyonu döndür
-        await session.abortTransaction();
+        // Mevcut rezervasyonu güncelle - önce eski miktarı geri al
+        slot.bookedSlots -= (existingReservation.quantity || 1);
+        
+        // Rezervasyonu güncelle
+        existingReservation.quantity = quantity;
+        existingReservation.expiresAt = new Date(Date.now() + 30 * 60 * 1000); // Süreyi yenile
+        await existingReservation.save({ session });
+        
+        // Slot kapasitesini yeni quantity'ye göre ayarla
+        slot.bookedSlots += quantity;
+        if (slot.bookedSlots >= slot.totalSlots) {
+          slot.isFull = true;
+        } else {
+          slot.isFull = false;
+        }
+        await slot.save({ session });
+        
+        // İşlemi tamamla
+        await session.commitTransaction();
         session.endSession();
+        
+        logger.info(`✅ Updated temporary reservation for slot: ${slotId}, session: ${sessionId}, quantity: ${quantity}`);
         return existingReservation;
       }
       
@@ -104,20 +130,24 @@ async function createTemporaryReservation(slotId, sessionId) {
           slotId,
           sessionId,
           status: 'temporary',
+          quantity: quantity, // Quantity değerini ekle
           expiresAt: new Date(Date.now() + 30 * 60 * 1000) // 30 dakika geçerli
-        });;
+        });
               
       await reservation.save({ session });
       
-      // 4. Slot'un bookedSlots sayısını artır
-      slot.bookedSlots += 1;
+      // 4. Slot'un bookedSlots sayısını quantity kadar artır
+      slot.bookedSlots += quantity;
+      if (slot.bookedSlots >= slot.totalSlots) {
+        slot.isFull = true;
+      }
       await slot.save({ session });
       
       // İşlemi tamamla
       await session.commitTransaction();
       session.endSession();
       
-      logger.info(`✅ Created temporary reservation for slot: ${slotId}, session: ${sessionId}`);
+      logger.info(`✅ Created temporary reservation for slot: ${slotId}, session: ${sessionId}, quantity: ${quantity}`);
       return reservation;
     } catch (error) {
       // Hata durumunda işlemi geri al
@@ -177,7 +207,7 @@ async function confirmReservation(reservationId, paymentDetails) {
     await session.commitTransaction();
     session.endSession();
     
-    logger.info(`✅ Confirmed reservation: ${reservationId}`);
+    logger.info(`✅ Confirmed reservation: ${reservationId} with quantity: ${reservation.quantity || 1}`);
     return reservation;
   } catch (error) {
     // Hata durumunda işlemi geri al
@@ -216,17 +246,25 @@ async function cancelReservation(reservationId) {
       reservation.cancelledAt = new Date();
       await reservation.save({ session });
       
-      // Slot'un bookedSlots sayısını azalt
+      // Slot'un bookedSlots sayısını quantity kadar azalt
       const slot = await ClassSlot.findById(reservation.slotId).session(session);
-      if (slot && slot.bookedSlots > 0) {
-        slot.bookedSlots -= 1;
+      if (slot) {
+        // Quantity'ye göre azalt
+        slot.bookedSlots -= (reservation.quantity || 1);
+        if (slot.bookedSlots < 0) slot.bookedSlots = 0; // Negatif değer olmamasını sağla
+        
+        // isFull değerini güncelle
+        if (slot.bookedSlots < slot.totalSlots) {
+          slot.isFull = false;
+        }
+        
         await slot.save({ session });
       }
       
       await session.commitTransaction();
       session.endSession();
       
-      logger.info(`✅ Cancelled reservation: ${reservationId}`);
+      logger.info(`✅ Cancelled reservation: ${reservationId} with quantity: ${reservation.quantity || 1}`);
       return reservation;
     } catch (error) {
       await session.abortTransaction();
@@ -264,10 +302,18 @@ async function cleanupExpiredReservations() {
         reservation.status = 'expired';
         await reservation.save({ session });
         
-        // Slot'un bookedSlots sayısını azalt
+        // Slot'un bookedSlots sayısını quantity kadar azalt
         const slot = await ClassSlot.findById(reservation.slotId).session(session);
         if (slot && slot.bookedSlots > 0) {
-          slot.bookedSlots -= 1;
+          // Quantity'ye göre azalt
+          slot.bookedSlots -= (reservation.quantity || 1);
+          if (slot.bookedSlots < 0) slot.bookedSlots = 0; // Negatif değer olmamasını sağla
+          
+          // isFull değerini güncelle
+          if (slot.bookedSlots < slot.totalSlots) {
+            slot.isFull = false;
+          }
+          
           await slot.save({ session });
         }
         
